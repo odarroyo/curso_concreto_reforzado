@@ -27,6 +27,12 @@ Plataforma web didáctica para la visualización y aprendizaje de la mecánica s
 - Cálculo de ductilidad seccional $\mu_\phi = \phi_u / \phi_y$ y rigidez secante elástica.
 - Presets para vigas (flexión pura), columnas sismorresistentes y muros estructurales.
 
+### 4. 🧱 [Cálculo de un Punto con Concreto Confinado](https://odarroyo.github.io/curso_concreto_reforzado/calculo_punto_fibras_confinado.html)
+- Diferenciación explícita entre el **recubrimiento no confinado** (Hognestad: $f'_c, \varepsilon_u = 0.0038$) y el **núcleo confinado** por estribos (Mander: $f'_{cc} = K \cdot f'_c, \varepsilon_{u,cc} = 5\varepsilon_{0,cc}$).
+- Desglose de fuerzas axiales y momentos flectores por zonas (Recubrimiento, Núcleo, Acero).
+- Lupa didáctica para inspeccionar la ley constitutiva aplicada a cada elemento.
+- Comparativa en tiempo real con y sin confinamiento activo ($K = 1.3$ vs $K = 1.0$).
+
 ---
 
 ## 💻 Características Técnicas

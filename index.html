@@ -213,6 +213,7 @@
     .stripe-blue { background: linear-gradient(90deg, #2563eb, #3b82f6); }
     .stripe-emerald { background: linear-gradient(90deg, #059669, #10b981); }
     .stripe-purple { background: linear-gradient(90deg, #7c3aed, #a855f7); }
+    .stripe-amber { background: linear-gradient(90deg, #ea580c, #f59e0b); }
 
     .card-top {
       display: flex;
@@ -238,6 +239,7 @@
     .pill-blue { background: rgba(37, 99, 235, 0.1); color: #2563eb; }
     .pill-emerald { background: rgba(5, 150, 105, 0.1); color: #059669; }
     .pill-purple { background: rgba(124, 58, 237, 0.1); color: #7c3aed; }
+    .pill-amber { background: rgba(234, 88, 12, 0.12); color: #ea580c; }
 
     .card-title {
       font-family: var(--font-title);
@@ -305,6 +307,9 @@
 
     .btn-purple { background: var(--accent-purple); }
     .module-card:hover .btn-purple { box-shadow: 0 4px 12px rgba(124, 58, 237, 0.35); }
+
+    .btn-amber { background: #ea580c; }
+    .module-card:hover .btn-amber { box-shadow: 0 4px 12px rgba(234, 88, 12, 0.35); }
 
     /* FOOTER */
     footer {
@@ -412,6 +417,29 @@
         </ul>
         <div class="btn-launch btn-purple">
           <span>Abrir Módulo 3</span>
+          <span>→</span>
+        </div>
+      </a>
+
+      <!-- CARD 4: CÁLCULO CON CONCRETO CONFINADO -->
+      <a href="calculo_punto_fibras_confinado.html" class="module-card">
+        <div class="card-stripe stripe-amber"></div>
+        <div class="card-top">
+          <div class="card-icon">🧱</div>
+          <span class="card-stage-pill pill-amber">Avanzado · Concreto Confinado</span>
+        </div>
+        <h3 class="card-title">Cálculo de un Punto (Pn, Mn) Confinado</h3>
+        <p class="card-desc">
+          Modela la diferencia entre el recubrimiento no confinado (Hognestad) y el núcleo confinado por estribos (Mander: \(f'_{cc} = K f'_c\) y ductilidad ampliada).
+        </p>
+        <ul class="card-features">
+          <li>Mander en núcleo vs Hognestad en recubrimiento</li>
+          <li>Factor de confinamiento K y deformación última extendida</li>
+          <li>Lupa didáctica detallada para cada zona</li>
+          <li>Interruptor en vivo para comparar con y sin confinamiento</li>
+        </ul>
+        <div class="btn-launch btn-amber">
+          <span>Abrir Módulo Confinado</span>
           <span>→</span>
         </div>
       </a>

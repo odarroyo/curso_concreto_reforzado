@@ -1,0 +1,2244 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Diseño de Concreto Armado - Modelo de Fibras con Concreto Confinado</title>
+  <!-- Google Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500;600;700&family=Outfit:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <!-- MathJax for rendering LaTeX math formulas -->
+  <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+  <style>
+    :root {
+      --bg-primary: #f8fafc;
+      --bg-secondary: #ffffff;
+      --bg-card: #ffffff;
+      --bg-card-subtle: #f1f5f9;
+      --bg-input: #ffffff;
+      --border-color: #e2e8f0;
+      --border-focus: #3b82f6;
+      --text-main: #1e293b;
+      --text-muted: #64748b;
+      --text-bright: #0f172a;
+
+      --accent-blue: #2563eb;
+      --accent-blue-light: #3b82f6;
+      --accent-cyan: #0891b2;
+      --accent-purple: #7c3aed;
+      --accent-amber: #d97706;
+      --accent-emerald: #059669;
+      --accent-rose: #e11d48;
+
+      /* Colores temáticos de materiales */
+      --color-unconf: #ea580c;       /* Concreto No Confinado (Naranja) */
+      --color-unconf-bg: rgba(234, 88, 12, 0.1);
+      --color-conf: #7c3aed;         /* Concreto Confinado (Púrpura Mander) */
+      --color-conf-bg: rgba(124, 58, 237, 0.12);
+      --color-steel: #0284c7;        /* Acero de Refuerzo (Azul/Cian) */
+      --color-steel-bg: rgba(2, 132, 199, 0.1);
+
+      --shadow-sm: 0 1px 2px rgba(0,0,0,0.05);
+      --shadow-md: 0 4px 6px -1px rgba(0,0,0,0.07), 0 2px 4px -2px rgba(0,0,0,0.05);
+      --shadow-lg: 0 10px 15px -3px rgba(0,0,0,0.08), 0 4px 6px -4px rgba(0,0,0,0.04);
+      --radius-sm: 6px;
+      --radius-md: 10px;
+      --radius-lg: 16px;
+
+      --font-main: 'Inter', system-ui, -apple-system, sans-serif;
+      --font-title: 'Outfit', system-ui, sans-serif;
+      --font-mono: 'JetBrains Mono', monospace;
+    }
+
+    [data-theme="dark"] {
+      --bg-primary: #0b0f19;
+      --bg-secondary: #111827;
+      --bg-card: #151e32;
+      --bg-card-subtle: #1a243d;
+      --bg-input: #101626;
+      --border-color: #24324f;
+      --border-focus: #60a5fa;
+      --text-main: #cbd5e1;
+      --text-muted: #94a3b8;
+      --text-bright: #f8fafc;
+      --shadow-sm: 0 1px 2px rgba(0,0,0,0.3);
+      --shadow-md: 0 4px 6px -1px rgba(0,0,0,0.4);
+      --shadow-lg: 0 10px 15px -3px rgba(0,0,0,0.5);
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: var(--font-main);
+      background: var(--bg-primary);
+      color: var(--text-main);
+      line-height: 1.5;
+      padding-bottom: 60px;
+      transition: background-color 0.25s ease, color 0.25s ease;
+    }
+
+    .container {
+      max-width: 1440px;
+      margin: 0 auto;
+      padding: 0 24px;
+    }
+
+    /* HEADER */
+    header.main-header {
+      background: var(--bg-card);
+      border-bottom: 1px solid var(--border-color);
+      padding: 18px 0;
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      box-shadow: var(--shadow-sm);
+    }
+
+    .header-content {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 16px;
+      flex-wrap: wrap;
+    }
+
+    .header-title-area h1 {
+      font-family: var(--font-title);
+      font-size: 1.45rem;
+      font-weight: 800;
+      color: var(--text-bright);
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .header-title-area p {
+      font-size: 0.85rem;
+      color: var(--text-muted);
+      margin-top: 2px;
+    }
+
+    .header-actions {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .badge-stage {
+      background: var(--color-conf-bg);
+      color: var(--color-conf);
+      border: 1px solid rgba(124, 58, 237, 0.3);
+      padding: 5px 12px;
+      border-radius: 999px;
+      font-size: 0.75rem;
+      font-weight: 700;
+      letter-spacing: 0.04em;
+      text-transform: uppercase;
+    }
+
+    .btn-header {
+      background: var(--bg-card-subtle);
+      border: 1px solid var(--border-color);
+      color: var(--text-main);
+      padding: 8px 14px;
+      border-radius: var(--radius-md);
+      font-family: var(--font-main);
+      font-size: 0.85rem;
+      font-weight: 600;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      text-decoration: none;
+      transition: all 0.2s ease;
+    }
+
+    .btn-header:hover {
+      background: var(--border-color);
+    }
+
+    /* CONCEPT BANNER */
+    .concept-banner {
+      background: linear-gradient(135deg, rgba(124, 58, 237, 0.08) 0%, rgba(234, 88, 12, 0.08) 100%);
+      border: 1px solid rgba(124, 58, 237, 0.25);
+      border-radius: var(--radius-lg);
+      padding: 16px 20px;
+      margin-top: 20px;
+      display: flex;
+      align-items: flex-start;
+      gap: 14px;
+    }
+
+    .concept-banner .icon {
+      font-size: 1.8rem;
+      line-height: 1;
+    }
+
+    .concept-banner .text h3 {
+      font-family: var(--font-title);
+      font-size: 1.05rem;
+      font-weight: 800;
+      color: var(--color-conf);
+      margin-bottom: 4px;
+    }
+
+    .concept-banner .text p {
+      font-size: 0.875rem;
+      color: var(--text-main);
+    }
+
+    /* MASTER CONTROLLER CARD */
+    .master-controller-card {
+      background: var(--bg-card);
+      border: 1px solid var(--border-color);
+      border-radius: var(--radius-lg);
+      padding: 20px 24px;
+      margin-top: 18px;
+      box-shadow: var(--shadow-sm);
+    }
+
+    .controller-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 12px;
+      margin-bottom: 14px;
+    }
+
+    .controller-title {
+      font-family: var(--font-title);
+      font-size: 1.15rem;
+      font-weight: 800;
+      color: var(--text-bright);
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .stepper-btn-group {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .btn-step {
+      background: var(--bg-card-subtle);
+      border: 1px solid var(--border-color);
+      color: var(--text-main);
+      font-family: var(--font-mono);
+      font-size: 0.8rem;
+      font-weight: 700;
+      padding: 5px 10px;
+      border-radius: var(--radius-sm);
+      cursor: pointer;
+      transition: all 0.15s ease;
+    }
+
+    .btn-step:hover {
+      background: var(--accent-blue);
+      color: #ffffff;
+      border-color: var(--accent-blue);
+    }
+
+    .presets-container {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      flex-wrap: wrap;
+      margin-bottom: 16px;
+    }
+
+    .preset-label {
+      font-size: 0.8rem;
+      font-weight: 700;
+      color: var(--text-muted);
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+    }
+
+    .preset-pill {
+      background: var(--bg-card-subtle);
+      border: 1px solid var(--border-color);
+      color: var(--text-main);
+      padding: 5px 12px;
+      border-radius: var(--radius-sm);
+      font-size: 0.8rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.15s ease;
+    }
+
+    .preset-pill:hover {
+      border-color: var(--color-conf);
+      color: var(--color-conf);
+    }
+
+    .preset-pill.active {
+      background: var(--color-conf);
+      border-color: var(--color-conf);
+      color: #ffffff;
+      box-shadow: 0 0 10px rgba(124, 58, 237, 0.35);
+    }
+
+    .slider-row {
+      display: flex;
+      align-items: center;
+      gap: 20px;
+    }
+
+    .slider-wrapper {
+      flex: 1;
+      position: relative;
+    }
+
+    .c-slider {
+      -webkit-appearance: none;
+      width: 100%;
+      height: 10px;
+      border-radius: 5px;
+      background: var(--border-color);
+      outline: none;
+    }
+
+    .c-slider::-webkit-slider-thumb {
+      -webkit-appearance: none;
+      width: 24px;
+      height: 24px;
+      border-radius: 50%;
+      background: var(--color-conf);
+      cursor: pointer;
+      border: 3px solid #ffffff;
+      box-shadow: 0 2px 6px rgba(0,0,0,0.3);
+    }
+
+    .slider-ticks {
+      display: flex;
+      justify-content: space-between;
+      margin-top: 8px;
+      font-size: 0.725rem;
+      font-family: var(--font-mono);
+      color: var(--text-muted);
+    }
+
+    .c-value-display {
+      background: var(--bg-card-subtle);
+      border: 2px solid var(--color-conf);
+      border-radius: var(--radius-md);
+      padding: 8px 16px;
+      min-width: 130px;
+      text-align: center;
+      font-family: var(--font-mono);
+      font-size: 1.15rem;
+      font-weight: 800;
+      color: var(--color-conf);
+    }
+
+    /* SECTION & CONFINEMENT PARAMETERS */
+    .params-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(130px, 1fr));
+      gap: 12px;
+      margin-top: 16px;
+    }
+
+    .param-box {
+      background: var(--bg-card);
+      border: 1px solid var(--border-color);
+      border-radius: var(--radius-md);
+      padding: 10px 14px;
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+    }
+
+    .param-box label {
+      font-size: 0.725rem;
+      font-weight: 700;
+      color: var(--text-muted);
+      text-transform: uppercase;
+    }
+
+    .param-box input {
+      background: var(--bg-input);
+      border: 1px solid var(--border-color);
+      border-radius: var(--radius-sm);
+      padding: 6px 8px;
+      font-family: var(--font-mono);
+      font-size: 0.925rem;
+      font-weight: 700;
+      color: var(--text-bright);
+      outline: none;
+      width: 100%;
+    }
+
+    .param-box input:focus {
+      border-color: var(--color-conf);
+    }
+
+    .toggle-conf-box {
+      background: var(--bg-card);
+      border: 2px solid var(--color-conf);
+      border-radius: var(--radius-md);
+      padding: 10px 14px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 10px;
+    }
+
+    .toggle-switch {
+      position: relative;
+      display: inline-block;
+      width: 44px;
+      height: 24px;
+    }
+
+    .toggle-switch input {
+      opacity: 0;
+      width: 0;
+      height: 0;
+    }
+
+    .toggle-slider {
+      position: absolute;
+      cursor: pointer;
+      top: 0; left: 0; right: 0; bottom: 0;
+      background-color: var(--border-color);
+      transition: .3s;
+      border-radius: 24px;
+    }
+
+    .toggle-slider:before {
+      position: absolute;
+      content: "";
+      height: 18px;
+      width: 18px;
+      left: 3px;
+      bottom: 3px;
+      background-color: white;
+      transition: .3s;
+      border-radius: 50%;
+    }
+
+    input:checked + .toggle-slider {
+      background-color: var(--color-conf);
+    }
+
+    input:checked + .toggle-slider:before {
+      transform: translateX(20px);
+    }
+
+    /* SUMMARY RESULTS HERO */
+    .results-hero-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 14px;
+      margin-top: 18px;
+    }
+
+    .hero-stat-card {
+      background: var(--bg-card);
+      border: 1px solid var(--border-color);
+      border-radius: var(--radius-md);
+      padding: 14px 18px;
+      box-shadow: var(--shadow-sm);
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .hero-stat-card .stat-label {
+      font-size: 0.725rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+      color: var(--text-muted);
+    }
+
+    .hero-stat-card .stat-value {
+      font-family: var(--font-mono);
+      font-size: 1.45rem;
+      font-weight: 800;
+      color: var(--text-bright);
+    }
+
+    .hero-stat-card .stat-sub {
+      font-size: 0.75rem;
+      color: var(--text-muted);
+    }
+
+    /* 4 PANELS GRID */
+    .panels-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(310px, 1fr));
+      gap: 18px;
+      margin-top: 18px;
+    }
+
+    .panel-card {
+      background: var(--bg-card);
+      border: 1px solid var(--border-color);
+      border-radius: var(--radius-lg);
+      padding: 16px;
+      box-shadow: var(--shadow-md);
+      display: flex;
+      flex-direction: column;
+    }
+
+    .panel-card-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 12px;
+    }
+
+    .panel-title {
+      font-family: var(--font-title);
+      font-size: 1.05rem;
+      font-weight: 800;
+      color: var(--text-bright);
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .panel-badge {
+      font-family: var(--font-mono);
+      font-size: 0.75rem;
+      padding: 3px 8px;
+      border-radius: var(--radius-sm);
+      background: var(--bg-card-subtle);
+      color: var(--text-muted);
+    }
+
+    .canvas-box {
+      width: 100%;
+      height: 380px;
+      position: relative;
+      background: var(--bg-primary);
+      border: 1px solid var(--border-color);
+      border-radius: var(--radius-md);
+      overflow: hidden;
+    }
+
+    .canvas-box canvas {
+      width: 100%;
+      height: 100%;
+      display: block;
+    }
+
+    /* INSPECTOR (LUPA DIDÁCTICA FIBRA POR FIBRA) */
+    .inspector-card {
+      background: var(--bg-card);
+      border: 1px solid var(--border-color);
+      border-radius: var(--radius-lg);
+      padding: 20px 24px;
+      margin-top: 20px;
+      box-shadow: var(--shadow-md);
+    }
+
+    .inspector-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 14px;
+      margin-bottom: 16px;
+    }
+
+    .inspector-title {
+      font-family: var(--font-title);
+      font-size: 1.25rem;
+      font-weight: 800;
+      color: var(--text-bright);
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .inspector-selector-box {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      flex-wrap: wrap;
+    }
+
+    .inspector-select {
+      background: var(--bg-input);
+      border: 1.5px solid var(--border-color);
+      color: var(--text-main);
+      padding: 8px 14px;
+      border-radius: var(--radius-sm);
+      font-family: var(--font-mono);
+      font-size: 0.85rem;
+      font-weight: 700;
+      outline: none;
+      cursor: pointer;
+    }
+
+    .inspector-select:focus {
+      border-color: var(--color-conf);
+    }
+
+    .inspector-depth-pill {
+      background: var(--color-conf-bg);
+      border: 1px solid rgba(124, 58, 237, 0.3);
+      color: var(--color-conf);
+      font-family: var(--font-mono);
+      font-size: 0.8rem;
+      font-weight: 700;
+      padding: 7px 12px;
+      border-radius: var(--radius-sm);
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      white-space: nowrap;
+    }
+
+    .inspector-steps-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+      gap: 14px;
+    }
+
+    .step-calc-box {
+      background: var(--bg-card-subtle);
+      border: 1px solid var(--border-color);
+      border-radius: var(--radius-md);
+      padding: 16px;
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+    }
+
+    .step-tag {
+      font-size: 0.725rem;
+      font-weight: 800;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      color: var(--color-conf);
+    }
+
+    .step-eq {
+      font-family: var(--font-mono);
+      font-size: 0.975rem;
+      font-weight: 700;
+      color: var(--text-bright);
+    }
+
+    .step-sub {
+      font-size: 0.775rem;
+      color: var(--text-muted);
+      line-height: 1.4;
+    }
+
+    /* STATICS BALANCE BREAKDOWN */
+    .balance-card {
+      background: var(--bg-card);
+      border: 1px solid var(--border-color);
+      border-radius: var(--radius-lg);
+      padding: 22px;
+      margin-top: 20px;
+      box-shadow: var(--shadow-md);
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+    }
+
+    .balance-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 20px;
+    }
+
+    @media (max-width: 768px) {
+      .balance-grid { grid-template-columns: 1fr; }
+    }
+
+    .balance-col {
+      background: var(--bg-card-subtle);
+      border: 1px solid var(--border-color);
+      border-radius: var(--radius-md);
+      padding: 16px;
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+
+    .balance-col-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-family: var(--font-title);
+      font-weight: 700;
+      font-size: 1.05rem;
+    }
+
+    .balance-progress-bar {
+      width: 100%;
+      height: 14px;
+      background: var(--border-color);
+      border-radius: 999px;
+      overflow: hidden;
+      display: flex;
+    }
+
+    .fill-unconf { background: var(--color-unconf); height: 100%; transition: width 0.2s; }
+    .fill-conf { background: var(--color-conf); height: 100%; transition: width 0.2s; }
+    .fill-steel { background: var(--color-steel); height: 100%; transition: width 0.2s; }
+
+    /* DATA TABLE */
+    .table-card {
+      background: var(--bg-card);
+      border: 1px solid var(--border-color);
+      border-radius: var(--radius-lg);
+      padding: 20px;
+      margin-top: 20px;
+      box-shadow: var(--shadow-md);
+    }
+
+    .table-responsive {
+      overflow-x: auto;
+      border: 1px solid var(--border-color);
+      border-radius: var(--radius-md);
+      margin-top: 14px;
+    }
+
+    table.data-table {
+      width: 100%;
+      border-collapse: collapse;
+      font-family: var(--font-mono);
+      font-size: 0.825rem;
+      text-align: right;
+    }
+
+    table.data-table th {
+      background: var(--bg-card-subtle);
+      color: var(--text-bright);
+      font-weight: 700;
+      padding: 10px 14px;
+      border-bottom: 1px solid var(--border-color);
+      white-space: nowrap;
+    }
+
+    table.data-table td {
+      padding: 8px 14px;
+      border-bottom: 1px solid var(--border-color);
+      white-space: nowrap;
+    }
+
+    table.data-table tr:hover {
+      background: rgba(124, 58, 237, 0.05);
+      cursor: pointer;
+    }
+
+    table.data-table tr.active-row {
+      background: rgba(124, 58, 237, 0.12);
+      font-weight: 700;
+    }
+
+    /* QUIZ */
+    .quiz-section {
+      background: var(--bg-card);
+      border: 1px solid var(--border-color);
+      border-radius: var(--radius-lg);
+      padding: 22px;
+      margin-top: 20px;
+      box-shadow: var(--shadow-md);
+    }
+
+    .quiz-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+      gap: 16px;
+      margin-top: 16px;
+    }
+
+    .quiz-card {
+      background: var(--bg-card-subtle);
+      border: 1px solid var(--border-color);
+      border-radius: var(--radius-md);
+      padding: 16px;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+
+    .quiz-btn {
+      background: var(--bg-card);
+      border: 1px solid var(--border-color);
+      color: var(--text-main);
+      padding: 8px 12px;
+      border-radius: var(--radius-sm);
+      font-size: 0.8rem;
+      cursor: pointer;
+      text-align: left;
+    }
+
+    .quiz-answer {
+      display: none;
+      padding: 10px;
+      border-radius: var(--radius-sm);
+      font-size: 0.8rem;
+      line-height: 1.4;
+    }
+
+    .quiz-answer.show {
+      display: block;
+      background: rgba(5, 150, 105, 0.1);
+      border: 1px solid rgba(5, 150, 105, 0.3);
+      color: var(--accent-emerald);
+    }
+  </style>
+</head>
+<body>
+
+  <!-- HEADER -->
+  <header class="main-header">
+    <div class="container header-content">
+      <div class="header-title-area">
+        <h1>
+          <span>🧱</span>
+          <span>Modelo de Fibras con Concreto Confinado</span>
+        </h1>
+        <p>Cálculo de un punto (Pn, Mn) considerando el núcleo confinado (Mander) y el recubrimiento (Hognestad)</p>
+      </div>
+
+      <div class="header-actions">
+        <a href="index.html" class="btn-header">🏠 Portal Principal</a>
+        <span class="badge-stage">Concreto Confinado</span>
+        <button id="btn-theme-toggle" class="btn-header" onclick="toggleTheme()">
+          <span id="theme-icon">🌙</span>
+          <span id="theme-text">Modo Oscuro</span>
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <main class="container">
+
+    <!-- CONCEPT BANNER -->
+    <div class="concept-banner">
+      <div class="icon">💡</div>
+      <div class="text">
+        <h3>Efecto Físico del Confinamiento: Recubrimiento vs Núcleo</h3>
+        <p>
+          En una columna con estribos cerrados, el concreto se divide en dos zonas con respuestas constitutivas distintas:
+          <strong>(1) Recubrimiento no confinado:</strong> alcanza un esfuerzo máximo \(f'_c = 28\text{ MPa}\) y sufre descascaramiento prematuro (\(\varepsilon_u = 0.0038\)).
+          <strong>(2) Núcleo confinado:</strong> gracias a la presión lateral de los estribos, su resistencia sube a \(f'_{cc} = K \cdot f'_c = 36.4\text{ MPa}\) y su capacidad de deformación inelástica se multiplica (\(\varepsilon_{u,cc} = 5\varepsilon_{0,cc} \approx 0.012\)), garantizando ductilidad sísmica.
+        </p>
+      </div>
+    </div>
+
+    <!-- MASTER CONTROLLER CARD -->
+    <div class="master-controller-card">
+      <div class="controller-header">
+        <div class="controller-title">
+          <span>⚙️</span>
+          <span>Posición del Eje Neutro (\(c\)) y Presets Didácticos</span>
+        </div>
+
+        <div class="stepper-btn-group">
+          <button class="btn-step" onclick="stepC(-1.0)">-1.0 cm</button>
+          <button class="btn-step" onclick="stepC(-0.1)">-0.1</button>
+          <button class="btn-step" onclick="stepC(0.1)">+0.1</button>
+          <button class="btn-step" onclick="stepC(1.0)">+1.0 cm</button>
+        </div>
+      </div>
+
+      <div class="presets-container">
+        <span class="preset-label">Estados Notables:</span>
+        <button class="preset-pill active" id="pre-script" onclick="setPreset('script')">📌 Caso Base Script (c = 10.1 cm)</button>
+        <button class="preset-pill" id="pre-centroid" onclick="setPreset('centroid')">⚖️ c en Centroide (c = 20.0 cm)</button>
+        <button class="preset-pill" id="pre-balanced" onclick="setPreset('balanced')">⚡ Falla Balanceada (cb)</button>
+        <button class="preset-pill" id="pre-core-comp" onclick="setPreset('core-comp')">🧱 Núcleo Muy Comprimido (c = 35 cm)</button>
+        <button class="preset-pill" id="pre-tension" onclick="setPreset('tension')">🔗 Tracción Dominante (c = 5 cm)</button>
+      </div>
+
+      <div class="slider-row">
+        <div class="slider-wrapper">
+          <input type="range" class="c-slider" id="slider-c" min="0.5" max="60.0" step="0.1" value="10.1" oninput="onSliderChange(this.value)">
+          <div class="slider-ticks">
+            <span>0.5 cm (Tracción)</span>
+            <span id="tick-base">10.1 cm (Script)</span>
+            <span id="tick-cb">cb ≈ 20.7 cm (Balanceado)</span>
+            <span id="tick-h">h = 40 cm</span>
+            <span>60 cm (Compresión)</span>
+          </div>
+        </div>
+
+        <div class="c-value-display">
+          <span id="val-c-display">10.1</span> <span style="font-size:0.85rem;">cm</span>
+        </div>
+      </div>
+
+      <!-- SECTION & CONFINEMENT PARAMETERS GRID -->
+      <div class="params-grid">
+        <div class="param-box">
+          <label>Base Total (b)</label>
+          <input type="number" id="input-b" value="60" min="15" max="200" step="1" oninput="updateAll()">
+        </div>
+        <div class="param-box">
+          <label>Peralte Total (h)</label>
+          <input type="number" id="input-h" value="40" min="15" max="300" step="1" oninput="updateAll()">
+        </div>
+        <div class="param-box">
+          <label>Recubrimiento (r)</label>
+          <input type="number" id="input-r" value="5" min="2" max="15" step="0.5" oninput="updateAll()">
+        </div>
+        <div class="param-box">
+          <label>f'c Concreto</label>
+          <input type="number" id="input-fc" value="28" min="14" max="70" step="1" oninput="updateAll()">
+        </div>
+        <div class="param-box">
+          <label>Factor Confinamiento K</label>
+          <input type="number" id="input-k" value="1.3" min="1.0" max="2.0" step="0.05" oninput="updateAll()">
+        </div>
+        <div class="param-box">
+          <label>fy Acero</label>
+          <input type="number" id="input-fy" value="420" min="280" max="550" step="10" oninput="updateAll()">
+        </div>
+        <div class="param-box">
+          <label>Deformación Tope \(\varepsilon_{cu}\)</label>
+          <input type="number" id="input-ecu" value="0.003" min="0.001" max="0.005" step="0.0005" oninput="updateAll()">
+        </div>
+        <div class="toggle-conf-box">
+          <div>
+            <div style="font-size:0.75rem; font-weight:700; color:var(--text-bright);">Confinamiento</div>
+            <div style="font-size:0.7rem; color:var(--text-muted);" id="lbl-status-conf">Activo (K = 1.3)</div>
+          </div>
+          <label class="toggle-switch">
+            <input type="checkbox" id="check-confinement" checked onchange="toggleConfinement(this.checked)">
+            <span class="toggle-slider"></span>
+          </label>
+        </div>
+      </div>
+    </div>
+
+    <!-- SUMMARY RESULTS HERO -->
+    <div class="results-hero-grid">
+      <div class="hero-stat-card" style="border-left: 4px solid var(--accent-blue);">
+        <span class="stat-label">Carga Axial Nominal (Pn)</span>
+        <div class="stat-value" id="res-pn">+1037.9 kN</div>
+        <span class="stat-sub">ΣFc + ΣFcc + ΣFs</span>
+      </div>
+
+      <div class="hero-stat-card" style="border-left: 4px solid var(--color-conf);">
+        <span class="stat-label">Momento Flector Nominal (Mn)</span>
+        <div class="stat-value" id="res-mn">342.6 kN·m</div>
+        <span class="stat-sub">Respecto al centroide plástico ȳ</span>
+      </div>
+
+      <div class="hero-stat-card" style="border-left: 4px solid var(--color-unconf);">
+        <span class="stat-label">Núcleo Confinado (Fcc)</span>
+        <div class="stat-value" id="res-fcc" style="color:var(--color-conf);">+480.0 kN</div>
+        <span class="stat-sub" id="res-fcc-sub">f'cc = 36.4 MPa (K=1.3)</span>
+      </div>
+
+      <div class="hero-stat-card" style="border-left: 4px solid var(--color-steel);">
+        <span class="stat-label">Acero Longitudinal (Fs)</span>
+        <div class="stat-value" id="res-fs" style="color:var(--color-steel);">-356.9 kN</div>
+        <span class="stat-sub" id="res-fs-sub">Tracción dominante en fondo</span>
+      </div>
+    </div>
+
+    <!-- 4 MAIN CANVASES -->
+    <div class="panels-grid">
+      <!-- Panel 1: Cross section with Core vs Cover -->
+      <div class="panel-card">
+        <div class="panel-card-header">
+          <div class="panel-title">
+            <span>📐</span>
+            <span>1. Sección Transversal</span>
+          </div>
+          <span class="panel-badge" id="badge-section-dim">60 × 40 cm</span>
+        </div>
+        <div class="canvas-box">
+          <canvas id="canvas-section"></canvas>
+        </div>
+      </div>
+
+      <!-- Panel 2: Strain profile -->
+      <div class="panel-card">
+        <div class="panel-card-header">
+          <div class="panel-title">
+            <span>📏</span>
+            <span>2. Deformaciones Unitarias</span>
+          </div>
+          <span class="panel-badge">Euler-Bernoulli</span>
+        </div>
+        <div class="canvas-box">
+          <canvas id="canvas-strains"></canvas>
+        </div>
+      </div>
+
+      <!-- Panel 3: Stress profiles (Unconfined vs Confined curves) -->
+      <div class="panel-card">
+        <div class="panel-card-header">
+          <div class="panel-title">
+            <span>🧱</span>
+            <span>3. Esfuerzos \(\sigma\)</span>
+          </div>
+          <span class="panel-badge">Hognestad / Mander</span>
+        </div>
+        <div class="canvas-box">
+          <canvas id="canvas-stresses"></canvas>
+        </div>
+      </div>
+
+      <!-- Panel 4: Forces & Lever Arms -->
+      <div class="panel-card">
+        <div class="panel-card-header">
+          <div class="panel-title">
+            <span>⚖️</span>
+            <span>4. Fuerzas Internas</span>
+          </div>
+          <span class="panel-badge">Brazos a ȳ</span>
+        </div>
+        <div class="canvas-box">
+          <canvas id="canvas-forces"></canvas>
+        </div>
+      </div>
+    </div>
+
+    <!-- DEEP DIVE INSPECTOR (LUPA DIDÁCTICA FIBRA POR FIBRA) -->
+    <div class="inspector-card">
+      <div class="inspector-header">
+        <div class="inspector-title">
+          <span>🔍</span>
+          <span>Lupa Didáctica: Desglose de Cálculo Fibra a Fibra</span>
+        </div>
+
+        <div class="inspector-selector-box">
+          <label for="select-element" style="font-size:0.85rem; font-weight:700; color:var(--text-muted);">Elemento:</label>
+          <select id="select-element" class="inspector-select" onchange="onInspectorSelectChange(this.value)">
+            <!-- Populated dynamically -->
+          </select>
+          <div id="inspector-depth-badge" class="inspector-depth-pill">
+            📍 F_cc,1: y = 7.5 cm
+          </div>
+        </div>
+      </div>
+
+      <div class="inspector-steps-grid" id="inspector-steps-container">
+        <!-- Filled dynamically -->
+      </div>
+    </div>
+
+    <!-- STATICS BALANCE BREAKDOWN -->
+    <div class="balance-card">
+      <h3 style="font-family:var(--font-title); font-size:1.15rem; font-weight:800; color:var(--text-bright);">
+        ⚖️ Desglose del Equilibrio Seccional: Aporte de Concreto y Acero
+      </h3>
+
+      <div class="balance-grid">
+        <!-- Axial forces -->
+        <div class="balance-col">
+          <div class="balance-col-header">
+            <span>Equilibrio de Fuerzas Axiales:</span>
+            <strong id="bal-pn-total" style="font-family:var(--font-mono);">Pn = +1037.9 kN</strong>
+          </div>
+          <div class="balance-progress-bar">
+            <div id="bar-unconf-force" class="fill-unconf" style="width: 45%;"></div>
+            <div id="bar-conf-force" class="fill-conf" style="width: 35%;"></div>
+            <div id="bar-steel-force" class="fill-steel" style="width: 20%;"></div>
+          </div>
+          <div style="display:flex; justify-content:space-between; font-size:0.75rem; font-family:var(--font-mono);">
+            <span style="color:var(--color-unconf);">■ Recubrimiento: <strong id="bal-txt-fc">+914.9 kN</strong></span>
+            <span style="color:var(--color-conf);">■ Núcleo: <strong id="bal-txt-fcc">+480.0 kN</strong></span>
+            <span style="color:var(--color-steel);">■ Acero: <strong id="bal-txt-fs">-356.9 kN</strong></span>
+          </div>
+        </div>
+
+        <!-- Moments -->
+        <div class="balance-col">
+          <div class="balance-col-header">
+            <span>Composición del Momento Flector:</span>
+            <strong id="bal-mn-total" style="font-family:var(--font-mono);">Mn = 342.6 kN·m</strong>
+          </div>
+          <div class="balance-progress-bar">
+            <div id="bar-unconf-moment" class="fill-unconf" style="width: 40%;"></div>
+            <div id="bar-conf-moment" class="fill-conf" style="width: 25%;"></div>
+            <div id="bar-steel-moment" class="fill-steel" style="width: 35%;"></div>
+          </div>
+          <div style="display:flex; justify-content:space-between; font-size:0.75rem; font-family:var(--font-mono);">
+            <span style="color:var(--color-unconf);">■ Mc: <strong id="bal-txt-mc">160.1 kNm</strong></span>
+            <span style="color:var(--color-conf);">■ Mcc: <strong id="bal-txt-mcc">60.0 kNm</strong></span>
+            <span style="color:var(--color-steel);">■ Ms: <strong id="bal-txt-ms">122.5 kNm</strong></span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- DATA TABLE -->
+    <div class="table-card">
+      <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:12px;">
+        <h3 style="font-family:var(--font-title); font-size:1.15rem; font-weight:800;">
+          📋 Tabla Numérica Integrada (Fibras y Armadura)
+        </h3>
+        <div style="display:flex; gap:8px;">
+          <button class="btn-step" onclick="downloadCSV()">📥 Descargar CSV</button>
+          <button class="btn-step" onclick="copyLaTeX()">📋 Copiar Código LaTeX</button>
+        </div>
+      </div>
+
+      <div class="table-responsive">
+        <table class="data-table">
+          <thead>
+            <tr>
+              <th style="text-align:center;">Elemento</th>
+              <th style="text-align:center;">Zona</th>
+              <th>y (cm)</th>
+              <th>Área (cm²)</th>
+              <th>\(\varepsilon\) (unit)</th>
+              <th>\(\sigma\) (MPa)</th>
+              <th>Fuerza (kN)</th>
+              <th>Brazo d (m)</th>
+              <th>Momento (kN·m)</th>
+            </tr>
+          </thead>
+          <tbody id="table-body">
+            <!-- Populated dynamically -->
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- CONCEPT QUIZ -->
+    <div class="quiz-section">
+      <h3 style="font-family:var(--font-title); font-size:1.2rem; font-weight:800; margin-bottom:6px;">
+        🧠 Desafíos Conceptuales: Concreto Confinado
+      </h3>
+      <p style="font-size:0.85rem; color:var(--text-muted);">
+        Autoevaluación sobre la física del confinamiento en columnas y muros de concreto:
+      </p>
+
+      <div class="quiz-grid">
+        <div class="quiz-card">
+          <div style="font-weight:700; font-size:0.9rem; color:var(--text-bright);">
+            1. ¿Por qué el concreto confinado resiste más que el concreto no confinado (\(f'_{cc} > f'_c\))?
+          </div>
+          <button class="quiz-btn" onclick="toggleQuiz(1)">Ver Explicación Física</button>
+          <div class="quiz-answer" id="quiz-ans-1">
+            <strong>Por el estado triaxial de esfuerzos.</strong> Cuando el concreto es comprimido longitudinalmente, tiende a expandirse transversalmente (efecto Poisson). Los estribos cerrados se oponen a esta dilatación y ejercen una presión de confinamiento lateral (\(f_l\)), retrasando la propagación de microfisuras y aumentando tanto la resistencia máxima como la ductilidad.
+          </div>
+        </div>
+
+        <div class="quiz-card">
+          <div style="font-weight:700; font-size:0.9rem; color:var(--text-bright);">
+            2. ¿Por qué se modelan por separado las fibras del recubrimiento y las del núcleo?
+          </div>
+          <button class="quiz-btn" onclick="toggleQuiz(2)">Ver Explicación Física</button>
+          <div class="quiz-answer" id="quiz-ans-2">
+            <strong>Porque tienen leyes constitutivas distintas.</strong> El recubrimiento exterior no tiene estribos que lo confinen; por lo tanto, a deformaciones \(\varepsilon > 0.0038\) se desmorona y pierde toda su fuerza. El núcleo interior, en cambio, sigue soportando cargas elevadas hasta deformaciones de 0.012 o mayores.
+          </div>
+        </div>
+
+        <div class="quiz-card">
+          <div style="font-weight:700; font-size:0.9rem; color:var(--text-bright);">
+            3. ¿Qué ocurre con la balanza de equilibrio si apagamos el confinamiento (\(K = 1.0\))?
+          </div>
+          <button class="quiz-btn" onclick="toggleQuiz(3)">Ver Explicación Física</button>
+          <div class="quiz-answer" id="quiz-ans-3">
+            <strong>La capacidad resistente \(P_n\) y \(M_n\) cae notablemente.</strong> Al desactivar el confinamiento, todo el núcleo se comporta como concreto simple (\(f'_c = 28\text{ MPa}\)), reduciendo la fuerza de compresión disponible y haciendo la columna mucho más vulnerable al aplastamiento prematuro.
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </main>
+
+  <script>
+  /* ==========================================================================
+     GLOBAL STATE & SECTION CONFIGURATION
+     ========================================================================== */
+  const state = {
+    theme: 'light',
+    confinementActive: true,
+    b: 60.0,      // cm (base total)
+    h: 40.0,      // cm (peralte total)
+    r: 5.0,       // cm (recubrimiento exterior)
+    fc: 28.0,     // MPa (f'c no confinado)
+    K: 1.3,       // factor de confinamiento
+    fy: 420.0,    // MPa
+    Es: 210000.0, // MPa
+    ecu: 0.003,   // deformación en fibra superior
+    c: 10.1,      // cm (profundidad eje neutro)
+    nfib: 8,      // número de franjas de altura
+    selectedElement: 'Fcc_1', // elemento seleccionado para la lupa
+    steel: [
+      { y: 5.0, area: 4 * 2.86 },  // 11.44 cm²
+      { y: 20.0, area: 2 * 2.86 }, // 5.72 cm²
+      { y: 35.0, area: 4 * 2.86 }  // 11.44 cm²
+    ]
+  };
+
+  /* ==========================================================================
+     CONSTITUTIVE MODELS
+     ========================================================================== */
+  // Steel elastoplastic
+  function sigmaSteel(es) {
+    const fs = es * state.Es;
+    if (fs > state.fy) return state.fy;
+    if (fs < -state.fy) return -state.fy;
+    return fs;
+  }
+
+  // Unconfined concrete (Hognestad)
+  function sigmaUnconf(ec) {
+    if (ec <= 0) return 0.0;
+    const Ec = 4400.0 * Math.sqrt(state.fc);
+    const e0 = 1.8 * state.fc / Ec;
+    const eu = 0.0038;
+    const m = -0.15 * state.fc / (eu - e0);
+    if (ec <= e0) {
+      return state.fc * (2.0 * (ec / e0) - Math.pow(ec / e0, 2));
+    } else if (ec <= eu) {
+      return state.fc + m * (ec - e0);
+    } else {
+      return 0.0;
+    }
+  }
+
+  // Confined concrete (Mander modified)
+  function sigmaConf(ecc) {
+    if (!state.confinementActive) return sigmaUnconf(ecc);
+    if (ecc <= 0) return 0.0;
+    const fcc = state.fc * state.K;
+    const Ec = 4400.0 * Math.sqrt(fcc);
+    const e0 = 1.8 * fcc / Ec;
+    const eu = 5.0 * e0; // 5 veces e0 según modelo
+    const m = -0.8 * fcc / (eu - e0);
+    if (ecc <= e0) {
+      return fcc * (2.0 * (ecc / e0) - Math.pow(ecc / e0, 2));
+    } else if (ecc <= eu) {
+      return fcc + m * (ecc - e0);
+    } else {
+      return 0.0;
+    }
+  }
+
+  /* ==========================================================================
+     SECTION COMPUTATION
+     ========================================================================== */
+  function computeSection(cVal) {
+    const c = Math.max(0.1, cVal);
+    const yhat = state.h / 2.0; // centroide geométrico en cm
+    const dh = state.h / state.nfib;
+    const bcc = Math.max(0, state.b - 2.0 * state.r);
+    const hcc = Math.max(0, state.h - 2.0 * state.r);
+    const fcc = state.confinementActive ? state.fc * state.K : state.fc;
+
+    // 1. Unconfined fibers (Recubrimiento)
+    // Top layer (0 to dh): full unconfined area b*dh
+    // Bottom layer (h-dh to h): full unconfined area b*dh
+    // Middle layers: side covers only: (b - bcc)*dh = 2r*dh
+    const unconfFibers = [];
+    for (let i = 0; i < state.nfib; i++) {
+      const y = (i + 0.5) * dh;
+      const isExtreme = (i === 0 || i === state.nfib - 1);
+      const area = isExtreme ? state.b * dh : (state.b - bcc) * dh;
+      const eps = state.ecu * (c - y) / c;
+      const sig = sigmaUnconf(eps);
+      const F = sig * area / 10.0; // kN
+      const arm = (yhat - y) / 100.0; // m
+      const M = F * arm; // kN·m
+
+      unconfFibers.push({
+        code: `F_c${i + 1}`,
+        type: 'unconf',
+        name: `Recubrimiento ${i + 1}`,
+        id: i + 1,
+        y,
+        yTop: i * dh,
+        yBot: (i + 1) * dh,
+        area,
+        eps,
+        sig,
+        F,
+        arm,
+        M
+      });
+    }
+
+    // 2. Confined fibers (Núcleo)
+    // Middle layers inside hcc: layers 1 to nfib-2
+    const confFibers = [];
+    for (let i = 1; i < state.nfib - 1; i++) {
+      const y = (i + 0.5) * dh;
+      const area = bcc * dh;
+      const eps = state.ecu * (c - y) / c;
+      const sig = sigmaConf(eps);
+      const F = sig * area / 10.0; // kN
+      const arm = (yhat - y) / 100.0; // m
+      const M = F * arm; // kN·m
+
+      confFibers.push({
+        code: `Fcc_${i}`,
+        type: 'conf',
+        name: `Núcleo Confinado ${i}`,
+        id: i,
+        y,
+        yTop: i * dh,
+        yBot: (i + 1) * dh,
+        area,
+        eps,
+        sig,
+        F,
+        arm,
+        M
+      });
+    }
+
+    // 3. Steel layers
+    const steelLayers = state.steel.map((s, idx) => {
+      const eps = state.ecu * (c - s.y) / c;
+      const sig = sigmaSteel(eps);
+      const F = sig * s.area / 10.0; // kN
+      const arm = (yhat - s.y) / 100.0; // m
+      const M = F * arm; // kN·m
+
+      return {
+        code: `As_${idx + 1}`,
+        type: 'steel',
+        name: `Capa Acero ${idx + 1}`,
+        id: idx + 1,
+        y: s.y,
+        area: s.area,
+        eps,
+        sig,
+        F,
+        arm,
+        M
+      };
+    });
+
+    // Sums
+    const sumFc = unconfFibers.reduce((acc, f) => acc + f.F, 0);
+    const sumFcc = confFibers.reduce((acc, f) => acc + f.F, 0);
+    const sumFs = steelLayers.reduce((acc, s) => acc + s.F, 0);
+
+    const sumMc = unconfFibers.reduce((acc, f) => acc + f.M, 0);
+    const sumMcc = confFibers.reduce((acc, f) => acc + f.M, 0);
+    const sumMs = steelLayers.reduce((acc, s) => acc + s.M, 0);
+
+    const Pn = sumFc + sumFcc + sumFs;
+    const Mn = sumMc + sumMcc + sumMs;
+
+    return {
+      c,
+      yhat,
+      dh,
+      bcc,
+      hcc,
+      fcc,
+      unconfFibers,
+      confFibers,
+      steelLayers,
+      sumFc,
+      sumFcc,
+      sumFs,
+      sumMc,
+      sumMcc,
+      sumMs,
+      Pn,
+      Mn
+    };
+  }
+
+  /* ==========================================================================
+     CONTROLLER EVENTS & PRESETS
+     ========================================================================== */
+  function onSliderChange(val) {
+    state.c = parseFloat(val);
+    document.getElementById('val-c-display').textContent = state.c.toFixed(1);
+    updateAll();
+  }
+
+  function stepC(delta) {
+    let nextC = Math.round((state.c + delta) * 10) / 10;
+    nextC = Math.max(0.5, Math.min(60.0, nextC));
+    state.c = nextC;
+    document.getElementById('slider-c').value = state.c;
+    document.getElementById('val-c-display').textContent = state.c.toFixed(1);
+    updateAll();
+  }
+
+  function setPreset(key) {
+    document.querySelectorAll('.preset-pill').forEach(btn => btn.classList.remove('active'));
+    
+    if (key === 'script') {
+      state.c = 10.1;
+      document.getElementById('pre-script').classList.add('active');
+    } else if (key === 'centroid') {
+      state.c = state.h / 2.0;
+      document.getElementById('pre-centroid').classList.add('active');
+    } else if (key === 'balanced') {
+      const d = state.steel[state.steel.length - 1].y;
+      const ey = state.fy / state.Es;
+      state.c = Math.round((state.ecu / (state.ecu + ey) * d) * 10) / 10;
+      document.getElementById('pre-balanced').classList.add('active');
+    } else if (key === 'core-comp') {
+      state.c = 35.0;
+      document.getElementById('pre-core-comp').classList.add('active');
+    } else if (key === 'tension') {
+      state.c = 5.0;
+      document.getElementById('pre-tension').classList.add('active');
+    }
+
+    document.getElementById('slider-c').value = state.c;
+    document.getElementById('val-c-display').textContent = state.c.toFixed(1);
+    updateAll();
+  }
+
+  function toggleConfinement(active) {
+    state.confinementActive = active;
+    document.getElementById('lbl-status-conf').textContent = active ? `Activo (K = ${state.K})` : 'Desactivado (K = 1.0)';
+    updateAll();
+  }
+
+  function onInspectorSelectChange(val) {
+    state.selectedElement = val;
+    updateAll();
+  }
+
+  /* ==========================================================================
+     CANVAS HELPER
+     ========================================================================== */
+  function setupCanvas(id) {
+    const canvas = document.getElementById(id);
+    const dpr = window.devicePixelRatio || 1;
+    const rect = canvas.getBoundingClientRect();
+    canvas.width = rect.width * dpr;
+    canvas.height = rect.height * dpr;
+    const ctx = canvas.getContext('2d');
+    ctx.scale(dpr, dpr);
+    return { ctx, width: rect.width, height: rect.height };
+  }
+
+  /* ==========================================================================
+     CANVAS 1: CROSS SECTION (CORE VS COVER)
+     ========================================================================== */
+  function drawSection(res) {
+    const { ctx, width, height } = setupCanvas('canvas-section');
+    ctx.clearRect(0, 0, width, height);
+
+    const pad = 35;
+    const scale = Math.min((width - 2 * pad) / state.b, (height - 2 * pad) / state.h);
+    const drawW = state.b * scale;
+    const drawH = state.h * scale;
+    const startX = (width - drawW) / 2;
+    const startY = (height - drawH) / 2;
+
+    const rPix = state.r * scale;
+    const coreX = startX + rPix;
+    const coreY = startY + rPix;
+    const coreW = drawW - 2 * rPix;
+    const coreH = drawH - 2 * rPix;
+
+    // Draw full section boundary
+    ctx.fillStyle = state.theme === 'dark' ? 'rgba(234, 88, 12, 0.08)' : 'rgba(234, 88, 12, 0.06)';
+    ctx.fillRect(startX, startY, drawW, drawH);
+
+    // Draw unconfined fibers
+    res.unconfFibers.forEach((fib, idx) => {
+      const yPix = startY + (idx * res.dh) * scale;
+      const hPix = res.dh * scale;
+      const isSelected = state.selectedElement === fib.code;
+
+      if (idx === 0 || idx === state.nfib - 1) {
+        // Top and bottom full-width covers
+        if (fib.sig > 0) {
+          ctx.fillStyle = `rgba(234, 88, 12, ${0.25 + 0.65 * (fib.sig / state.fc)})`;
+          ctx.fillRect(startX, yPix, drawW, hPix);
+        }
+        ctx.strokeStyle = isSelected ? '#2563eb' : (state.theme === 'dark' ? '#334155' : '#cbd5e1');
+        ctx.lineWidth = isSelected ? 3 : 1;
+        ctx.strokeRect(startX, yPix, drawW, hPix);
+      } else {
+        // Left and right side covers
+        if (fib.sig > 0) {
+          ctx.fillStyle = `rgba(234, 88, 12, ${0.25 + 0.65 * (fib.sig / state.fc)})`;
+          ctx.fillRect(startX, yPix, rPix, hPix);
+          ctx.fillRect(startX + drawW - rPix, yPix, rPix, hPix);
+        }
+        ctx.strokeStyle = isSelected ? '#2563eb' : (state.theme === 'dark' ? '#334155' : '#cbd5e1');
+        ctx.lineWidth = isSelected ? 3 : 1;
+        ctx.strokeRect(startX, yPix, rPix, hPix);
+        ctx.strokeRect(startX + drawW - rPix, yPix, rPix, hPix);
+      }
+
+      if (isSelected) {
+        ctx.fillStyle = '#2563eb';
+        ctx.font = 'bold 10.5px "JetBrains Mono"';
+        ctx.textAlign = 'left';
+        ctx.fillText(`◀ ${fib.code}: y=${fib.y.toFixed(1)}cm`, startX + drawW + 6, yPix + hPix / 2 + 4);
+      }
+    });
+
+    // Draw confined core fibers
+    res.confFibers.forEach((fib) => {
+      const yPix = startY + (fib.y - res.dh / 2.0) * scale;
+      const hPix = res.dh * scale;
+      const isSelected = state.selectedElement === fib.code;
+
+      if (fib.sig > 0) {
+        const ratio = fib.sig / res.fcc;
+        ctx.fillStyle = `rgba(124, 58, 237, ${0.25 + 0.65 * ratio})`;
+        ctx.fillRect(coreX, yPix, coreW, hPix);
+      } else {
+        ctx.fillStyle = state.theme === 'dark' ? 'rgba(124, 58, 237, 0.08)' : 'rgba(124, 58, 237, 0.06)';
+        ctx.fillRect(coreX, yPix, coreW, hPix);
+      }
+
+      ctx.strokeStyle = isSelected ? '#2563eb' : (state.theme === 'dark' ? '#4c1d95' : '#c4b5fd');
+      ctx.lineWidth = isSelected ? 3 : 1;
+      ctx.strokeRect(coreX, yPix, coreW, hPix);
+
+      if (isSelected) {
+        ctx.fillStyle = '#2563eb';
+        ctx.font = 'bold 10.5px "JetBrains Mono"';
+        ctx.textAlign = 'left';
+        ctx.fillText(`◀ ${fib.code}: y=${fib.y.toFixed(1)}cm`, startX + drawW + 6, yPix + hPix / 2 + 4);
+      }
+    });
+
+    // Core boundary (Stirrup outline)
+    ctx.strokeStyle = '#7c3aed';
+    ctx.lineWidth = 2.5;
+    ctx.setLineDash([5, 3]);
+    ctx.strokeRect(coreX, coreY, coreW, coreH);
+    ctx.setLineDash([]);
+
+    // Outer outline
+    ctx.strokeStyle = state.theme === 'dark' ? '#64748b' : '#334155';
+    ctx.lineWidth = 2;
+    ctx.strokeRect(startX, startY, drawW, drawH);
+
+    // Steel bars
+    res.steelLayers.forEach((s) => {
+      const sY = startY + s.y * scale;
+      const isSelected = state.selectedElement === s.code;
+      const isYield = Math.abs(s.sig) >= state.fy - 1e-3;
+      const isComp = s.sig > 0;
+      const color = isYield ? '#e11d48' : (isComp ? '#ea580c' : '#0891b2');
+
+      const rebarXs = [coreX + 15, coreX + coreW / 2, coreX + coreW - 15];
+      if (s.id === 2) rebarXs.splice(1, 1); // 2 bars in middle layer
+
+      rebarXs.forEach(rx => {
+        ctx.beginPath();
+        ctx.arc(rx, sY, isSelected ? 9 : 7, 0, 2 * Math.PI);
+        ctx.fillStyle = color;
+        ctx.fill();
+        ctx.strokeStyle = isSelected ? '#2563eb' : '#ffffff';
+        ctx.lineWidth = isSelected ? 3 : 2;
+        ctx.stroke();
+      });
+
+      if (isSelected) {
+        ctx.fillStyle = '#2563eb';
+        ctx.font = 'bold 10.5px "JetBrains Mono"';
+        ctx.textAlign = 'left';
+        ctx.fillText(`◀ ${s.code}: y=${s.y.toFixed(1)}cm`, startX + drawW + 6, sY + 4);
+      }
+    });
+
+    // Neutral Axis Line (c)
+    const cY = startY + res.c * scale;
+    if (cY <= startY + drawH + 25) {
+      ctx.beginPath();
+      ctx.setLineDash([6, 4]);
+      ctx.moveTo(startX - 15, cY);
+      ctx.lineTo(startX + drawW + 15, cY);
+      ctx.strokeStyle = '#7c3aed';
+      ctx.lineWidth = 2.5;
+      ctx.stroke();
+      ctx.setLineDash([]);
+
+      ctx.fillStyle = '#7c3aed';
+      ctx.font = 'bold 11px "Outfit"';
+      ctx.textAlign = 'right';
+      ctx.fillText(`E.N. c=${res.c.toFixed(1)}cm`, startX - 20, cY + 4);
+    }
+
+    // Centroid line (yhat)
+    const ybY = startY + res.yhat * scale;
+    ctx.beginPath();
+    ctx.setLineDash([3, 3]);
+    ctx.moveTo(startX, ybY);
+    ctx.lineTo(startX + drawW, ybY);
+    ctx.strokeStyle = '#d97706';
+    ctx.lineWidth = 1.5;
+    ctx.stroke();
+    ctx.setLineDash([]);
+
+    // Dimension labels
+    ctx.fillStyle = state.theme === 'dark' ? '#94a3b8' : '#64748b';
+    ctx.font = '10.5px "Outfit"';
+    ctx.textAlign = 'center';
+    ctx.fillText(`b = ${state.b} cm (bcc = ${res.bcc} cm)`, startX + drawW / 2, startY - 10);
+    ctx.fillText(`h = ${state.h} cm (hcc = ${res.hcc} cm)`, startX + drawW / 2, startY + drawH + 20);
+  }
+
+  /* ==========================================================================
+     CANVAS 2: STRAIN PROFILE (EULER-BERNOULLI)
+     ========================================================================== */
+  function drawStrains(res) {
+    const { ctx, width, height } = setupCanvas('canvas-strains');
+    ctx.clearRect(0, 0, width, height);
+
+    const padX = 45, padY = 35;
+    const drawH = height - 2 * padY;
+    const drawW = width - 2 * padX;
+    const scaleY = drawH / state.h;
+    const midX = padX + drawW * 0.45;
+    const startY = padY;
+
+    // Zero axis
+    ctx.beginPath();
+    ctx.moveTo(midX, startY);
+    ctx.lineTo(midX, startY + drawH);
+    ctx.strokeStyle = state.theme === 'dark' ? '#334155' : '#cbd5e1';
+    ctx.lineWidth = 2;
+    ctx.stroke();
+
+    const epsTop = state.ecu;
+    const epsBot = state.ecu * (res.c - state.h) / res.c;
+    const epsMax = Math.max(0.005, Math.abs(epsBot) * 1.15, epsTop * 1.15);
+    const scaleEps = (drawW * 0.42) / epsMax;
+
+    const xTop = midX + epsTop * scaleEps;
+    const xBot = midX + epsBot * scaleEps;
+
+    // Linear profile line
+    ctx.beginPath();
+    ctx.moveTo(xTop, startY);
+    ctx.lineTo(xBot, startY + drawH);
+    ctx.strokeStyle = '#2563eb';
+    ctx.lineWidth = 2.5;
+    ctx.stroke();
+
+    // Compression triangle
+    const cY = startY + res.c * scaleY;
+    if (res.c < state.h && res.c > 0) {
+      ctx.beginPath();
+      ctx.moveTo(midX, startY);
+      ctx.lineTo(xTop, startY);
+      ctx.lineTo(midX, cY);
+      ctx.closePath();
+      ctx.fillStyle = 'rgba(234, 88, 12, 0.2)';
+      ctx.fill();
+
+      // Tension triangle
+      ctx.beginPath();
+      ctx.moveTo(midX, cY);
+      ctx.lineTo(xBot, startY + drawH);
+      ctx.lineTo(midX, startY + drawH);
+      ctx.closePath();
+      ctx.fillStyle = 'rgba(8, 145, 178, 0.2)';
+      ctx.fill();
+    }
+
+    // Steel layer dots
+    res.steelLayers.forEach(s => {
+      const yPix = startY + s.y * scaleY;
+      const xPix = midX + s.eps * scaleEps;
+      const isSelected = state.selectedElement === s.code;
+
+      ctx.beginPath();
+      ctx.arc(xPix, yPix, isSelected ? 8 : 5, 0, 2 * Math.PI);
+      ctx.fillStyle = Math.abs(s.sig) >= state.fy - 1e-3 ? '#e11d48' : (s.eps >= 0 ? '#ea580c' : '#0891b2');
+      ctx.fill();
+      ctx.strokeStyle = isSelected ? '#2563eb' : '#ffffff';
+      ctx.lineWidth = 2;
+      ctx.stroke();
+
+      ctx.fillStyle = state.theme === 'dark' ? '#e2e8f0' : '#1e293b';
+      ctx.font = isSelected ? 'bold 10.5px "JetBrains Mono"' : '9.5px "JetBrains Mono"';
+      ctx.textAlign = s.eps >= 0 ? 'left' : 'right';
+      ctx.fillText(`${s.code}=${s.eps.toFixed(4)}`, xPix + (s.eps >= 0 ? 8 : -8), yPix + 4);
+    });
+
+    // Top & bottom labels
+    ctx.fillStyle = '#ea580c';
+    ctx.font = 'bold 11px "JetBrains Mono"';
+    ctx.textAlign = 'left';
+    ctx.fillText(`εcu = +${epsTop.toFixed(4)}`, xTop + 6, startY + 4);
+
+    ctx.fillStyle = '#0891b2';
+    ctx.textAlign = 'right';
+    ctx.fillText(`εinf = ${epsBot.toFixed(4)}`, xBot - 6, startY + drawH + 4);
+  }
+
+  /* ==========================================================================
+     CANVAS 3: STRESS PROFILES (UNCONFINED VS CONFINED)
+     ========================================================================== */
+  function drawStresses(res) {
+    const { ctx, width, height } = setupCanvas('canvas-stresses');
+    ctx.clearRect(0, 0, width, height);
+
+    const padX = 45, padY = 35;
+    const drawH = height - 2 * padY;
+    const drawW = width - 2 * padX;
+    const scaleY = drawH / state.h;
+    const midX = padX + drawW * 0.35;
+    const startY = padY;
+    const maxStress = Math.max(res.fcc, state.fc, 35.0);
+    const scaleSig = (drawW * 0.58) / maxStress;
+
+    // Zero axis
+    ctx.beginPath();
+    ctx.moveTo(midX, startY);
+    ctx.lineTo(midX, startY + drawH);
+    ctx.strokeStyle = state.theme === 'dark' ? '#334155' : '#cbd5e1';
+    ctx.lineWidth = 2;
+    ctx.stroke();
+
+    const cLimY = Math.min(state.h, Math.max(0, res.c));
+
+    // 1. Unconfined curve (Orange)
+    ctx.beginPath();
+    for (let y = 0; y <= cLimY; y += 0.5) {
+      const eps = state.ecu * (res.c - y) / res.c;
+      const sig = sigmaUnconf(eps);
+      const px = midX + sig * scaleSig;
+      const py = startY + y * scaleY;
+      if (y === 0) ctx.moveTo(px, py);
+      else ctx.lineTo(px, py);
+    }
+    ctx.lineTo(midX, startY + cLimY * scaleY);
+    ctx.closePath();
+    ctx.fillStyle = 'rgba(234, 88, 12, 0.2)';
+    ctx.fill();
+    ctx.strokeStyle = '#ea580c';
+    ctx.lineWidth = 2;
+    ctx.stroke();
+
+    // 2. Confined curve (Purple)
+    if (state.confinementActive) {
+      ctx.beginPath();
+      for (let y = state.r; y <= Math.min(state.h - state.r, cLimY); y += 0.5) {
+        const eps = state.ecu * (res.c - y) / res.c;
+        const sig = sigmaConf(eps);
+        const px = midX + sig * scaleSig;
+        const py = startY + y * scaleY;
+        if (y === state.r) ctx.moveTo(px, py);
+        else ctx.lineTo(px, py);
+      }
+      ctx.lineTo(midX, startY + Math.min(state.h - state.r, cLimY) * scaleY);
+      ctx.closePath();
+      ctx.fillStyle = 'rgba(124, 58, 237, 0.25)';
+      ctx.fill();
+      ctx.strokeStyle = '#7c3aed';
+      ctx.lineWidth = 2.5;
+      ctx.stroke();
+    }
+
+    // Legend tags
+    ctx.fillStyle = '#ea580c';
+    ctx.font = 'bold 10px "Outfit"';
+    ctx.textAlign = 'left';
+    ctx.fillText(`■ No Confinado (fc=${state.fc}MPa)`, midX + 10, startY + 14);
+
+    if (state.confinementActive) {
+      ctx.fillStyle = '#7c3aed';
+      ctx.fillText(`■ Confinado (f'cc=${res.fcc.toFixed(1)}MPa)`, midX + 10, startY + 28);
+    }
+  }
+
+  /* ==========================================================================
+     CANVAS 4: INTERNAL FORCES & LEVER ARMS
+     ========================================================================== */
+  function drawForces(res) {
+    const { ctx, width, height } = setupCanvas('canvas-forces');
+    ctx.clearRect(0, 0, width, height);
+
+    const padX = 40, padY = 35;
+    const drawH = height - 2 * padY;
+    const drawW = width - 2 * padX;
+    const midX = padX + drawW * 0.45;
+    const startY = padY;
+    const scaleY = drawH / state.h;
+
+    // Centroid line
+    const ybY = startY + res.yhat * scaleY;
+    ctx.beginPath();
+    ctx.setLineDash([3, 3]);
+    ctx.moveTo(padX, ybY);
+    ctx.lineTo(width - padX, ybY);
+    ctx.strokeStyle = '#d97706';
+    ctx.lineWidth = 1.5;
+    ctx.stroke();
+    ctx.setLineDash([]);
+
+    ctx.fillStyle = '#d97706';
+    ctx.font = '10px "Outfit"';
+    ctx.textAlign = 'left';
+    ctx.fillText(`ȳ = ${res.yhat.toFixed(1)} cm`, width - padX - 60, ybY - 4);
+
+    // Scaling for force arrows
+    const maxF = Math.max(Math.abs(res.sumFc), Math.abs(res.sumFcc), Math.abs(res.sumFs), 200.0);
+    const scaleF = (drawW * 0.4) / maxF;
+
+    // 1. Resultant Unconfined Force (Fc)
+    if (res.sumFc > 0.1) {
+      const yFc = startY + Math.min(state.h * 0.4, res.c * 0.35) * scaleY;
+      const lenFc = res.sumFc * scaleF;
+      drawArrow(ctx, midX, yFc, midX + lenFc, yFc, '#ea580c', `ΣFc = +${res.sumFc.toFixed(0)} kN`);
+    }
+
+    // 2. Resultant Confined Force (Fcc)
+    if (res.sumFcc > 0.1) {
+      const yFcc = startY + Math.min(state.h * 0.6, res.c * 0.5) * scaleY;
+      const lenFcc = res.sumFcc * scaleF;
+      drawArrow(ctx, midX, yFcc, midX + lenFcc, yFcc, '#7c3aed', `ΣFcc = +${res.sumFcc.toFixed(0)} kN`);
+    }
+
+    // 3. Steel layer forces
+    res.steelLayers.forEach(s => {
+      if (Math.abs(s.F) > 0.1) {
+        const yFs = startY + s.y * scaleY;
+        const lenFs = s.F * scaleF;
+        const color = s.F > 0 ? '#ea580c' : '#0891b2';
+        const isSelected = state.selectedElement === s.code;
+        drawArrow(ctx, midX, yFs, midX + lenFs, yFs, color, `${s.code} = ${s.F.toFixed(0)} kN`, isSelected);
+      }
+    });
+  }
+
+  function drawArrow(ctx, fromX, fromY, toX, toY, color, label, isThick = false) {
+    const headLen = 8;
+    const angle = Math.atan2(toY - fromY, toX - fromX);
+
+    ctx.beginPath();
+    ctx.moveTo(fromX, fromY);
+    ctx.lineTo(toX, toY);
+    ctx.strokeStyle = color;
+    ctx.lineWidth = isThick ? 4 : 2.5;
+    ctx.stroke();
+
+    ctx.beginPath();
+    ctx.moveTo(toX, toY);
+    ctx.lineTo(toX - headLen * Math.cos(angle - Math.PI / 6), toY - headLen * Math.sin(angle - Math.PI / 6));
+    ctx.lineTo(toX - headLen * Math.cos(angle + Math.PI / 6), toY - headLen * Math.sin(angle + Math.PI / 6));
+    ctx.closePath();
+    ctx.fillStyle = color;
+    ctx.fill();
+
+    ctx.fillStyle = color;
+    ctx.font = isThick ? 'bold 11px "JetBrains Mono"' : 'bold 10px "JetBrains Mono"';
+    ctx.textAlign = toX >= fromX ? 'left' : 'right';
+    ctx.fillText(label, toX + (toX >= fromX ? 6 : -6), toY + 3);
+  }
+
+  /* ==========================================================================
+     INSPECTOR (LUPA DIDÁCTICA FIBRA POR FIBRA)
+     ========================================================================== */
+  function updateInspector(res) {
+    const select = document.getElementById('select-element');
+    
+    // Build options
+    const expectedOptions = [];
+    res.unconfFibers.forEach(f => {
+      expectedOptions.push({
+        value: f.code,
+        group: 'unconf',
+        text: `${f.code}: y = ${f.y.toFixed(1)} cm (Recubrimiento, A = ${f.area.toFixed(0)} cm²)`
+      });
+    });
+
+    res.confFibers.forEach(f => {
+      expectedOptions.push({
+        value: f.code,
+        group: 'conf',
+        text: `${f.code}: y = ${f.y.toFixed(1)} cm (Núcleo Confinado, A = ${f.area.toFixed(0)} cm²)`
+      });
+    });
+
+    res.steelLayers.forEach(s => {
+      expectedOptions.push({
+        value: s.code,
+        group: 'steel',
+        text: `${s.code}: y = ${s.y.toFixed(1)} cm (Acero, As = ${s.area.toFixed(1)} cm²)`
+      });
+    });
+
+    const currentSig = Array.from(select.options).map(o => o.value + '@' + o.textContent).join('|');
+    const expectedSig = expectedOptions.map(o => o.value + '@' + o.text).join('|');
+
+    if (currentSig !== expectedSig) {
+      const prevVal = select.value || state.selectedElement;
+      select.innerHTML = '';
+
+      const grpUnconf = document.createElement('optgroup');
+      grpUnconf.label = 'Concreto No Confinado (Recubrimiento)';
+      expectedOptions.filter(o => o.group === 'unconf').forEach(item => {
+        const opt = document.createElement('option');
+        opt.value = item.value;
+        opt.textContent = item.text;
+        grpUnconf.appendChild(opt);
+      });
+      select.appendChild(grpUnconf);
+
+      const grpConf = document.createElement('optgroup');
+      grpConf.label = 'Concreto Confinado (Núcleo)';
+      expectedOptions.filter(o => o.group === 'conf').forEach(item => {
+        const opt = document.createElement('option');
+        opt.value = item.value;
+        opt.textContent = item.text;
+        grpConf.appendChild(opt);
+      });
+      select.appendChild(grpConf);
+
+      const grpSteel = document.createElement('optgroup');
+      grpSteel.label = 'Barras de Acero Longitudinal';
+      expectedOptions.filter(o => o.group === 'steel').forEach(item => {
+        const opt = document.createElement('option');
+        opt.value = item.value;
+        opt.textContent = item.text;
+        grpSteel.appendChild(opt);
+      });
+      select.appendChild(grpSteel);
+
+      if (expectedOptions.some(o => o.value === prevVal)) {
+        state.selectedElement = prevVal;
+      } else {
+        state.selectedElement = 'Fcc_1';
+      }
+    }
+
+    select.value = state.selectedElement;
+
+    // Find element
+    let elem = res.unconfFibers.find(f => f.code === state.selectedElement);
+    let category = 'unconf';
+    if (!elem) {
+      elem = res.confFibers.find(f => f.code === state.selectedElement);
+      category = 'conf';
+    }
+    if (!elem) {
+      elem = res.steelLayers.find(s => s.code === state.selectedElement);
+      category = 'steel';
+    }
+
+    if (!elem) return;
+
+    // Update Depth Badge
+    const depthBadge = document.getElementById('inspector-depth-badge');
+    const pctH = ((elem.y / state.h) * 100).toFixed(0);
+    const catName = category === 'unconf' ? 'Recubrimiento' : (category === 'conf' ? 'Núcleo Confinado' : 'Acero');
+    depthBadge.innerHTML = `📍 <strong>${elem.code}: y = ${elem.y.toFixed(1)} cm</strong> <span style="opacity:0.85;">(${catName} · ${pctH}% de h)</span>`;
+
+    // Render Steps
+    const container = document.getElementById('inspector-steps-container');
+
+    if (category === 'unconf') {
+      const Ec = 4400.0 * Math.sqrt(state.fc);
+      const e0 = 1.8 * state.fc / Ec;
+      let branch = 'Tracción (nula)';
+      if (elem.eps > 0 && elem.eps <= e0) branch = 'Parábola Hognestad ascendente';
+      else if (elem.eps > e0 && elem.eps <= 0.0038) branch = 'Rama lineal descendente';
+
+      container.innerHTML = `
+        <div class="step-calc-box">
+          <span class="step-tag">Paso 1 · Posición y Área (Recubrimiento)</span>
+          <div class="step-eq">y = ${elem.y.toFixed(2)} cm, A = ${elem.area.toFixed(1)} cm²</div>
+          <div class="step-sub">Fibra del recubrimiento exterior sin confinamiento lateral.</div>
+        </div>
+        <div class="step-calc-box">
+          <span class="step-tag">Paso 2 · Deformación Euler-Bernoulli</span>
+          <div class="step-eq">ε = ${elem.eps.toFixed(6)}</div>
+          <div class="step-sub">ε = ε_cu · (c - y)/c = ${state.ecu} · (${res.c.toFixed(1)} - ${elem.y.toFixed(1)}) / ${res.c.toFixed(1)}</div>
+        </div>
+        <div class="step-calc-box">
+          <span class="step-tag">Paso 3 · Modelo Hognestad No Confinado</span>
+          <div class="step-eq">σ = ${elem.sig.toFixed(2)} MPa</div>
+          <div class="step-sub"><strong>${branch}:</strong> f'c = ${state.fc} MPa, ε0 = ${e0.toFixed(4)}</div>
+        </div>
+        <div class="step-calc-box">
+          <span class="step-tag">Paso 4 · Fuerza Tributaria</span>
+          <div class="step-eq">F = ${elem.F.toFixed(2)} kN</div>
+          <div class="step-sub">F = σ · A = ${elem.sig.toFixed(2)} MPa · ${elem.area.toFixed(1)} cm² / 10</div>
+        </div>
+        <div class="step-calc-box">
+          <span class="step-tag">Paso 5 · Brazo al Centroide Plástico</span>
+          <div class="step-eq">d = ${elem.arm.toFixed(3)} m</div>
+          <div class="step-sub">d = (ȳ - y)/100 = (${res.yhat.toFixed(1)} - ${elem.y.toFixed(1)}) / 100</div>
+        </div>
+        <div class="step-calc-box">
+          <span class="step-tag">Paso 6 · Momento Resultante</span>
+          <div class="step-eq">M = ${elem.M.toFixed(2)} kN·m</div>
+          <div class="step-sub">M = F · d = ${elem.F.toFixed(2)} kN · ${elem.arm.toFixed(3)} m</div>
+        </div>
+      `;
+    } else if (category === 'conf') {
+      const fcc = res.fcc;
+      const Ec = 4400.0 * Math.sqrt(fcc);
+      const e0 = 1.8 * fcc / Ec;
+      const eu = 5.0 * e0;
+      let branch = 'Tracción (nula)';
+      if (elem.eps > 0 && elem.eps <= e0) branch = 'Parábola Mander/Hognestad confinada';
+      else if (elem.eps > e0 && elem.eps <= eu) branch = 'Descenso plástico confinado (alta ductilidad)';
+
+      container.innerHTML = `
+        <div class="step-calc-box">
+          <span class="step-tag">Paso 1 · Posición y Área (Núcleo Confinado)</span>
+          <div class="step-eq">y = ${elem.y.toFixed(2)} cm, Acc = ${elem.area.toFixed(1)} cm²</div>
+          <div class="step-sub">Área dentro del núcleo confinado por estribos (bcc = ${res.bcc} cm).</div>
+        </div>
+        <div class="step-calc-box">
+          <span class="step-tag">Paso 2 · Deformación Euler-Bernoulli</span>
+          <div class="step-eq">ε = ${elem.eps.toFixed(6)}</div>
+          <div class="step-sub">Misma deformación que el recubrimiento a esta profundidad y.</div>
+        </div>
+        <div class="step-calc-box">
+          <span class="step-tag">Paso 3 · Modelo Confinado Mander (K = ${state.K})</span>
+          <div class="step-eq">σ = ${elem.sig.toFixed(2)} MPa</div>
+          <div class="step-sub"><strong>${branch}:</strong> f'cc = ${fcc.toFixed(1)} MPa, εu,cc = ${eu.toFixed(4)}</div>
+        </div>
+        <div class="step-calc-box">
+          <span class="step-tag">Paso 4 · Fuerza Tributaria Confinada</span>
+          <div class="step-eq">Fcc = ${elem.F.toFixed(2)} kN</div>
+          <div class="step-sub">Fcc = σ · Acc = ${elem.sig.toFixed(2)} MPa · ${elem.area.toFixed(1)} cm² / 10</div>
+        </div>
+        <div class="step-calc-box">
+          <span class="step-tag">Paso 5 · Brazo al Centroide Plástico</span>
+          <div class="step-eq">d = ${elem.arm.toFixed(3)} m</div>
+          <div class="step-sub">d = (ȳ - y)/100 = (${res.yhat.toFixed(1)} - ${elem.y.toFixed(1)}) / 100</div>
+        </div>
+        <div class="step-calc-box">
+          <span class="step-tag">Paso 6 · Momento Resultante</span>
+          <div class="step-eq">Mcc = ${elem.M.toFixed(2)} kN·m</div>
+          <div class="step-sub">Mcc = Fcc · d = ${elem.F.toFixed(2)} kN · ${elem.arm.toFixed(3)} m</div>
+        </div>
+      `;
+    } else {
+      // Steel layer
+      const ey = state.fy / state.Es;
+      const isYield = Math.abs(elem.sig) >= state.fy - 1e-3;
+
+      container.innerHTML = `
+        <div class="step-calc-box">
+          <span class="step-tag">Paso 1 · Posición y Área de Acero</span>
+          <div class="step-eq">y = ${elem.y.toFixed(2)} cm, As = ${elem.area.toFixed(1)} cm²</div>
+          <div class="step-sub">Profundidad de la capa de refuerzo longitudinal.</div>
+        </div>
+        <div class="step-calc-box">
+          <span class="step-tag">Paso 2 · Deformación Unitaria Acero</span>
+          <div class="step-eq">εs = ${elem.eps.toFixed(6)}</div>
+          <div class="step-sub">εs = ε_cu · (c - y)/c (${elem.eps >= 0 ? 'Compresión' : 'Tracción'})</div>
+        </div>
+        <div class="step-calc-box">
+          <span class="step-tag">Paso 3 · Modelo Elastoplástico</span>
+          <div class="step-eq">fs = ${elem.sig.toFixed(1)} MPa</div>
+          <div class="step-sub"><strong>${isYield ? 'Fluencia Plástica' : 'Régimen Elástico'}:</strong> εy = ${ey.toFixed(4)}, fy = ${state.fy} MPa</div>
+        </div>
+        <div class="step-calc-box">
+          <span class="step-tag">Paso 4 · Fuerza Interna Acero</span>
+          <div class="step-eq">Fs = ${elem.F.toFixed(2)} kN</div>
+          <div class="step-sub">Fs = fs · As = ${elem.sig.toFixed(1)} MPa · ${elem.area.toFixed(1)} cm² / 10</div>
+        </div>
+        <div class="step-calc-box">
+          <span class="step-tag">Paso 5 · Brazo al Centroide Plástico</span>
+          <div class="step-eq">d = ${elem.arm.toFixed(3)} m</div>
+          <div class="step-sub">d = (ȳ - y)/100 = (${res.yhat.toFixed(1)} - ${elem.y.toFixed(1)}) / 100</div>
+        </div>
+        <div class="step-calc-box">
+          <span class="step-tag">Paso 6 · Contribución al Momento</span>
+          <div class="step-eq">Ms = ${elem.M.toFixed(2)} kN·m</div>
+          <div class="step-sub">Ms = Fs · d = ${elem.F.toFixed(2)} kN · ${elem.arm.toFixed(3)} m</div>
+        </div>
+      `;
+    }
+  }
+
+  /* ==========================================================================
+     DATA TABLE POPULATION
+     ========================================================================== */
+  function updateTable(res) {
+    const tbody = document.getElementById('table-body');
+    tbody.innerHTML = '';
+
+    const allItems = [...res.unconfFibers, ...res.confFibers, ...res.steelLayers];
+
+    allItems.forEach(item => {
+      const tr = document.createElement('tr');
+      if (item.code === state.selectedElement) tr.className = 'active-row';
+
+      const isConf = item.type === 'conf';
+      const isUnconf = item.type === 'unconf';
+      const typeLabel = isConf ? 'Núcleo' : (isUnconf ? 'Recubrimiento' : 'Acero');
+      const badgeColor = isConf ? 'var(--color-conf)' : (isUnconf ? 'var(--color-unconf)' : 'var(--color-steel)');
+
+      tr.innerHTML = `
+        <td style="text-align:center; font-weight:700;">${item.code}</td>
+        <td style="text-align:center;">
+          <span style="font-size:0.75rem; padding:2px 8px; border-radius:4px; font-weight:700; background:rgba(0,0,0,0.06); color:${badgeColor};">
+            ${typeLabel}
+          </span>
+        </td>
+        <td>${item.y.toFixed(2)}</td>
+        <td>${item.area.toFixed(1)}</td>
+        <td style="color:${item.eps >= 0 ? 'var(--color-unconf)' : 'var(--color-steel)'}; font-weight:700;">${item.eps.toFixed(5)}</td>
+        <td>${item.sig.toFixed(2)}</td>
+        <td style="font-weight:700; color:${item.F >= 0 ? 'var(--color-unconf)' : 'var(--color-steel)'};">${item.F.toFixed(2)}</td>
+        <td>${item.arm.toFixed(3)}</td>
+        <td style="font-weight:700; color:var(--accent-blue);">${item.M.toFixed(2)}</td>
+      `;
+
+      tr.onclick = () => {
+        state.selectedElement = item.code;
+        updateAll();
+      };
+
+      tbody.appendChild(tr);
+    });
+  }
+
+  /* ==========================================================================
+     MASTER UPDATE ALL
+     ========================================================================== */
+  function updateAll() {
+    // Read input values
+    state.b = parseFloat(document.getElementById('input-b').value) || 60.0;
+    state.h = parseFloat(document.getElementById('input-h').value) || 40.0;
+    state.r = parseFloat(document.getElementById('input-r').value) || 5.0;
+    state.fc = parseFloat(document.getElementById('input-fc').value) || 28.0;
+    state.K = parseFloat(document.getElementById('input-k').value) || 1.3;
+    state.fy = parseFloat(document.getElementById('input-fy').value) || 420.0;
+    state.ecu = parseFloat(document.getElementById('input-ecu').value) || 0.003;
+
+    // Proportional steel layers if h changed
+    state.steel = [
+      { y: state.r, area: 4 * 2.86 },
+      { y: state.h / 2.0, area: 2 * 2.86 },
+      { y: state.h - state.r, area: 4 * 2.86 }
+    ];
+
+    // Compute state
+    const res = computeSection(state.c);
+
+    // Update hero stats
+    document.getElementById('res-pn').textContent = `${res.Pn >= 0 ? '+' : ''}${res.Pn.toFixed(1)} kN`;
+    document.getElementById('res-mn').textContent = `${res.Mn.toFixed(1)} kN·m`;
+    document.getElementById('res-fcc').textContent = `+${res.sumFcc.toFixed(1)} kN`;
+    document.getElementById('res-fcc-sub').textContent = `f'cc = ${res.fcc.toFixed(1)} MPa (K=${state.K})`;
+    document.getElementById('res-fs').textContent = `${res.sumFs >= 0 ? '+' : ''}${res.sumFs.toFixed(1)} kN`;
+    document.getElementById('res-fs-sub').textContent = res.sumFs < 0 ? 'Tracción neta en acero' : 'Compresión neta en acero';
+
+    // Update balance stats
+    document.getElementById('bal-pn-total').textContent = `Pn = ${res.Pn >= 0 ? '+' : ''}${res.Pn.toFixed(1)} kN`;
+    document.getElementById('bal-mn-total').textContent = `Mn = ${res.Mn.toFixed(1)} kN·m`;
+    document.getElementById('bal-txt-fc').textContent = `+${res.sumFc.toFixed(1)} kN`;
+    document.getElementById('bal-txt-fcc').textContent = `+${res.sumFcc.toFixed(1)} kN`;
+    document.getElementById('bal-txt-fs').textContent = `${res.sumFs >= 0 ? '+' : ''}${res.sumFs.toFixed(1)} kN`;
+
+    document.getElementById('bal-txt-mc').textContent = `${res.sumMc.toFixed(1)} kNm`;
+    document.getElementById('bal-txt-mcc').textContent = `${res.sumMcc.toFixed(1)} kNm`;
+    document.getElementById('bal-txt-ms').textContent = `${res.sumMs.toFixed(1)} kNm`;
+
+    // Progress bar fills
+    const absSumF = Math.abs(res.sumFc) + Math.abs(res.sumFcc) + Math.abs(res.sumFs);
+    if (absSumF > 0) {
+      document.getElementById('bar-unconf-force').style.width = `${(Math.abs(res.sumFc) / absSumF * 100).toFixed(0)}%`;
+      document.getElementById('bar-conf-force').style.width = `${(Math.abs(res.sumFcc) / absSumF * 100).toFixed(0)}%`;
+      document.getElementById('bar-steel-force').style.width = `${(Math.abs(res.sumFs) / absSumF * 100).toFixed(0)}%`;
+    }
+
+    const absSumM = Math.abs(res.sumMc) + Math.abs(res.sumMcc) + Math.abs(res.sumMs);
+    if (absSumM > 0) {
+      document.getElementById('bar-unconf-moment').style.width = `${(Math.abs(res.sumMc) / absSumM * 100).toFixed(0)}%`;
+      document.getElementById('bar-conf-moment').style.width = `${(Math.abs(res.sumMcc) / absSumM * 100).toFixed(0)}%`;
+      document.getElementById('bar-steel-moment').style.width = `${(Math.abs(res.sumMs) / absSumM * 100).toFixed(0)}%`;
+    }
+
+    // Badge section dimensions
+    document.getElementById('badge-section-dim').textContent = `${state.b} × ${state.h} cm`;
+
+    // Draw 4 canvases
+    drawSection(res);
+    drawStrains(res);
+    drawStresses(res);
+    drawForces(res);
+
+    // Update inspector & table
+    updateInspector(res);
+    updateTable(res);
+  }
+
+  /* ==========================================================================
+     EXPORTS & UTILS
+     ========================================================================== */
+  function downloadCSV() {
+    const res = computeSection(state.c);
+    let csv = 'Elemento,Zona,y_cm,Area_cm2,eps_unit,sigma_MPa,Fuerza_kN,Brazo_m,Momento_kNm\n';
+    const all = [...res.unconfFibers, ...res.confFibers, ...res.steelLayers];
+    all.forEach(item => {
+      csv += `${item.code},${item.type},${item.y.toFixed(2)},${item.area.toFixed(1)},${item.eps.toFixed(6)},${item.sig.toFixed(2)},${item.F.toFixed(2)},${item.arm.toFixed(3)},${item.M.toFixed(2)}\n`;
+    });
+
+    const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement('a');
+    link.href = url;
+    link.download = `calculo_punto_confinado_c_${state.c.toFixed(1)}cm.csv`;
+    link.click();
+  }
+
+  function copyLaTeX() {
+    const res = computeSection(state.c);
+    let tex = `\\begin{table}[h!]\n\\centering\n\\caption{Cálculo de Fuerzas Internas con Concreto Confinado ($c = ${state.c.toFixed(1)}$~cm, $P_n = ${res.Pn.toFixed(1)}$~kN, $M_n = ${res.Mn.toFixed(1)}$~kN$\\cdot$m)}\n`;
+    tex += `\\begin{tabular}{llccccccc}\n\\hline\n`;
+    tex += `Elemento & Zona & $y$~(cm) & $A$~(cm$^2$) & $\\varepsilon$ & $\\sigma$~(MPa) & $F$~(kN) & $d$~(m) & $M$~(kN$\\cdot$m) \\\\\n\\hline\n`;
+    const all = [...res.unconfFibers, ...res.confFibers, ...res.steelLayers];
+    all.forEach(item => {
+      tex += `${item.code} & ${item.type} & ${item.y.toFixed(1)} & ${item.area.toFixed(1)} & ${item.eps.toFixed(5)} & ${item.sig.toFixed(2)} & ${item.F.toFixed(2)} & ${item.arm.toFixed(3)} & ${item.M.toFixed(2)} \\\\\n`;
+    });
+    tex += `\\hline\n\\end{tabular}\n\\end{table}`;
+
+    navigator.clipboard.writeText(tex).then(() => {
+      alert('¡Código LaTeX copiado al portapapeles exitosamente!');
+    });
+  }
+
+  function toggleQuiz(id) {
+    const el = document.getElementById(`quiz-ans-${id}`);
+    el.classList.toggle('show');
+  }
+
+  function toggleTheme() {
+    const html = document.documentElement;
+    const isDark = html.getAttribute('data-theme') === 'dark';
+    const newTheme = isDark ? 'light' : 'dark';
+    html.setAttribute('data-theme', newTheme);
+    state.theme = newTheme;
+
+    document.getElementById('theme-icon').textContent = newTheme === 'dark' ? '☀️' : '🌙';
+    document.getElementById('theme-text').textContent = newTheme === 'dark' ? 'Modo Claro' : 'Modo Oscuro';
+    localStorage.setItem('concreto_theme', newTheme);
+
+    updateAll();
+  }
+
+  window.addEventListener('resize', () => {
+    updateAll();
+  });
+
+  window.addEventListener('DOMContentLoaded', () => {
+    const savedTheme = localStorage.getItem('concreto_theme') || 'light';
+    if (savedTheme === 'dark') {
+      document.documentElement.setAttribute('data-theme', 'dark');
+      state.theme = 'dark';
+      document.getElementById('theme-icon').textContent = '☀️';
+      document.getElementById('theme-text').textContent = 'Modo Claro';
+    }
+    updateAll();
+  });
+  </script>
+</body>
+</html>
