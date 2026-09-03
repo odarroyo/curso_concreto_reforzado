@@ -39,6 +39,13 @@ Plataforma web didáctica para la visualización y aprendizaje de la mecánica s
 - Análisis del incremento en compresión pura $P_0$ (+15.8%) y la invariancia física en tracción pura $P_t$.
 - Puntos notables interactivos: Momento Máximo, Falla Balanceada, Límite por Tracción y Compresión pura.
 
+### 6. 🏛️ [Modelo de Fibras de Sección General (int_diag2)](https://odarroyo.github.io/curso_concreto_reforzado/modelo_fibras_seccion_general.html)
+- Implementación general del algoritmo de fibras `int_diag2` de `funcion_general.py` para geometrías arbitrarias.
+- **Visualizador interactivo de fibras:** Malla 2D de fibras de concreto coloreadas por gradiente de esfuerzo y barras de acero proporcionales.
+- Cálculo automático del centroide seccional $\bar{y}$ y momentos flectores respecto a $\bar{y}$.
+- Presets del script de clase: Sección rectangular, Muro con aletas en T ($B=2.5\text{ m}, h=2.05\text{ m}$), Muro asimétrico y Columna I.
+- Generador y exportador de código Python para ejecutar en Spyder o Jupyter.
+
 ---
 
 ## 💻 Características Técnicas

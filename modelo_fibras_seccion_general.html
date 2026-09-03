@@ -1,0 +1,2029 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Modelo de Fibras de Sección General (int_diag2) · Concreto Armado</title>
+  
+  <!-- Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500;600;700&family=Outfit:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  
+  <!-- MathJax for TeX formulas -->
+  <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
+  <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+
+  <style>
+    :root {
+      --bg-primary: #f8fafc;
+      --bg-card: #ffffff;
+      --bg-card-subtle: #f1f5f9;
+      --bg-input: #ffffff;
+      --text-main: #1e293b;
+      --text-muted: #64748b;
+      --text-bright: #0f172a;
+      --border-color: #e2e8f0;
+      --border-focus: #3b82f6;
+
+      --accent-blue: #2563eb;
+      --accent-indigo: #4f46e5;
+      --accent-purple: #7c3aed;
+      --accent-teal: #0d9488;
+      --accent-emerald: #059669;
+      --accent-amber: #d97706;
+      --accent-rose: #e11d48;
+
+      --color-concrete: #64748b;
+      --color-steel: #0284c7;
+      --color-na: #dc2626;
+      --color-centroid: #d97706;
+
+      --shadow-sm: 0 1px 2px 0 rgb(0 0 0 / 0.05);
+      --shadow-md: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
+      --shadow-lg: 0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1);
+
+      --radius-sm: 6px;
+      --radius-md: 10px;
+      --radius-lg: 16px;
+
+      --font-main: 'Inter', -apple-system, sans-serif;
+      --font-title: 'Outfit', sans-serif;
+      --font-mono: 'JetBrains Mono', monospace;
+    }
+
+    [data-theme="dark"] {
+      --bg-primary: #0b0f19;
+      --bg-card: #111827;
+      --bg-card-subtle: #1e293b;
+      --bg-input: #1e293b;
+      --text-main: #e2e8f0;
+      --text-muted: #94a3b8;
+      --text-bright: #f8fafc;
+      --border-color: #334155;
+      --border-focus: #60a5fa;
+
+      --shadow-sm: 0 1px 2px 0 rgb(0 0 0 / 0.5);
+      --shadow-md: 0 4px 6px -1px rgb(0 0 0 / 0.4);
+      --shadow-lg: 0 10px 15px -3px rgb(0 0 0 / 0.5);
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      background-color: var(--bg-primary);
+      color: var(--text-main);
+      font-family: var(--font-main);
+      line-height: 1.5;
+      transition: background-color 0.25s ease, color 0.25s ease;
+      padding-bottom: 60px;
+    }
+
+    .container {
+      max-width: 1440px;
+      margin: 0 auto;
+      padding: 0 24px;
+    }
+
+    /* HEADER */
+    header {
+      background: var(--bg-card);
+      border-bottom: 1px solid var(--border-color);
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      box-shadow: var(--shadow-sm);
+    }
+
+    .header-inner {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 14px 0;
+      gap: 16px;
+    }
+
+    .header-left {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+    }
+
+    .header-btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 7px 13px;
+      border-radius: var(--radius-sm);
+      font-size: 0.825rem;
+      font-weight: 600;
+      text-decoration: none;
+      background: var(--bg-card-subtle);
+      color: var(--text-main);
+      border: 1px solid var(--border-color);
+      transition: all 0.15s ease;
+      cursor: pointer;
+    }
+
+    .header-btn:hover {
+      background: var(--accent-blue);
+      color: #ffffff;
+      border-color: var(--accent-blue);
+    }
+
+    .header-title-group h1 {
+      font-family: var(--font-title);
+      font-size: 1.35rem;
+      font-weight: 800;
+      color: var(--text-bright);
+      letter-spacing: -0.02em;
+      line-height: 1.2;
+    }
+
+    .header-title-group p {
+      font-size: 0.8rem;
+      color: var(--text-muted);
+      font-weight: 500;
+    }
+
+    .theme-toggle-btn {
+      background: var(--bg-card-subtle);
+      border: 1px solid var(--border-color);
+      color: var(--text-main);
+      padding: 8px 12px;
+      border-radius: var(--radius-sm);
+      font-size: 0.85rem;
+      font-weight: 600;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      transition: all 0.2s ease;
+    }
+
+    .theme-toggle-btn:hover {
+      border-color: var(--accent-blue);
+      color: var(--accent-blue);
+    }
+
+    /* PRESETS BAR */
+    .presets-bar {
+      background: var(--bg-card);
+      border: 1px solid var(--border-color);
+      border-radius: var(--radius-lg);
+      padding: 16px 20px;
+      margin-top: 20px;
+      box-shadow: var(--shadow-sm);
+    }
+
+    .presets-title-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 12px;
+      flex-wrap: wrap;
+      gap: 10px;
+    }
+
+    .presets-title {
+      font-family: var(--font-title);
+      font-size: 0.95rem;
+      font-weight: 700;
+      color: var(--text-bright);
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .presets-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(210px, 1fr));
+      gap: 10px;
+    }
+
+    .btn-preset {
+      background: var(--bg-card-subtle);
+      border: 1.5px solid var(--border-color);
+      color: var(--text-main);
+      padding: 10px 14px;
+      border-radius: var(--radius-md);
+      font-size: 0.825rem;
+      font-weight: 600;
+      text-align: left;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      display: flex;
+      flex-direction: column;
+      gap: 3px;
+    }
+
+    .btn-preset:hover {
+      border-color: var(--accent-teal);
+      background: rgba(13, 148, 136, 0.08);
+      color: var(--accent-teal);
+    }
+
+    .btn-preset.active {
+      background: var(--accent-teal);
+      border-color: var(--accent-teal);
+      color: #ffffff;
+      box-shadow: 0 4px 12px rgba(13, 148, 136, 0.35);
+    }
+
+    .btn-preset .preset-sub {
+      font-size: 0.725rem;
+      opacity: 0.8;
+      font-family: var(--font-mono);
+      font-weight: 500;
+    }
+
+    /* CONTROLS CARD */
+    .controls-card {
+      background: var(--bg-card);
+      border: 1px solid var(--border-color);
+      border-radius: var(--radius-lg);
+      padding: 20px;
+      margin-top: 18px;
+      box-shadow: var(--shadow-sm);
+    }
+
+    .slider-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 12px;
+      margin-bottom: 12px;
+    }
+
+    .slider-title {
+      font-family: var(--font-title);
+      font-size: 1.05rem;
+      font-weight: 800;
+      color: var(--text-bright);
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .stepper-btn-group {
+      display: flex;
+      gap: 6px;
+    }
+
+    .btn-step {
+      background: var(--bg-card-subtle);
+      border: 1px solid var(--border-color);
+      color: var(--text-main);
+      padding: 4px 10px;
+      border-radius: var(--radius-sm);
+      font-size: 0.775rem;
+      font-weight: 700;
+      font-family: var(--font-mono);
+      cursor: pointer;
+      transition: all 0.15s ease;
+    }
+
+    .btn-step:hover {
+      background: var(--accent-teal);
+      color: #ffffff;
+      border-color: var(--accent-teal);
+    }
+
+    .slider-row {
+      display: flex;
+      align-items: center;
+      gap: 20px;
+    }
+
+    .slider-wrapper {
+      flex: 1;
+    }
+
+    .c-slider {
+      -webkit-appearance: none;
+      width: 100%;
+      height: 10px;
+      border-radius: 5px;
+      background: var(--border-color);
+      outline: none;
+    }
+
+    .c-slider::-webkit-slider-thumb {
+      -webkit-appearance: none;
+      width: 24px;
+      height: 24px;
+      border-radius: 50%;
+      background: var(--accent-teal);
+      cursor: pointer;
+      border: 3px solid #ffffff;
+      box-shadow: 0 2px 6px rgba(0,0,0,0.3);
+    }
+
+    .slider-ticks {
+      display: flex;
+      justify-content: space-between;
+      font-size: 0.725rem;
+      color: var(--text-muted);
+      font-family: var(--font-mono);
+      margin-top: 6px;
+    }
+
+    .c-value-display {
+      background: var(--bg-card-subtle);
+      border: 2px solid var(--accent-teal);
+      border-radius: var(--radius-md);
+      padding: 8px 16px;
+      text-align: center;
+      min-width: 140px;
+    }
+
+    .c-value-display span {
+      font-family: var(--font-mono);
+      font-size: 1.35rem;
+      font-weight: 800;
+      color: var(--accent-teal);
+    }
+
+    /* VISIBILITY TOGGLE BAR */
+    .vis-toggle-bar {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+      flex-wrap: wrap;
+      margin-top: 14px;
+      padding-top: 14px;
+      border-top: 1px solid var(--border-color);
+    }
+
+    .vis-title {
+      font-size: 0.775rem;
+      font-weight: 700;
+      color: var(--text-muted);
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+    }
+
+    .checkbox-label {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      font-size: 0.8rem;
+      font-weight: 600;
+      cursor: pointer;
+      user-select: none;
+    }
+
+    .checkbox-label input {
+      accent-color: var(--accent-teal);
+    }
+
+    /* HERO STATS */
+    .hero-stats-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(210px, 1fr));
+      gap: 14px;
+      margin-top: 18px;
+    }
+
+    .hero-stat-card {
+      background: var(--bg-card);
+      border: 1px solid var(--border-color);
+      border-radius: var(--radius-md);
+      padding: 14px 18px;
+      box-shadow: var(--shadow-sm);
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+    }
+
+    .stat-label {
+      font-size: 0.725rem;
+      font-weight: 700;
+      color: var(--text-muted);
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+    }
+
+    .stat-value {
+      font-family: var(--font-mono);
+      font-size: 1.45rem;
+      font-weight: 800;
+      color: var(--text-bright);
+    }
+
+    .stat-sub {
+      font-size: 0.75rem;
+      color: var(--text-muted);
+    }
+
+    /* MAIN DUAL LAYOUT */
+    .layout-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 20px;
+      margin-top: 20px;
+    }
+
+    @media (max-width: 1024px) {
+      .layout-grid {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    .card-panel {
+      background: var(--bg-card);
+      border: 1px solid var(--border-color);
+      border-radius: var(--radius-lg);
+      padding: 20px;
+      box-shadow: var(--shadow-sm);
+      display: flex;
+      flex-direction: column;
+    }
+
+    .panel-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 14px;
+      flex-wrap: wrap;
+      gap: 10px;
+    }
+
+    .panel-title {
+      font-family: var(--font-title);
+      font-size: 1.15rem;
+      font-weight: 800;
+      color: var(--text-bright);
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .panel-badge {
+      font-size: 0.75rem;
+      font-weight: 700;
+      padding: 3px 8px;
+      border-radius: 999px;
+      background: var(--bg-card-subtle);
+      color: var(--accent-teal);
+      border: 1px solid var(--border-color);
+    }
+
+    /* CANVAS CONTAINERS */
+    .canvas-container-big {
+      width: 100%;
+      height: 480px;
+      background: var(--bg-primary);
+      border: 1px solid var(--border-color);
+      border-radius: var(--radius-md);
+      position: relative;
+      overflow: hidden;
+    }
+
+    .canvas-container-big canvas {
+      width: 100%;
+      height: 100%;
+      display: block;
+    }
+
+    /* DUAL SECTION CANVASES IN LEFT PANEL */
+    .section-views-grid {
+      display: grid;
+      grid-template-columns: 1.2fr 1fr;
+      gap: 12px;
+      height: 480px;
+    }
+
+    @media (max-width: 640px) {
+      .section-views-grid {
+        grid-template-columns: 1fr;
+        height: auto;
+      }
+    }
+
+    .sub-canvas-box {
+      background: var(--bg-primary);
+      border: 1px solid var(--border-color);
+      border-radius: var(--radius-md);
+      position: relative;
+      overflow: hidden;
+      height: 100%;
+    }
+
+    .sub-canvas-box canvas {
+      width: 100%;
+      height: 100%;
+      display: block;
+    }
+
+    .canvas-legend-bar {
+      display: flex;
+      gap: 14px;
+      font-size: 0.775rem;
+      font-weight: 700;
+      flex-wrap: wrap;
+      margin-top: 10px;
+      padding: 8px 12px;
+      background: var(--bg-card-subtle);
+      border-radius: var(--radius-sm);
+    }
+
+    .legend-item {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .legend-box {
+      width: 12px;
+      height: 12px;
+      border-radius: 3px;
+    }
+
+    /* FIBER INSPECTOR & PARAMETERS ACCORDION */
+    .details-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 20px;
+      margin-top: 20px;
+    }
+
+    @media (max-width: 900px) {
+      .details-grid {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    .inspector-box {
+      background: var(--bg-card);
+      border: 1px solid var(--border-color);
+      border-radius: var(--radius-lg);
+      padding: 20px;
+      box-shadow: var(--shadow-sm);
+    }
+
+    .inspector-select {
+      background: var(--bg-input);
+      border: 1.5px solid var(--border-color);
+      color: var(--text-bright);
+      padding: 8px 12px;
+      border-radius: var(--radius-sm);
+      font-size: 0.85rem;
+      font-family: var(--font-mono);
+      font-weight: 600;
+      width: 100%;
+      outline: none;
+      margin-bottom: 14px;
+    }
+
+    .inspector-select:focus {
+      border-color: var(--accent-teal);
+    }
+
+    .steps-list {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+
+    .step-item {
+      background: var(--bg-card-subtle);
+      border: 1px solid var(--border-color);
+      border-radius: var(--radius-sm);
+      padding: 10px 14px;
+      font-size: 0.825rem;
+    }
+
+    .step-title {
+      font-weight: 700;
+      color: var(--text-bright);
+      margin-bottom: 3px;
+      display: flex;
+      justify-content: space-between;
+    }
+
+    .step-math {
+      font-family: var(--font-mono);
+      color: var(--accent-teal);
+      font-size: 0.85rem;
+      font-weight: 600;
+    }
+
+    /* FIBER EDITOR CARD */
+    .editor-card {
+      background: var(--bg-card);
+      border: 1px solid var(--border-color);
+      border-radius: var(--radius-lg);
+      padding: 20px;
+      box-shadow: var(--shadow-sm);
+    }
+
+    .tabs-header {
+      display: flex;
+      gap: 8px;
+      border-bottom: 1px solid var(--border-color);
+      padding-bottom: 10px;
+      margin-bottom: 14px;
+    }
+
+    .tab-btn {
+      background: none;
+      border: none;
+      padding: 6px 14px;
+      border-radius: var(--radius-sm);
+      font-size: 0.825rem;
+      font-weight: 700;
+      color: var(--text-muted);
+      cursor: pointer;
+      transition: all 0.15s ease;
+    }
+
+    .tab-btn.active {
+      background: var(--accent-teal);
+      color: #ffffff;
+    }
+
+    .editor-pane {
+      display: none;
+    }
+
+    .editor-pane.active {
+      display: block;
+    }
+
+    .param-row {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(130px, 1fr));
+      gap: 10px;
+      margin-bottom: 12px;
+    }
+
+    .param-group {
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+    }
+
+    .param-group label {
+      font-size: 0.725rem;
+      font-weight: 700;
+      color: var(--text-muted);
+      text-transform: uppercase;
+    }
+
+    .param-group input {
+      background: var(--bg-input);
+      border: 1px solid var(--border-color);
+      border-radius: var(--radius-sm);
+      padding: 6px 10px;
+      font-family: var(--font-mono);
+      font-size: 0.85rem;
+      color: var(--text-bright);
+      outline: none;
+    }
+
+    .param-group input:focus {
+      border-color: var(--accent-teal);
+    }
+
+    textarea.custom-text {
+      width: 100%;
+      height: 110px;
+      background: var(--bg-input);
+      border: 1px solid var(--border-color);
+      border-radius: var(--radius-sm);
+      padding: 10px;
+      font-family: var(--font-mono);
+      font-size: 0.8rem;
+      color: var(--text-bright);
+      outline: none;
+      resize: vertical;
+    }
+
+    /* DATA TABLE */
+    .table-card {
+      background: var(--bg-card);
+      border: 1px solid var(--border-color);
+      border-radius: var(--radius-lg);
+      padding: 20px;
+      margin-top: 20px;
+      box-shadow: var(--shadow-sm);
+    }
+
+    .table-responsive {
+      overflow-x: auto;
+      border: 1px solid var(--border-color);
+      border-radius: var(--radius-md);
+      margin-top: 14px;
+    }
+
+    table.data-table {
+      width: 100%;
+      border-collapse: collapse;
+      font-family: var(--font-mono);
+      font-size: 0.825rem;
+      text-align: right;
+    }
+
+    table.data-table th {
+      background: var(--bg-card-subtle);
+      color: var(--text-bright);
+      font-weight: 700;
+      padding: 10px 14px;
+      border-bottom: 1px solid var(--border-color);
+      white-space: nowrap;
+    }
+
+    table.data-table td {
+      padding: 8px 14px;
+      border-bottom: 1px solid var(--border-color);
+    }
+
+    table.data-table tr:hover {
+      background: var(--bg-card-subtle);
+      cursor: pointer;
+    }
+
+    footer {
+      margin-top: 40px;
+      text-align: center;
+      font-size: 0.8rem;
+      color: var(--text-muted);
+    }
+  </style>
+</head>
+<body>
+
+  <!-- HEADER -->
+  <header>
+    <div class="container header-inner">
+      <div class="header-left">
+        <a href="index.html" class="header-btn">
+          <span>🏠</span>
+          <span>Portal Principal</span>
+        </a>
+        <div class="header-title-group">
+          <h1>Modelo de Fibras de Sección General</h1>
+          <p>Implementación didáctica e interactiva de la función <code>int_diag2</code> (funcion_general.py)</p>
+        </div>
+      </div>
+      <button class="theme-toggle-btn" onclick="toggleTheme()">
+        <span id="theme-icon">🌙</span>
+        <span id="theme-text">Modo Oscuro</span>
+      </button>
+    </div>
+  </header>
+
+  <main class="container">
+
+    <!-- PRESETS BAR FROM funcion_general.py -->
+    <div class="presets-bar">
+      <div class="presets-title-row">
+        <div class="presets-title">
+          <span>📐</span>
+          <span>Secciones del Script de Clase (funcion_general.py):</span>
+        </div>
+        <span style="font-size:0.775rem; color:var(--text-muted);">Haz clic para cargar al instante la geometría y el refuerzo</span>
+      </div>
+
+      <div class="presets-grid">
+        <button class="btn-preset active" id="btn-pre-rect" onclick="loadPreset('rect')">
+          <span>1. Sección Rectangular</span>
+          <span class="preset-sub">b=30cm, h=40cm · 3 capas de acero</span>
+        </button>
+
+        <button class="btn-preset" id="btn-pre-twall" onclick="loadPreset('twall')">
+          <span>2. Muro con Aletas en T</span>
+          <span class="preset-sub">B=2.5m, h=2.05m · 14 capas de acero</span>
+        </button>
+
+        <button class="btn-preset" id="btn-pre-asymm" onclick="loadPreset('asymm')">
+          <span>3. Muro Asimétrico Alternado</span>
+          <span class="preset-sub">22 fibras conc. · 29 barras Φ16/Φ12</span>
+        </button>
+
+        <button class="btn-preset" id="btn-pre-isection" onclick="loadPreset('isection')">
+          <span>4. Columna en I (Doble T)</span>
+          <span class="preset-sub">bf=50cm, bw=15cm, h=60cm</span>
+        </button>
+      </div>
+    </div>
+
+    <!-- CONTROLS & NEUTRAL AXIS SLIDER -->
+    <div class="controls-card">
+      <div class="slider-header">
+        <div class="slider-title">
+          <span>🎯</span>
+          <span>Control de la Posición del Eje Neutro (c)</span>
+        </div>
+
+        <div class="stepper-btn-group">
+          <button class="btn-step" onclick="stepC(-0.10)">-0.10 m</button>
+          <button class="btn-step" onclick="stepC(-0.01)">-0.01</button>
+          <button class="btn-step" onclick="stepC(0.01)">+0.01</button>
+          <button class="btn-step" onclick="stepC(0.10)">+0.10 m</button>
+        </div>
+      </div>
+
+      <div class="slider-row">
+        <div class="slider-wrapper">
+          <input type="range" class="c-slider" id="slider-c" min="0.01" max="0.54" step="0.005" value="0.15" oninput="onSliderChange(this.value)">
+          <div class="slider-ticks">
+            <span id="tick-min">0.01 m (Tracción)</span>
+            <span id="tick-cb">cb ≈ 0.21 m</span>
+            <span id="tick-yhat">ȳ ≈ 0.20 m</span>
+            <span id="tick-h">h = 0.40 m</span>
+            <span id="tick-max">1.35h = 0.54 m (Compresión)</span>
+          </div>
+        </div>
+
+        <div class="c-value-display">
+          <span id="val-c-display">0.150</span> <span style="font-size:0.85rem; font-weight:700; color:var(--text-muted);">m</span>
+        </div>
+      </div>
+
+      <!-- VISUALIZATION OPTIONS -->
+      <div class="vis-toggle-bar">
+        <span class="vis-title">Visualización de Fibras:</span>
+        <label class="checkbox-label">
+          <input type="checkbox" id="chk-show-mesh" checked onchange="drawSectionViews()">
+          <span>Malla de Fibras de Concreto</span>
+        </label>
+        <label class="checkbox-label">
+          <input type="checkbox" id="chk-show-stress-color" checked onchange="drawSectionViews()">
+          <span>Gradiente de Esfuerzos σc</span>
+        </label>
+        <label class="checkbox-label">
+          <input type="checkbox" id="chk-show-steel" checked onchange="drawSectionViews()">
+          <span>Barras de Acero Proporcionales</span>
+        </label>
+        <label class="checkbox-label">
+          <input type="checkbox" id="chk-show-centroid" checked onchange="drawSectionViews()">
+          <span style="color:var(--accent-amber);">Centroide Seccional (ȳ)</span>
+        </label>
+        <label class="checkbox-label">
+          <input type="checkbox" id="chk-show-na" checked onchange="drawSectionViews()">
+          <span style="color:var(--color-na);">Eje Neutro (c)</span>
+        </label>
+      </div>
+    </div>
+
+    <!-- HERO STATS -->
+    <div class="hero-stats-grid">
+      <div class="hero-stat-card" style="border-left: 4px solid var(--accent-teal);">
+        <span class="stat-label">Carga Axial Total Pn</span>
+        <div class="stat-value" id="stat-pn">+1240.5 kN</div>
+        <div class="stat-sub" id="stat-pn-sub">Compresión Neta</div>
+      </div>
+
+      <div class="hero-stat-card" style="border-left: 4px solid var(--accent-blue);">
+        <span class="stat-label">Momento Flector Mn (respecto a ȳ)</span>
+        <div class="stat-value" id="stat-mn">184.2 kN·m</div>
+        <div class="stat-sub" id="stat-mn-sub">ȳ = 0.200 m (desde borde sup.)</div>
+      </div>
+
+      <div class="hero-stat-card" style="border-left: 4px solid var(--color-concrete);">
+        <span class="stat-label">Fuerza Concreto (Fc)</span>
+        <div class="stat-value" id="stat-fc">+1450.2 kN</div>
+        <div class="stat-sub" id="stat-fc-sub">Fibras comprimidas activas</div>
+      </div>
+
+      <div class="hero-stat-card" style="border-left: 4px solid var(--color-steel);">
+        <span class="stat-label">Fuerza Acero (Fs)</span>
+        <div class="stat-value" id="stat-fs">-209.7 kN</div>
+        <div class="stat-sub" id="stat-fs-sub">Tracción neta en armadura</div>
+      </div>
+    </div>
+
+    <!-- MAIN DUAL LAYOUT -->
+    <div class="layout-grid">
+
+      <!-- LEFT: FIBER SECTION & MECHANICAL PROFILES -->
+      <div class="card-panel">
+        <div class="panel-header">
+          <div class="panel-title">
+            <span>🧱</span>
+            <span>Malla de Fibras y Perfiles Seccionales</span>
+          </div>
+          <span class="panel-badge" id="badge-fibers-count">100 Fibras · 3 Capas Acero</span>
+        </div>
+
+        <div class="section-views-grid">
+          <!-- SUB-CANVAS 1: SECTION GEOMETRY & FIBER MESH -->
+          <div class="sub-canvas-box">
+            <canvas id="canvas-section-mesh"></canvas>
+          </div>
+
+          <!-- SUB-CANVAS 2: STRAIN & STRESS PROFILES -->
+          <div class="sub-canvas-box">
+            <canvas id="canvas-profiles"></canvas>
+          </div>
+        </div>
+
+        <div class="canvas-legend-bar">
+          <div class="legend-item">
+            <div class="legend-box" style="background:#ef4444;"></div>
+            <span>Concreto Comprimido (σc)</span>
+          </div>
+          <div class="legend-item">
+            <div class="legend-box" style="background:#e2e8f0; border:1px solid #94a3b8;"></div>
+            <span>Concreto Fisurado (ε < 0, σ=0)</span>
+          </div>
+          <div class="legend-item">
+            <div class="legend-box" style="background:#0284c7; border-radius:50%;"></div>
+            <span>Acero en Tracción</span>
+          </div>
+          <div class="legend-item">
+            <div class="legend-box" style="background:#dc2626; border-radius:50%;"></div>
+            <span>Acero en Compresión</span>
+          </div>
+          <div class="legend-item">
+            <div style="width:14px; height:2px; background:var(--accent-amber);"></div>
+            <span style="color:var(--accent-amber);">Centroide ȳ</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- RIGHT: P-M INTERACTION DIAGRAM (int_diag2) -->
+      <div class="card-panel">
+        <div class="panel-header">
+          <div class="panel-title">
+            <span>📈</span>
+            <span>Diagrama de Interacción P - M (int_diag2)</span>
+          </div>
+          <span class="panel-badge">Euler-Bernoulli + Hognestad</span>
+        </div>
+
+        <div class="canvas-container-big">
+          <canvas id="canvas-pm"></canvas>
+        </div>
+
+        <div class="canvas-legend-bar">
+          <div class="legend-item">
+            <div style="width:14px; height:3px; background:var(--accent-teal);"></div>
+            <span style="color:var(--accent-teal);">Envolvente P - M (int_diag2)</span>
+          </div>
+          <div class="legend-item">
+            <div style="width:10px; height:10px; border-radius:50%; background:#f59e0b; border:2px solid #ffffff;"></div>
+            <span>Punto Activo Seleccionado</span>
+          </div>
+          <div class="legend-item">
+            <div style="width:10px; height:10px; border-radius:50%; background:#ef4444;"></div>
+            <span>Compresión Pura (c → ∞)</span>
+          </div>
+          <div class="legend-item">
+            <div style="width:10px; height:10px; border-radius:50%; background:#3b82f6;"></div>
+            <span>Tracción Pura (c → 0)</span>
+          </div>
+        </div>
+      </div>
+
+    </div>
+
+    <!-- FIBER INSPECTOR & SECTION EDITOR -->
+    <div class="details-grid">
+
+      <!-- LUPA DIDÁCTICA / INSPECTOR DE FIBRA -->
+      <div class="inspector-box">
+        <div class="panel-header">
+          <div class="panel-title">
+            <span>🔍</span>
+            <span>Lupa Didáctica: Inspector de Fibra</span>
+          </div>
+          <span class="panel-badge" id="lbl-inspector-type">Fibra de Concreto</span>
+        </div>
+
+        <label style="font-size:0.75rem; font-weight:700; color:var(--text-muted); text-transform:uppercase;">Seleccionar Elemento:</label>
+        <select class="inspector-select" id="sel-inspector" onchange="onInspectorChange(this.value)">
+          <!-- Populated dynamically -->
+        </select>
+
+        <div class="steps-list" id="inspector-steps">
+          <!-- Populated dynamically -->
+        </div>
+      </div>
+
+      <!-- EDITOR Y PARÁMETROS DE MATERIALES -->
+      <div class="editor-card">
+        <div class="panel-header">
+          <div class="panel-title">
+            <span>⚙️</span>
+            <span>Parámetros de Materiales y Discretización</span>
+          </div>
+        </div>
+
+        <div class="param-row">
+          <div class="param-group">
+            <label>f'c (MPa)</label>
+            <input type="number" id="inp-fc" value="28" min="15" max="90" step="1" onchange="recomputeAll()">
+          </div>
+          <div class="param-group">
+            <label>fy (MPa)</label>
+            <input type="number" id="inp-fy" value="420" min="200" max="600" step="10" onchange="recomputeAll()">
+          </div>
+          <div class="param-group">
+            <label>Es (MPa)</label>
+            <input type="number" id="inp-es" value="210000" min="150000" max="250000" step="5000" onchange="recomputeAll()">
+          </div>
+          <div class="param-group">
+            <label>εcu (extrema)</label>
+            <input type="number" id="inp-ecu" value="0.003" min="0.002" max="0.005" step="0.0005" onchange="recomputeAll()">
+          </div>
+        </div>
+
+        <div class="tabs-header">
+          <button class="tab-btn active" id="tab-btn-geom" onclick="switchEditorTab('geom')">Geometría Paramétrica</button>
+          <button class="tab-btn" id="tab-btn-py" onclick="switchEditorTab('py')">Código Python (int_diag2)</button>
+        </div>
+
+        <!-- PANE 1: GEOMETRIC BUILDER -->
+        <div class="editor-pane active" id="pane-geom">
+          <div id="geom-controls-rect">
+            <div class="param-row">
+              <div class="param-group">
+                <label>Base b (m)</label>
+                <input type="number" id="inp-rect-b" value="0.30" min="0.10" max="5.0" step="0.05" onchange="applyParametricGeom()">
+              </div>
+              <div class="param-group">
+                <label>Altura h (m)</label>
+                <input type="number" id="inp-rect-h" value="0.40" min="0.15" max="10.0" step="0.05" onchange="applyParametricGeom()">
+              </div>
+              <div class="param-group">
+                <label>N° Fibras (nfib)</label>
+                <input type="number" id="inp-rect-nfib" value="100" min="10" max="500" step="10" onchange="applyParametricGeom()">
+              </div>
+            </div>
+          </div>
+
+          <div id="geom-controls-twall" style="display:none;">
+            <div class="param-row">
+              <div class="param-group">
+                <label>Ancho Aleta B (m)</label>
+                <input type="number" id="inp-t-B" value="2.50" min="0.5" max="10.0" step="0.1" onchange="applyParametricGeom()">
+              </div>
+              <div class="param-group">
+                <label>Espesor Aleta h1 (m)</label>
+                <input type="number" id="inp-t-h1" value="0.10" min="0.05" max="1.0" step="0.05" onchange="applyParametricGeom()">
+              </div>
+              <div class="param-group">
+                <label>Espesor Alma t (m)</label>
+                <input type="number" id="inp-t-t" value="0.10" min="0.05" max="1.0" step="0.05" onchange="applyParametricGeom()">
+              </div>
+              <div class="param-group">
+                <label>Altura Alma h2 (m)</label>
+                <input type="number" id="inp-t-h2" value="1.95" min="0.5" max="10.0" step="0.05" onchange="applyParametricGeom()">
+              </div>
+            </div>
+          </div>
+
+          <p style="font-size:0.775rem; color:var(--text-muted); margin-top:8px;">
+            ℹ️ Las fibras se generan discretizando la sección en rebanadas horizontales continuas con área \(A_i = b_i \cdot \Delta h_i\) y centroide \(y_i\).
+          </p>
+        </div>
+
+        <!-- PANE 2: PYTHON CODE -->
+        <div class="editor-pane" id="pane-py">
+          <textarea class="custom-text" id="txt-python-code" readonly></textarea>
+          <button class="btn-step" style="margin-top:8px;" onclick="copyPythonCode()">📋 Copiar Código Python</button>
+        </div>
+
+      </div>
+
+    </div>
+
+    <!-- SUMMARY DATA TABLE -->
+    <div class="table-card">
+      <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:12px;">
+        <h3 style="font-family:var(--font-title); font-size:1.15rem; font-weight:800;">
+          📋 Puntos Notables del Diagrama de Interacción P - M (int_diag2)
+        </h3>
+        <button class="btn-step" onclick="downloadCSV()">📥 Descargar Datos CSV</button>
+      </div>
+
+      <div class="table-responsive">
+        <table class="data-table">
+          <thead>
+            <tr>
+              <th style="text-align:center;">Punto</th>
+              <th>Eje Neutro c (m)</th>
+              <th>Pn (kN)</th>
+              <th>Mn (kN·m)</th>
+              <th>Fuerza Conc. Fc (kN)</th>
+              <th>Fuerza Acero Fs (kN)</th>
+              <th style="text-align:center;">Régimen</th>
+            </tr>
+          </thead>
+          <tbody id="tbl-summary-body">
+            <!-- Populated dynamically -->
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+  </main>
+
+  <footer>
+    <div class="container">
+      <p>Material Educativo para el Curso de <strong>Concreto Armado</strong> · Basado en <code>funcion_general.py</code></p>
+    </div>
+  </footer>
+
+  <script>
+    /* ==========================================================================
+       GLOBAL STATE & MATERIAL MODELS
+       ========================================================================== */
+    const state = {
+      theme: 'light',
+      currentPreset: 'rect',
+      fc: 28.0,
+      fy: 420.0,
+      Es: 210000.0,
+      ecu: 0.003,
+      c: 0.15,
+
+      // Concrete fibers: array of { y: meters, area: m2, b: meters, dh: meters }
+      fibers: [],
+      // Steel fibers: array of { y: meters, area: m2, label: string }
+      steel: [],
+
+      // Calculated section props
+      h: 0.40,
+      At: 0,
+      yhat: 0.20,
+
+      // Curves data
+      pmCurve: [],
+      selectedElement: 'fiber-0'
+    };
+
+    // Constitutive Laws from funcion_general.py
+    function elastoplastico(es, Es = state.Es, fy = state.fy) {
+      let fs = es * Es;
+      if (fs > fy) return fy;
+      if (fs < -fy) return -fy;
+      return fs;
+    }
+
+    function noconf(ec, fc = state.fc) {
+      if (ec <= 0) return 0;
+      const Ec = 4400 * Math.sqrt(fc);
+      const e0 = 1.8 * fc / Ec;
+      const eu = 0.0038;
+      const m = -0.15 * fc / (eu - e0);
+      if (ec <= e0) return fc * (2.0 * (ec / e0) - Math.pow(ec / e0, 2));
+      if (ec <= eu) return fc + m * (ec - e0);
+      return 0;
+    }
+
+    /* ==========================================================================
+       PRESET LOADERS (from funcion_general.py)
+       ========================================================================== */
+    function loadPreset(key) {
+      state.currentPreset = key;
+      document.querySelectorAll('.btn-preset').forEach(b => b.classList.remove('active'));
+      const activeBtn = document.getElementById(`btn-pre-${key}`);
+      if (activeBtn) activeBtn.classList.add('active');
+
+      document.getElementById('geom-controls-rect').style.display = key === 'rect' ? 'block' : 'none';
+      document.getElementById('geom-controls-twall').style.display = key === 'twall' ? 'block' : 'none';
+
+      if (key === 'rect') {
+        // Preset 1: Rectangular b=0.3, h=0.4, 3 steel layers
+        const b = 0.30, h = 0.40, nfib = 100;
+        const dh = h / nfib;
+        state.h = h;
+        state.fibers = [];
+        for (let i = 0; i < nfib; i++) {
+          const y = (i + 0.5) * dh;
+          state.fibers.push({ y, area: b * dh, b, dh });
+        }
+        state.steel = [
+          { y: 0.05, area: (3 * 2.0) / 10000, label: '3 #5 (y = 5cm)' },
+          { y: 0.20, area: (2 * 2.0) / 10000, label: '2 #5 (y = 20cm)' },
+          { y: 0.35, area: (3 * 2.0) / 10000, label: '3 #5 (y = 35cm)' }
+        ];
+        state.c = 0.15;
+      } else if (key === 'twall') {
+        // Preset 2: T-Wall (Muro con Aletas) from funcion_general.py lines 128-144
+        const nfibf = 100, nfibw = 400;
+        const B = 2.50, h1 = 0.10, t = 0.10, h2 = 1.95;
+        const ht = h1 + h2;
+        const hff = h1 / nfibf;
+        const hfw = h2 / nfibw;
+        state.h = ht;
+        state.fibers = [];
+
+        // Flange fibers
+        for (let i = 0; i < nfibf; i++) {
+          const y = (i + 0.5) * hff;
+          state.fibers.push({ y, area: B * hff, b: B, dh: hff });
+        }
+        // Web fibers
+        for (let i = 0; i < nfibw; i++) {
+          const y = h1 + (i + 0.5) * hfw;
+          state.fibers.push({ y, area: t * hfw, b: t, dh: hfw });
+        }
+
+        // Steel reinforcement (14 layers)
+        state.steel = [];
+        const a7 = Math.pow(7.0 / 1000.0, 2) * Math.PI / 4.0;
+        const nBars = [16, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1];
+        const stepY = (ht - 0.10) / (14 - 1);
+        for (let j = 0; j < 14; j++) {
+          const y = 0.05 + j * stepY;
+          state.steel.push({ y, area: nBars[j] * a7, label: `${nBars[j]} barras (y = ${(y * 100).toFixed(1)}cm)` });
+        }
+        state.c = 0.60;
+      } else if (key === 'asymm') {
+        // Preset 3: Asymmetric Wall (lines 149-160)
+        const nfib = 22;
+        state.h = 0.05 + 0.10 * (nfib - 1) + 0.05; // 2.20 m
+        state.fibers = [];
+        for (let i = 0; i < nfib; i++) {
+          const y = 0.05 + 0.10 * i;
+          state.fibers.push({ y, area: 0.02, b: 0.20, dh: 0.10 });
+        }
+        state.steel = [];
+        for (let i = 0; i < 29; i++) {
+          const y = 0.05 + 0.075 * i;
+          const diam = (i % 2 === 0) ? 0.016 : 0.012;
+          const area = 2.0 * Math.PI * Math.pow(diam, 2) / 4.0;
+          state.steel.push({ y, area, label: `2 Φ${(diam * 1000).toFixed(0)}mm (y = ${(y * 100).toFixed(1)}cm)` });
+        }
+        state.c = 0.80;
+      } else if (key === 'isection') {
+        // Preset 4: I-Section
+        const bf = 0.50, tf = 0.10, bw = 0.15, h = 0.60;
+        const hw = h - 2 * tf;
+        state.h = h;
+        state.fibers = [];
+        const nfTop = 20, nfWeb = 40, nfBot = 20;
+
+        // Top flange
+        for (let i = 0; i < nfTop; i++) {
+          const dh = tf / nfTop;
+          const y = (i + 0.5) * dh;
+          state.fibers.push({ y, area: bf * dh, b: bf, dh });
+        }
+        // Web
+        for (let i = 0; i < nfWeb; i++) {
+          const dh = hw / nfWeb;
+          const y = tf + (i + 0.5) * dh;
+          state.fibers.push({ y, area: bw * dh, b: bw, dh });
+        }
+        // Bottom flange
+        for (let i = 0; i < nfBot; i++) {
+          const dh = tf / nfBot;
+          const y = tf + hw + (i + 0.5) * dh;
+          state.fibers.push({ y, area: bf * dh, b: bf, dh });
+        }
+
+        state.steel = [
+          { y: 0.05, area: 4 * 2.86 / 10000, label: '4 #6 Top (y = 5cm)' },
+          { y: 0.30, area: 2 * 2.86 / 10000, label: '2 #6 Mid (y = 30cm)' },
+          { y: 0.55, area: 4 * 2.86 / 10000, label: '4 #6 Bot (y = 55cm)' }
+        ];
+        state.c = 0.25;
+      }
+
+      recomputeAll();
+    }
+
+    function applyParametricGeom() {
+      if (state.currentPreset === 'rect') {
+        const b = parseFloat(document.getElementById('inp-rect-b').value) || 0.30;
+        const h = parseFloat(document.getElementById('inp-rect-h').value) || 0.40;
+        const nfib = parseInt(document.getElementById('inp-rect-nfib').value) || 100;
+        const dh = h / nfib;
+        state.h = h;
+        state.fibers = [];
+        for (let i = 0; i < nfib; i++) {
+          const y = (i + 0.5) * dh;
+          state.fibers.push({ y, area: b * dh, b, dh });
+        }
+      } else if (state.currentPreset === 'twall') {
+        const B = parseFloat(document.getElementById('inp-t-B').value) || 2.50;
+        const h1 = parseFloat(document.getElementById('inp-t-h1').value) || 0.10;
+        const t = parseFloat(document.getElementById('inp-t-t').value) || 0.10;
+        const h2 = parseFloat(document.getElementById('inp-t-h2').value) || 1.95;
+        const ht = h1 + h2;
+        const nfibf = 100, nfibw = 400;
+        const hff = h1 / nfibf, hfw = h2 / nfibw;
+        state.h = ht;
+        state.fibers = [];
+        for (let i = 0; i < nfibf; i++) state.fibers.push({ y: (i + 0.5) * hff, area: B * hff, b: B, dh: hff });
+        for (let i = 0; i < nfibw; i++) state.fibers.push({ y: h1 + (i + 0.5) * hfw, area: t * hfw, b: t, dh: hfw });
+      }
+      recomputeAll();
+    }
+
+    /* ==========================================================================
+       CORE ALGORITHM: int_diag2 IMPLEMENTATION
+       ========================================================================== */
+    function computeSectionState(cVal) {
+      const c = Math.max(1e-15, cVal);
+      let sumFc = 0, sumMc = 0;
+      let sumFs = 0, sumMs = 0;
+
+      const fiberResults = state.fibers.map((fib, idx) => {
+        const ec = state.ecu * (c - fib.y) / c;
+        const fc = noconf(ec, state.fc);
+        const Fc = fc * fib.area * 1000.0; // kN
+        const arm = state.yhat - fib.y; // m
+        const Mc = Fc * arm; // kN-m
+        sumFc += Fc;
+        sumMc += Mc;
+        return { idx, y: fib.y, ec, fc, Fc, arm, Mc, area: fib.area, b: fib.b };
+      });
+
+      const steelResults = state.steel.map((st, idx) => {
+        const es = state.ecu * (c - st.y) / c;
+        const fs = elastoplastico(es, state.Es, state.fy);
+        const Fs = fs * st.area * 1000.0; // kN
+        const arm = state.yhat - st.y; // m
+        const Ms = Fs * arm; // kN-m
+        sumFs += Fs;
+        sumMs += Ms;
+        return { idx, y: st.y, es, fs, Fs, arm, Ms, area: st.area, label: st.label };
+      });
+
+      const P = sumFc + sumFs;
+      const M = sumMc + sumMs;
+
+      return { c, P, M, sumFc, sumMc, sumFs, sumMs, fiberResults, steelResults };
+    }
+
+    function runIntDiag2() {
+      // Calculate section total area & centroid yhat
+      state.At = state.fibers.reduce((sum, f) => sum + f.area, 0);
+      state.yhat = state.fibers.reduce((sum, f) => sum + f.area * f.y, 0) / state.At;
+
+      const h = state.h;
+      const npos = 120;
+      const pos_en2 = [];
+      const dc = (h * 1.35 - 0.01) / (npos - 1);
+      for (let i = 0; i < npos; i++) {
+        pos_en2.push(0.01 + i * dc);
+      }
+
+      // pos_en = [1e-15, ...pos_en2, 1e15]
+      const pos_en = [1e-15, ...pos_en2, 1e15];
+      const curve = [];
+
+      pos_en.forEach(c => {
+        const res = computeSectionState(c);
+        curve.push({ c, P: res.P, M: res.M });
+      });
+
+      state.pmCurve = curve;
+    }
+
+    function recomputeAll() {
+      // Read material inputs
+      state.fc = parseFloat(document.getElementById('inp-fc').value) || 28.0;
+      state.fy = parseFloat(document.getElementById('inp-fy').value) || 420.0;
+      state.Es = parseFloat(document.getElementById('inp-es').value) || 210000.0;
+      state.ecu = parseFloat(document.getElementById('inp-ecu').value) || 0.003;
+
+      // Run int_diag2
+      runIntDiag2();
+
+      // Configure slider limits: max = 1.35 * h
+      const maxC = Math.round(state.h * 1.35 * 1000) / 1000;
+      const slider = document.getElementById('slider-c');
+      slider.max = maxC.toFixed(3);
+      slider.step = (maxC / 100).toFixed(3);
+
+      if (state.c > maxC) state.c = maxC;
+      if (state.c < 0.01) state.c = 0.01;
+      slider.value = state.c;
+      document.getElementById('val-c-display').textContent = state.c.toFixed(3);
+
+      // Ticks
+      const dLast = state.steel[state.steel.length - 1].y;
+      const ey = state.fy / state.Es;
+      const cb = (state.ecu / (state.ecu + ey) * dLast).toFixed(2);
+      document.getElementById('tick-min').textContent = '0.01 m';
+      document.getElementById('tick-cb').textContent = `cb ≈ ${cb} m`;
+      document.getElementById('tick-yhat').textContent = `ȳ = ${state.yhat.toFixed(2)} m`;
+      document.getElementById('tick-h').textContent = `h = ${state.h.toFixed(2)} m`;
+      document.getElementById('tick-max').textContent = `1.35h = ${maxC.toFixed(2)} m`;
+
+      document.getElementById('badge-fibers-count').textContent = `${state.fibers.length} Fibras · ${state.steel.length} Capas Acero`;
+
+      updateUI();
+      updateInspectorOptions();
+      generatePythonCode();
+      updateSummaryTable();
+    }
+
+    /* ==========================================================================
+       CANVAS RENDERING: SECTION MESH & PROFILES
+       ========================================================================== */
+    function setupCanvas(id) {
+      const canvas = document.getElementById(id);
+      const dpr = window.devicePixelRatio || 1;
+      const rect = canvas.getBoundingClientRect();
+      canvas.width = rect.width * dpr;
+      canvas.height = rect.height * dpr;
+      const ctx = canvas.getContext('2d');
+      ctx.scale(dpr, dpr);
+      return { ctx, width: rect.width, height: rect.height };
+    }
+
+    function drawSectionViews() {
+      const res = computeSectionState(state.c);
+
+      // 1. LEFT CANVAS: SECTION MESH
+      const { ctx: ctxMesh, width: wMesh, height: hMesh } = setupCanvas('canvas-section-mesh');
+      ctxMesh.clearRect(0, 0, wMesh, hMesh);
+
+      const padX = 25, padY = 25;
+      const drawH = hMesh - 2 * padY;
+      const drawW = wMesh - 2 * padX;
+      const scaleY = drawH / state.h;
+      const maxB = Math.max(...state.fibers.map(f => f.b));
+      const scaleX = (drawW * 0.85) / maxB;
+      const midX = padX + drawW / 2;
+
+      const showMesh = document.getElementById('chk-show-mesh').checked;
+      const showStressColor = document.getElementById('chk-show-stress-color').checked;
+      const showSteel = document.getElementById('chk-show-steel').checked;
+      const showCentroid = document.getElementById('chk-show-centroid').checked;
+      const showNA = document.getElementById('chk-show-na').checked;
+
+      // Draw Concrete Fibers
+      res.fiberResults.forEach(fib => {
+        const yTop = padY + (fib.y - state.fibers[fib.idx].dh / 2) * scaleY;
+        const fH = Math.max(1, state.fibers[fib.idx].dh * scaleY);
+        const fW = fib.b * scaleX;
+        const xLeft = midX - fW / 2;
+
+        if (showStressColor) {
+          if (fib.ec > 0) {
+            const ratio = Math.min(1.0, fib.fc / state.fc);
+            ctxMesh.fillStyle = `rgb(${Math.round(239 * ratio + 100 * (1 - ratio))}, ${Math.round(68 * (1 - ratio))}, ${Math.round(68 * (1 - ratio))})`;
+          } else {
+            ctxMesh.fillStyle = state.theme === 'dark' ? '#1e293b' : '#f1f5f9';
+          }
+        } else {
+          ctxMesh.fillStyle = state.theme === 'dark' ? '#334155' : '#cbd5e1';
+        }
+
+        ctxMesh.fillRect(xLeft, yTop, fW, fH);
+
+        if (showMesh && state.fibers.length <= 150) {
+          ctxMesh.strokeStyle = state.theme === 'dark' ? '#0f172a' : '#94a3b8';
+          ctxMesh.lineWidth = 0.5;
+          ctxMesh.strokeRect(xLeft, yTop, fW, fH);
+        }
+      });
+
+      // Draw Outer Section Boundary
+      ctxMesh.strokeStyle = state.theme === 'dark' ? '#e2e8f0' : '#1e293b';
+      ctxMesh.lineWidth = 2.0;
+
+      // Steel Bars
+      if (showSteel) {
+        res.steelResults.forEach(st => {
+          const sY = padY + st.y * scaleY;
+          const isTens = st.fs < 0;
+          ctxMesh.beginPath();
+          ctxMesh.arc(midX, sY, 6, 0, 2 * Math.PI);
+          ctxMesh.fillStyle = isTens ? '#0284c7' : '#dc2626';
+          ctxMesh.fill();
+          ctxMesh.strokeStyle = '#ffffff';
+          ctxMesh.lineWidth = 1.5;
+          ctxMesh.stroke();
+        });
+      }
+
+      // Neutral Axis (NA)
+      if (showNA) {
+        const naY = padY + state.c * scaleY;
+        if (naY <= padY + drawH + 30) {
+          ctxMesh.beginPath();
+          ctxMesh.setLineDash([5, 3]);
+          ctxMesh.moveTo(padX, naY);
+          ctxMesh.lineTo(padX + drawW, naY);
+          ctxMesh.strokeStyle = '#dc2626';
+          ctxMesh.lineWidth = 2;
+          ctxMesh.stroke();
+          ctxMesh.setLineDash([]);
+
+          ctxMesh.fillStyle = '#dc2626';
+          ctxMesh.font = 'bold 10px "JetBrains Mono"';
+          ctxMesh.textAlign = 'left';
+          ctxMesh.fillText(`E.N. c=${state.c.toFixed(2)}m`, padX + 4, naY - 4);
+        }
+      }
+
+      // Centroid yhat
+      if (showCentroid) {
+        const yhatY = padY + state.yhat * scaleY;
+        ctxMesh.beginPath();
+        ctxMesh.setLineDash([4, 4]);
+        ctxMesh.moveTo(padX, yhatY);
+        ctxMesh.lineTo(padX + drawW, yhatY);
+        ctxMesh.strokeStyle = '#d97706';
+        ctxMesh.lineWidth = 2;
+        ctxMesh.stroke();
+        ctxMesh.setLineDash([]);
+
+        ctxMesh.fillStyle = '#d97706';
+        ctxMesh.font = 'bold 10px "JetBrains Mono"';
+        ctxMesh.textAlign = 'right';
+        ctxMesh.fillText(`ȳ=${state.yhat.toFixed(2)}m`, padX + drawW - 4, yhatY - 4);
+      }
+
+      // Title on Canvas
+      ctxMesh.fillStyle = state.theme === 'dark' ? '#cbd5e1' : '#475569';
+      ctxMesh.font = 'bold 11px "Outfit"';
+      ctxMesh.textAlign = 'left';
+      ctxMesh.fillText('Geometría de Fibras', padX, padY - 8);
+
+      // 2. RIGHT CANVAS: STRAIN & STRESS PROFILES
+      const { ctx: ctxProf, width: wProf, height: hProf } = setupCanvas('canvas-profiles');
+      ctxProf.clearRect(0, 0, wProf, hProf);
+
+      const pPadX = 30, pPadY = 25;
+      const pDrawH = hProf - 2 * pPadY;
+      const pDrawW = wProf - 2 * pPadX;
+      const pScaleY = pDrawH / state.h;
+      const pZeroX = pPadX + pDrawW * 0.45;
+
+      // Vertical zero reference
+      ctxProf.beginPath();
+      ctxProf.moveTo(pZeroX, pPadY);
+      ctxProf.lineTo(pZeroX, pPadY + pDrawH);
+      ctxProf.strokeStyle = state.theme === 'dark' ? '#334155' : '#cbd5e1';
+      ctxProf.lineWidth = 1.5;
+      ctxProf.stroke();
+
+      // Strain Profile (Euler-Bernoulli line)
+      const maxEps = Math.max(state.ecu, Math.abs(state.ecu * (state.c - state.h) / state.c));
+      const scaleEps = (pDrawW * 0.45) / Math.max(maxEps, 0.005);
+
+      const topEpsX = pZeroX + state.ecu * scaleEps;
+      const botEps = state.ecu * (state.c - state.h) / state.c;
+      const botEpsX = pZeroX + botEps * scaleEps;
+
+      ctxProf.beginPath();
+      ctxProf.moveTo(topEpsX, pPadY);
+      ctxProf.lineTo(botEpsX, pPadY + pDrawH);
+      ctxProf.strokeStyle = '#2563eb';
+      ctxProf.lineWidth = 2.5;
+      ctxProf.stroke();
+
+      // Concrete Stress Profile
+      ctxProf.beginPath();
+      const maxSig = state.fc;
+      const scaleSig = (pDrawW * 0.45) / maxSig;
+      let first = true;
+      res.fiberResults.forEach(fib => {
+        if (fib.fc > 0) {
+          const px = pZeroX + fib.fc * scaleSig;
+          const py = pPadY + fib.y * pScaleY;
+          if (first) { ctxProf.moveTo(pZeroX, py); ctxProf.lineTo(px, py); first = false; }
+          else ctxProf.lineTo(px, py);
+        }
+      });
+      ctxProf.strokeStyle = '#ef4444';
+      ctxProf.lineWidth = 2;
+      ctxProf.stroke();
+
+      // Steel Points on Profile
+      res.steelResults.forEach(st => {
+        const py = pPadY + st.y * pScaleY;
+        const px = pZeroX + (st.es * scaleEps);
+        ctxProf.beginPath();
+        ctxProf.arc(px, py, 4.5, 0, 2 * Math.PI);
+        ctxProf.fillStyle = st.fs < 0 ? '#0284c7' : '#dc2626';
+        ctxProf.fill();
+      });
+
+      // Axis label
+      ctxProf.fillStyle = state.theme === 'dark' ? '#cbd5e1' : '#475569';
+      ctxProf.font = 'bold 11px "Outfit"';
+      ctxProf.textAlign = 'left';
+      ctxProf.fillText('Deformaciones (ε) y Esfuerzos (σ)', pPadX, pPadY - 8);
+    }
+
+    /* ==========================================================================
+       CANVAS RENDERING: P-M DIAGRAM (int_diag2)
+       ========================================================================== */
+    function drawPMDiagram() {
+      const { ctx, width, height } = setupCanvas('canvas-pm');
+      ctx.clearRect(0, 0, width, height);
+
+      const padX = 65, padY = 30;
+      const drawW = width - padX - 30;
+      const drawH = height - padY - 45;
+
+      const pVals = state.pmCurve.map(pt => pt.P);
+      const mVals = state.pmCurve.map(pt => pt.M);
+
+      const minP = Math.min(...pVals) * 1.15;
+      const maxP = Math.max(...pVals) * 1.15;
+      const minM = Math.min(0, Math.min(...mVals));
+      const maxM = Math.max(10.0, Math.max(...mVals)) * 1.15;
+
+      function mapM(m) { return padX + ((m - minM) / (maxM - minM)) * drawW; }
+      function mapP(p) { return padY + drawH - ((p - minP) / (maxP - minP)) * drawH; }
+
+      // Grid lines
+      ctx.strokeStyle = state.theme === 'dark' ? '#1e293b' : '#e2e8f0';
+      ctx.lineWidth = 1;
+
+      // Horizontal grid
+      const pRange = maxP - minP;
+      const pStep = Math.pow(10, Math.floor(Math.log10(pRange))) * (pRange / Math.pow(10, Math.floor(Math.log10(pRange))) > 5 ? 1 : 0.5);
+      for (let p = Math.ceil(minP / pStep) * pStep; p <= maxP; p += pStep) {
+        const y = mapP(p);
+        ctx.beginPath();
+        ctx.moveTo(padX, y);
+        ctx.lineTo(padX + drawW, y);
+        ctx.stroke();
+
+        ctx.fillStyle = state.theme === 'dark' ? '#64748b' : '#94a3b8';
+        ctx.font = '10px "JetBrains Mono"';
+        ctx.textAlign = 'right';
+        ctx.fillText(`${Math.round(p)}`, padX - 8, y + 3);
+      }
+
+      // Vertical grid
+      const mRange = maxM - minM;
+      const mStep = Math.pow(10, Math.floor(Math.log10(mRange))) * (mRange / Math.pow(10, Math.floor(Math.log10(mRange))) > 5 ? 1 : 0.5);
+      for (let m = Math.ceil(minM / mStep) * mStep; m <= maxM; m += mStep) {
+        const x = mapM(m);
+        ctx.beginPath();
+        ctx.moveTo(x, padY);
+        ctx.lineTo(x, padY + drawH);
+        ctx.stroke();
+
+        ctx.fillStyle = state.theme === 'dark' ? '#64748b' : '#94a3b8';
+        ctx.font = '10px "JetBrains Mono"';
+        ctx.textAlign = 'center';
+        ctx.fillText(`${Math.round(m)}`, x, padY + drawH + 16);
+      }
+
+      // Zero axes
+      if (minM <= 0 && maxM >= 0) {
+        const x0 = mapM(0);
+        ctx.beginPath();
+        ctx.moveTo(x0, padY);
+        ctx.lineTo(x0, padY + drawH);
+        ctx.strokeStyle = state.theme === 'dark' ? '#4b5563' : '#94a3b8';
+        ctx.lineWidth = 1.5;
+        ctx.stroke();
+      }
+      if (minP <= 0 && maxP >= 0) {
+        const y0 = mapP(0);
+        ctx.beginPath();
+        ctx.moveTo(padX, y0);
+        ctx.lineTo(padX + drawW, y0);
+        ctx.strokeStyle = state.theme === 'dark' ? '#4b5563' : '#94a3b8';
+        ctx.lineWidth = 1.5;
+        ctx.stroke();
+      }
+
+      // Axis Titles
+      ctx.fillStyle = state.theme === 'dark' ? '#cbd5e1' : '#334155';
+      ctx.font = 'bold 11px "Outfit"';
+      ctx.textAlign = 'center';
+      ctx.fillText('Momento Flector Mn [kN·m]', padX + drawW / 2, padY + drawH + 34);
+
+      ctx.save();
+      ctx.translate(padX - 48, padY + drawH / 2);
+      ctx.rotate(-Math.PI / 2);
+      ctx.fillText('Carga Axial Pn [kN] (+ Compresión)', 0, 0);
+      ctx.restore();
+
+      // Draw P-M Curve (int_diag2)
+      if (state.pmCurve.length > 0) {
+        ctx.beginPath();
+        state.pmCurve.forEach((pt, idx) => {
+          const x = mapM(pt.M);
+          const y = mapP(pt.P);
+          if (idx === 0) ctx.moveTo(x, y);
+          else ctx.lineTo(x, y);
+        });
+        ctx.strokeStyle = '#0d9488';
+        ctx.lineWidth = 3.5;
+        ctx.stroke();
+      }
+
+      // Active Operating Point
+      const curRes = computeSectionState(state.c);
+      const curX = mapM(curRes.M);
+      const curY = mapP(curRes.P);
+
+      // Crosshair
+      ctx.beginPath();
+      ctx.setLineDash([4, 4]);
+      ctx.moveTo(padX, curY);
+      ctx.lineTo(curX, curY);
+      ctx.lineTo(curX, padY + drawH);
+      ctx.strokeStyle = '#f59e0b';
+      ctx.lineWidth = 1.5;
+      ctx.stroke();
+      ctx.setLineDash([]);
+
+      // Operating Point Dot
+      ctx.beginPath();
+      ctx.arc(curX, curY, 7, 0, 2 * Math.PI);
+      ctx.fillStyle = '#f59e0b';
+      ctx.fill();
+      ctx.strokeStyle = '#ffffff';
+      ctx.lineWidth = 2.5;
+      ctx.stroke();
+
+      // Tooltip Label
+      ctx.fillStyle = state.theme === 'dark' ? '#f8fafc' : '#0f172a';
+      ctx.font = 'bold 11px "JetBrains Mono"';
+      ctx.textAlign = 'left';
+      ctx.fillText(`(M=${curRes.M.toFixed(1)}, P=${curRes.P.toFixed(1)})`, curX + 10, curY - 10);
+    }
+
+    /* ==========================================================================
+       INSPECTOR & SUMMARY TABLES
+       ========================================================================== */
+    function updateUI() {
+      const res = computeSectionState(state.c);
+
+      document.getElementById('stat-pn').textContent = `${res.P >= 0 ? '+' : ''}${res.P.toFixed(1)} kN`;
+      document.getElementById('stat-pn-sub').textContent = res.P >= 0 ? 'Compresión Neta' : 'Tracción Neta';
+
+      document.getElementById('stat-mn').textContent = `${res.M.toFixed(1)} kN·m`;
+      document.getElementById('stat-mn-sub').textContent = `ȳ = ${state.yhat.toFixed(3)} m (desde borde sup.)`;
+
+      document.getElementById('stat-fc').textContent = `${res.sumFc >= 0 ? '+' : ''}${res.sumFc.toFixed(1)} kN`;
+      document.getElementById('stat-fs').textContent = `${res.sumFs >= 0 ? '+' : ''}${res.sumFs.toFixed(1)} kN`;
+
+      drawSectionViews();
+      drawPMDiagram();
+      renderInspectorSteps(res);
+    }
+
+    function updateInspectorOptions() {
+      const sel = document.getElementById('sel-inspector');
+      sel.innerHTML = '';
+
+      // Concrete fibers (sampling if too many)
+      const step = state.fibers.length > 30 ? Math.ceil(state.fibers.length / 20) : 1;
+      for (let i = 0; i < state.fibers.length; i += step) {
+        const opt = document.createElement('option');
+        opt.value = `fiber-${i}`;
+        opt.textContent = `🧱 Fibra Concreto #${i + 1} (y = ${(state.fibers[i].y * 100).toFixed(1)} cm, b = ${(state.fibers[i].b * 100).toFixed(0)} cm)`;
+        sel.appendChild(opt);
+      }
+
+      // Steel layers
+      state.steel.forEach((st, idx) => {
+        const opt = document.createElement('option');
+        opt.value = `steel-${idx}`;
+        opt.textContent = `🔩 Acero #${idx + 1}: ${st.label}`;
+        sel.appendChild(opt);
+      });
+
+      sel.value = state.selectedElement;
+    }
+
+    function onInspectorChange(val) {
+      state.selectedElement = val;
+      const res = computeSectionState(state.c);
+      renderInspectorSteps(res);
+    }
+
+    function renderInspectorSteps(res) {
+      const box = document.getElementById('inspector-steps');
+      box.innerHTML = '';
+
+      const [type, idxStr] = state.selectedElement.split('-');
+      const idx = parseInt(idxStr);
+
+      if (type === 'fiber' && res.fiberResults[idx]) {
+        const f = res.fiberResults[idx];
+        document.getElementById('lbl-inspector-type').textContent = `Fibra de Concreto #${idx + 1}`;
+
+        box.innerHTML = `
+          <div class="step-item">
+            <div class="step-title"><span>1. Posición y Geometría:</span></div>
+            <div class="step-math">y = ${f.y.toFixed(3)} m · Ancho b = ${(f.b * 100).toFixed(1)} cm · Área = ${(f.area * 10000).toFixed(1)} cm²</div>
+          </div>
+          <div class="step-item">
+            <div class="step-title"><span>2. Deformación Unitaria (Euler-Bernoulli):</span></div>
+            <div class="step-math">εc = 0.003 · (${state.c.toFixed(3)} - ${f.y.toFixed(3)}) / ${state.c.toFixed(3)} = ${f.ec.toFixed(5)}</div>
+          </div>
+          <div class="step-item">
+            <div class="step-title"><span>3. Esfuerzo según Hognestad (noconf):</span></div>
+            <div class="step-math">σc = ${f.fc.toFixed(2)} MPa ${f.ec <= 0 ? '(Fisurado / Tracción = 0)' : ''}</div>
+          </div>
+          <div class="step-item">
+            <div class="step-title"><span>4. Fuerza Axial y Brazo al Centroide ȳ:</span></div>
+            <div class="step-math">Fc = ${f.fc.toFixed(2)} · ${f.area.toFixed(4)} · 1000 = ${f.Fc.toFixed(1)} kN · Brazo = (${state.yhat.toFixed(3)} - ${f.y.toFixed(3)}) = ${f.arm.toFixed(3)} m</div>
+          </div>
+          <div class="step-item">
+            <div class="step-title"><span>5. Momento Flector Aportado:</span></div>
+            <div class="step-math">Mc = Fc · Brazo = ${f.Mc.toFixed(2)} kN·m</div>
+          </div>
+        `;
+      } else if (type === 'steel' && res.steelResults[idx]) {
+        const s = res.steelResults[idx];
+        document.getElementById('lbl-inspector-type').textContent = `Capa de Acero #${idx + 1}`;
+
+        box.innerHTML = `
+          <div class="step-item">
+            <div class="step-title"><span>1. Posición y Armadura:</span></div>
+            <div class="step-math">y = ${s.y.toFixed(3)} m · Área As = ${(s.area * 10000).toFixed(2)} cm²</div>
+          </div>
+          <div class="step-item">
+            <div class="step-title"><span>2. Deformación Unitaria εs:</span></div>
+            <div class="step-math">εs = 0.003 · (${state.c.toFixed(3)} - ${s.y.toFixed(3)}) / ${state.c.toFixed(3)} = ${s.es.toFixed(5)}</div>
+          </div>
+          <div class="step-item">
+            <div class="step-title"><span>3. Esfuerzo Elastoplástico (fs):</span></div>
+            <div class="step-math">fs = ${s.fs.toFixed(1)} MPa ${Math.abs(s.fs) >= state.fy ? '(¡Fluencia Alcanzada!)' : '(Régimen Elástico)'}</div>
+          </div>
+          <div class="step-item">
+            <div class="step-title"><span>4. Fuerza Axial y Brazo al Centroide ȳ:</span></div>
+            <div class="step-math">Fs = ${s.fs.toFixed(1)} · ${s.area.toFixed(6)} · 1000 = ${s.Fs.toFixed(1)} kN · Brazo = ${s.arm.toFixed(3)} m</div>
+          </div>
+          <div class="step-item">
+            <div class="step-title"><span>5. Momento Flector Aportado:</span></div>
+            <div class="step-math">Ms = Fs · Brazo = ${s.Ms.toFixed(2)} kN·m</div>
+          </div>
+        `;
+      }
+    }
+
+    function updateSummaryTable() {
+      const tbody = document.getElementById('tbl-summary-body');
+      tbody.innerHTML = '';
+
+      const sample = state.pmCurve.filter((_, i) => i % 10 === 0 || i === state.pmCurve.length - 1);
+      sample.forEach((pt, idx) => {
+        const res = computeSectionState(pt.c);
+        let regimen = 'Transición';
+        if (pt.c <= 1e-10) regimen = 'Tracción Pura (c→0)';
+        else if (pt.c >= 1e10) regimen = 'Compresión Pura (c→∞)';
+        else if (res.P < 0) regimen = 'Flexotracción';
+        else if (res.M > 0) regimen = 'Flexocompresión';
+
+        const tr = document.createElement('tr');
+        tr.innerHTML = `
+          <td style="text-align:center; font-weight:700;">#${idx + 1}</td>
+          <td>${pt.c > 1000 ? '∞' : (pt.c < 1e-5 ? '0' : pt.c.toFixed(3))}</td>
+          <td style="font-weight:700; color:var(--accent-teal);">${pt.P.toFixed(1)}</td>
+          <td style="font-weight:700; color:var(--accent-blue);">${pt.M.toFixed(1)}</td>
+          <td style="color:var(--color-concrete);">${res.sumFc.toFixed(1)}</td>
+          <td style="color:var(--color-steel);">${res.sumFs.toFixed(1)}</td>
+          <td style="text-align:center; font-size:0.75rem; font-weight:700;">${regimen}</td>
+        `;
+
+        tr.onclick = () => {
+          if (pt.c < 1000 && pt.c > 1e-5) {
+            state.c = pt.c;
+            document.getElementById('slider-c').value = state.c;
+            document.getElementById('val-c-display').textContent = state.c.toFixed(3);
+            updateUI();
+          }
+        };
+
+        tbody.appendChild(tr);
+      });
+    }
+
+    /* ==========================================================================
+       PYTHON CODE GENERATOR
+       ========================================================================== */
+    function generatePythonCode() {
+      const code = `import numpy as np
+import matplotlib.pyplot as plt
+
+# Modelo Constitutivo Acero y Concreto
+def elastoplastico(es, Es=210000, fy=${state.fy}):
+    fs = es * Es
+    if fs > fy: return fy
+    elif fs < -fy: return -fy
+    return fs
+
+def noconf(ec, fc=${state.fc}):
+    Ec = 4400 * np.sqrt(fc)
+    e0 = 1.8 * fc / Ec
+    eu = 0.0038
+    m = -0.15 * fc / (eu - e0)
+    if ec <= 0: return 0
+    elif ec <= e0: return fc * (2 * (ec / e0) - (ec / e0)**2)
+    elif ec <= eu: return fc + m * (ec - e0)
+    return 0
+
+vec_elastoplastico = np.vectorize(elastoplastico)
+vec_noconf = np.vectorize(noconf)
+
+# Función General int_diag2 (de funcion_general.py)
+def int_diag2(area_fibra, area_acero, pos_fibra, pos_acero, fc=${state.fc}, fy=${state.fy}, ec=0.003, npos=500):
+    h = np.max(pos_fibra)
+    pos_en2 = np.linspace(0.01, h * 1.35, npos)
+    pos_en = np.concatenate(([1e-15], pos_en2, [1e15]))
+    P = np.zeros(len(pos_en))
+    M = np.zeros(len(pos_en))
+    At = np.sum(area_fibra)
+    yhat = np.sum(area_fibra * pos_fibra) / At
+    for ind, c in enumerate(pos_en):
+        e_s = ec * (c - pos_acero) / c
+        e_c = ec * (c - pos_fibra) / c
+        f_c = vec_noconf(e_c, fc)
+        f_s = vec_elastoplastico(e_s)
+        F_c = f_c * area_fibra * 1000
+        F_s = f_s * area_acero * 1000
+        M_c = F_c * (yhat - pos_fibra)
+        M_s = F_s * (yhat - pos_acero)
+        P[ind] = np.sum(F_c) + np.sum(F_s)
+        M[ind] = np.sum(M_c) + np.sum(M_s)
+    plt.plot(M, P)
+    plt.xlabel('Momento (kN-m)')
+    plt.ylabel('Fuerza Axial (kN)')
+    plt.title('Diagrama de Interacción P - M (int_diag2)')
+    plt.grid(True)
+    plt.show()
+    return P, M
+
+# Arrays de entrada de la sección actual
+area_fibra = np.array([${state.fibers.map(f => f.area.toFixed(6)).join(', ')}])
+pos_fibra = np.array([${state.fibers.map(f => f.y.toFixed(4)).join(', ')}])
+area_acero = np.array([${state.steel.map(s => s.area.toFixed(6)).join(', ')}])
+pos_acero = np.array([${state.steel.map(s => s.y.toFixed(4)).join(', ')}])
+
+P, M = int_diag2(area_fibra, area_acero, pos_fibra, pos_acero)
+`;
+      document.getElementById('txt-python-code').value = code;
+    }
+
+    function copyPythonCode() {
+      const txt = document.getElementById('txt-python-code').value;
+      navigator.clipboard.writeText(txt).then(() => {
+        alert('¡Código Python copiado al portapapeles!');
+      });
+    }
+
+    function downloadCSV() {
+      let csv = 'c_m,Pn_kN,Mn_kNm\n';
+      state.pmCurve.forEach(pt => {
+        csv += `${pt.c.toFixed(4)},${pt.P.toFixed(2)},${pt.M.toFixed(2)}\n`;
+      });
+      const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
+      const url = URL.createObjectURL(blob);
+      const link = document.createElement('a');
+      link.href = url;
+      link.download = `curva_pm_int_diag2_${state.currentPreset}.csv`;
+      link.click();
+    }
+
+    /* ==========================================================================
+       EVENT LISTENERS & CONTROLS
+       ========================================================================== */
+    function onSliderChange(val) {
+      state.c = parseFloat(val);
+      document.getElementById('val-c-display').textContent = state.c.toFixed(3);
+      updateUI();
+    }
+
+    function stepC(delta) {
+      const maxC = Math.round(state.h * 1.35 * 1000) / 1000;
+      let nextC = Math.round((state.c + delta) * 1000) / 1000;
+      nextC = Math.max(0.01, Math.min(maxC, nextC));
+      state.c = nextC;
+      document.getElementById('slider-c').value = state.c;
+      document.getElementById('val-c-display').textContent = state.c.toFixed(3);
+      updateUI();
+    }
+
+    function switchEditorTab(tab) {
+      document.getElementById('tab-btn-geom').classList.toggle('active', tab === 'geom');
+      document.getElementById('tab-btn-py').classList.toggle('active', tab === 'py');
+      document.getElementById('pane-geom').classList.toggle('active', tab === 'geom');
+      document.getElementById('pane-py').classList.toggle('active', tab === 'py');
+    }
+
+    function toggleTheme() {
+      state.theme = state.theme === 'light' ? 'dark' : 'light';
+      document.documentElement.setAttribute('data-theme', state.theme);
+      document.getElementById('theme-icon').textContent = state.theme === 'light' ? '🌙' : '☀️';
+      document.getElementById('theme-text').textContent = state.theme === 'light' ? 'Modo Oscuro' : 'Modo Claro';
+      drawSectionViews();
+      drawPMDiagram();
+    }
+
+    // INITIALIZATION
+    window.addEventListener('DOMContentLoaded', () => {
+      loadPreset('rect');
+      window.addEventListener('resize', () => {
+        drawSectionViews();
+        drawPMDiagram();
+      });
+    });
+  </script>
+</body>
+</html>

@@ -215,6 +215,7 @@
     .stripe-purple { background: linear-gradient(90deg, #7c3aed, #a855f7); }
     .stripe-amber { background: linear-gradient(90deg, #ea580c, #f59e0b); }
     .stripe-rose { background: linear-gradient(90deg, #e11d48, #f43f5e); }
+    .stripe-teal { background: linear-gradient(90deg, #0d9488, #14b8a6); }
 
     .card-top {
       display: flex;
@@ -242,6 +243,7 @@
     .pill-purple { background: rgba(124, 58, 237, 0.1); color: #7c3aed; }
     .pill-amber { background: rgba(234, 88, 12, 0.12); color: #ea580c; }
     .pill-rose { background: rgba(225, 29, 72, 0.12); color: #e11d48; }
+    .pill-teal { background: rgba(13, 148, 136, 0.12); color: #0d9488; }
 
     .card-title {
       font-family: var(--font-title);
@@ -315,6 +317,9 @@
 
     .btn-rose { background: #e11d48; }
     .module-card:hover .btn-rose { box-shadow: 0 4px 12px rgba(225, 29, 72, 0.35); }
+
+    .btn-teal { background: #0d9488; }
+    .module-card:hover .btn-teal { box-shadow: 0 4px 12px rgba(13, 148, 136, 0.35); }
 
     /* FOOTER */
     footer {
@@ -468,6 +473,29 @@
         </ul>
         <div class="btn-launch btn-rose">
           <span>Abrir Módulo P-M Confinado</span>
+          <span>→</span>
+        </div>
+      </a>
+
+      <!-- CARD 6: MODELO DE FIBRAS DE SECCIÓN GENERAL -->
+      <a href="modelo_fibras_seccion_general.html" class="module-card">
+        <div class="card-stripe stripe-teal"></div>
+        <div class="card-top">
+          <div class="card-icon">🏛️</div>
+          <span class="card-stage-pill pill-teal">Avanzado · Sección General</span>
+        </div>
+        <h3 class="card-title">Modelo de Fibras de Sección General (int_diag2)</h3>
+        <p class="card-desc">
+          Implementa el algoritmo general de interacción para cualquier geometría arbitraria (muros con aletas en T, perfiles en I, armadura distribuida o asimétrica).
+        </p>
+        <ul class="card-features">
+          <li>Visualizador interactivo de la malla de fibras de concreto y barras</li>
+          <li>Cálculo del centroide plástico \(\bar{y}\) y momentos respecto a \(\bar{y}\)</li>
+          <li>Presets del script: Muro T, Muro asimétrico y Columna I</li>
+          <li>Exportador dinámico de código Python para Spyder / Jupyter</li>
+        </ul>
+        <div class="btn-launch btn-teal">
+          <span>Abrir Módulo Sección General</span>
           <span>→</span>
         </div>
       </a>
