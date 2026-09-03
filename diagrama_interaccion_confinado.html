@@ -759,11 +759,7 @@
         <span style="font-size:0.8rem; font-weight:700; color:var(--text-muted); text-transform:uppercase;">Visualización:</span>
         <label class="checkbox-label">
           <input type="checkbox" id="chk-show-unconf" checked onchange="updateAll()">
-          <span style="color:var(--color-unconf);">Mostrar Curva No Confinada (Referencia)</span>
-        </label>
-        <label class="checkbox-label">
-          <input type="checkbox" id="chk-show-phi" checked onchange="updateAll()">
-          <span style="color:var(--color-design);">Mostrar Envolvente de Diseño (\(\phi P_n, \phi M_n\))</span>
+          <span style="color:var(--color-unconf);">Mostrar Curva No Confinada (Referencia Hognestad)</span>
         </label>
         <label class="checkbox-label">
           <input type="checkbox" id="chk-show-crosshair" checked onchange="updateAll()">
@@ -849,15 +845,11 @@
         <div class="pm-legend">
           <div class="legend-item">
             <div class="legend-box" style="background:var(--color-conf);"></div>
-            <span style="color:var(--color-conf);">Confinado Nominal (Pn, Mn)</span>
+            <span style="color:var(--color-conf);">Confinado (Pc, Mc) · Modelo Mander</span>
           </div>
           <div class="legend-item" id="leg-unconf">
-            <div class="legend-box" style="background:var(--color-unconf); border-top: 1px dashed var(--color-unconf);"></div>
-            <span style="color:var(--color-unconf);">No Confinado (Referencia Hognestad)</span>
-          </div>
-          <div class="legend-item" id="leg-design">
-            <div class="legend-box" style="background:var(--color-design);"></div>
-            <span style="color:var(--color-design);">Diseño Confinado (\(\phi P_n, \phi M_n\))</span>
+            <div class="legend-box" style="background:var(--color-unconf); border-top: 2px dashed var(--color-unconf);"></div>
+            <span style="color:var(--color-unconf);">No Confinado (P, M) · Modelo Hognestad</span>
           </div>
           <div class="legend-item">
             <div style="width:10px; height:10px; border-radius:50%; background:#f59e0b; border:2px solid #ffffff;"></div>
@@ -893,7 +885,7 @@
               <th>Mn No Confinado (kN·m)</th>
               <th>\(\Delta P_n\) (kN)</th>
               <th>\(\Delta M_n\) (kN·m)</th>
-              <th>\(\phi\) (NSR-10)</th>
+              <th style="text-align:center;">Régimen Seccional</th>
             </tr>
           </thead>
           <tbody id="table-pm-body">
@@ -969,14 +961,12 @@
       { y: 35.0, area: 4 * 2.86 }
     ],
     showUnconf: true,
-    showPhi: true,
     showCrosshair: true
   };
 
   let curvesData = {
     conf: [],
     unconf: [],
-    design: [],
     p0_conf: 0,
     p0_unconf: 0,
     pt: 0,
@@ -1015,13 +1005,6 @@
     if (ecc <= e0) return fcc * (2.0 * (ecc / e0) - Math.pow(ecc / e0, 2));
     if (ecc <= eu) return fcc + m * (ecc - e0);
     return 0.0;
-  }
-
-  function getPhiFactor(et) {
-    const ey = state.fy / state.Es; // ~0.002
-    if (et <= ey) return 0.65; // Controlado por compresión
-    if (et >= 0.005) return 0.90; // Controlado por tracción
-    return 0.65 + (et - ey) * (0.25 / (0.005 - ey)); // Zona de transición
   }
 
   /* ==========================================================================
@@ -1089,10 +1072,6 @@
     const Pn_unconf = sumFc_unconf + sumFs_unconf;
     const Mn_unconf = sumMc_unconf + sumMs_unconf;
 
-    const phi = getPhiFactor(et);
-    const Pu_conf = phi * Pn_conf;
-    const Mu_conf = phi * Mn_conf;
-
     return {
       c,
       yhat,
@@ -1100,11 +1079,8 @@
       bcc,
       fcc,
       et,
-      phi,
       Pn_conf,
       Mn_conf,
-      Pu_conf,
-      Mu_conf,
       Pn_unconf,
       Mn_unconf,
       sumFc_conf,
@@ -1147,38 +1123,35 @@
     const P0_unconf = (state.fc * (state.b * state.h - astTotal) + state.fy * astTotal) / 10.0;
     const P0_conf = (state.fc * (state.b * state.h - bcc * hcc) + fcc * (bcc * hcc - astTotal) + state.fy * astTotal) / 10.0;
 
-    const confPts = [{ c: 0, P: Pt, M: 0, et: 0.05, phi: 0.9 }];
-    const unconfPts = [{ c: 0, P: Pt, M: 0, et: 0.05, phi: 0.9 }];
-    const designPts = [{ c: 0, P: 0.9 * Pt, M: 0 }];
+    // Start at Pure Tension (M = 0, P = Pt)
+    const confPts = [{ c: 0, P: Pt, M: 0, et: 0.05 }];
+    const unconfPts = [{ c: 0, P: Pt, M: 0, et: 0.05 }];
 
-    const cMin = 0.5;
-    const cMax = state.h * 1.5;
-    const steps = 90;
-    const dc = (cMax - cMin) / steps;
+    // Smooth progressive sampling of c from 0.5 cm up to 3*h cm
+    const cSamples = [];
+    for (let c = 0.5; c <= 15.0; c += 0.25) cSamples.push(c);
+    for (let c = 15.5; c <= state.h * 1.5; c += 0.5) cSamples.push(c);
+    for (let c = state.h * 1.5 + 1.0; c <= state.h * 3.0; c += 2.0) cSamples.push(c);
 
     let maxMc = 0, maxMu = 0;
 
-    for (let i = 0; i <= steps; i++) {
-      const cVal = cMin + i * dc;
+    cSamples.forEach(cVal => {
       const res = computeSectionAtC(cVal);
 
-      confPts.push({ c: cVal, P: res.Pn_conf, M: Math.max(0, res.Mn_conf), et: res.et, phi: res.phi });
+      confPts.push({ c: cVal, P: res.Pn_conf, M: Math.max(0, res.Mn_conf), et: res.et });
       unconfPts.push({ c: cVal, P: res.Pn_unconf, M: Math.max(0, res.Mn_unconf), et: res.et });
-      designPts.push({ c: cVal, P: res.Pu_conf, M: Math.max(0, res.Mu_conf) });
 
       if (res.Mn_conf > maxMc) maxMc = res.Mn_conf;
       if (res.Mn_unconf > maxMu) maxMu = res.Mn_unconf;
-    }
+    });
 
-    // Append Pure Compression limits
-    confPts.push({ c: 1e5, P: P0_conf, M: 0, et: -0.003, phi: 0.65 });
-    unconfPts.push({ c: 1e5, P: P0_unconf, M: 0, et: -0.003, phi: 0.65 });
-    designPts.push({ c: 1e5, P: 0.65 * 0.80 * P0_conf, M: 0 }); // ACI tied column max axial cap
+    // Close smoothly at Pure Compression (M = 0, P = P0)
+    confPts.push({ c: 1e5, P: P0_conf, M: 0, et: -0.003 });
+    unconfPts.push({ c: 1e5, P: P0_unconf, M: 0, et: -0.003 });
 
     curvesData = {
       conf: confPts,
       unconf: unconfPts,
-      design: designPts,
       p0_conf: P0_conf,
       p0_unconf: P0_unconf,
       pt: Pt,
@@ -1302,23 +1275,7 @@
       ctx.setLineDash([]);
     }
 
-    // 2. Draw Design Curve (Green dashed)
-    if (state.showPhi && curvesData.design.length > 0) {
-      ctx.beginPath();
-      curvesData.design.forEach((pt, idx) => {
-        const x = mapM(pt.M);
-        const y = mapP(pt.P);
-        if (idx === 0) ctx.moveTo(x, y);
-        else ctx.lineTo(x, y);
-      });
-      ctx.strokeStyle = '#059669';
-      ctx.lineWidth = 2;
-      ctx.setLineDash([3, 3]);
-      ctx.stroke();
-      ctx.setLineDash([]);
-    }
-
-    // 3. Draw Confined Nominal Curve (Purple continuous)
+    // 2. Draw Confined Nominal Curve (Purple continuous)
     if (curvesData.conf.length > 0) {
       ctx.beginPath();
       curvesData.conf.forEach((pt, idx) => {
@@ -1646,9 +1603,15 @@
       const dP = pt.P - unconfPt.P;
       const dM = pt.M - unconfPt.M;
 
+      let regimen = 'Transición';
+      if (pt.c === 0) regimen = 'Tracción Pura';
+      else if (pt.c > 1000) regimen = 'Compresión Pura';
+      else if (pt.et >= 0.005) regimen = 'Falla Dúctil (Tracción)';
+      else if (pt.et <= 0.002) regimen = 'Falla Frágil (Compresión)';
+
       tr.innerHTML = `
         <td style="text-align:center; font-weight:700;">P${idx + 1}</td>
-        <td>${pt.c > 1000 ? 'P0' : pt.c.toFixed(1)}</td>
+        <td>${pt.c > 1000 ? 'P0' : (pt.c === 0 ? 'Pt' : pt.c.toFixed(1))}</td>
         <td style="color:${pt.et >= 0.005 ? 'var(--color-steel)' : 'var(--color-unconf)'}; font-weight:700;">
           ${pt.et !== undefined ? pt.et.toFixed(4) : '-'}
         </td>
@@ -1658,7 +1621,7 @@
         <td style="color:var(--color-unconf);">${unconfPt.M.toFixed(1)}</td>
         <td style="color:var(--accent-emerald); font-weight:700;">${dP >= 0 ? '+' : ''}${dP.toFixed(1)}</td>
         <td style="color:var(--accent-emerald); font-weight:700;">${dM >= 0 ? '+' : ''}${dM.toFixed(1)}</td>
-        <td>${pt.phi ? pt.phi.toFixed(3) : '0.650'}</td>
+        <td style="text-align:center; font-size:0.75rem; font-weight:700;">${regimen}</td>
       `;
 
       tr.onclick = () => {
@@ -1675,11 +1638,10 @@
   }
 
   function downloadCSV() {
-    let csv = 'c_cm,Pn_conf_kN,Mn_conf_kNm,Pu_conf_kN,Mu_conf_kNm,Pn_unconf_kN,Mn_unconf_kNm,Delta_P_kN,Delta_M_kNm\n';
+    let csv = 'c_cm,Pn_conf_kN,Mn_conf_kNm,Pn_unconf_kN,Mn_unconf_kNm,Delta_P_kN,Delta_M_kNm\n';
     curvesData.conf.forEach((pt, i) => {
       const u = curvesData.unconf[i] || { P: 0, M: 0 };
-      const d = curvesData.design[i] || { P: 0, M: 0 };
-      csv += `${pt.c.toFixed(2)},${pt.P.toFixed(2)},${pt.M.toFixed(2)},${d.P.toFixed(2)},${d.M.toFixed(2)},${u.P.toFixed(2)},${u.M.toFixed(2)},${(pt.P - u.P).toFixed(2)},${(pt.M - u.M).toFixed(2)}\n`;
+      csv += `${pt.c.toFixed(2)},${pt.P.toFixed(2)},${pt.M.toFixed(2)},${u.P.toFixed(2)},${u.M.toFixed(2)},${(pt.P - u.P).toFixed(2)},${(pt.M - u.M).toFixed(2)}\n`;
     });
 
     const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
@@ -1716,11 +1678,9 @@
      ========================================================================== */
   function updateAll() {
     state.showUnconf = document.getElementById('chk-show-unconf').checked;
-    state.showPhi = document.getElementById('chk-show-phi').checked;
     state.showCrosshair = document.getElementById('chk-show-crosshair').checked;
 
     document.getElementById('leg-unconf').style.display = state.showUnconf ? 'flex' : 'none';
-    document.getElementById('leg-design').style.display = state.showPhi ? 'flex' : 'none';
 
     const res = computeSectionAtC(state.c);
 
