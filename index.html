@@ -1,0 +1,449 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Diseño de Concreto Armado I - Portal de Herramientas Interactivas</title>
+  <!-- Google Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Outfit:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg-primary: #f8fafc;
+      --bg-secondary: #ffffff;
+      --bg-card: #ffffff;
+      --bg-card-subtle: #f1f5f9;
+      --border-color: #e2e8f0;
+      --border-hover: #cbd5e1;
+      --text-main: #1e293b;
+      --text-muted: #64748b;
+      --text-bright: #0f172a;
+
+      --accent-blue: #2563eb;
+      --accent-purple: #7c3aed;
+      --accent-emerald: #059669;
+      --accent-rose: #e11d48;
+      --accent-amber: #d97706;
+
+      --shadow-sm: 0 1px 2px rgba(0,0,0,0.05);
+      --shadow-md: 0 4px 6px -1px rgba(0,0,0,0.07), 0 2px 4px -2px rgba(0,0,0,0.05);
+      --shadow-lg: 0 10px 15px -3px rgba(0,0,0,0.08), 0 4px 6px -4px rgba(0,0,0,0.04);
+      --radius-sm: 8px;
+      --radius-md: 14px;
+      --radius-lg: 20px;
+
+      --font-main: 'Inter', system-ui, -apple-system, sans-serif;
+      --font-title: 'Outfit', system-ui, sans-serif;
+      --font-mono: 'JetBrains Mono', monospace;
+    }
+
+    [data-theme="dark"] {
+      --bg-primary: #0b0f19;
+      --bg-secondary: #111827;
+      --bg-card: #151e32;
+      --bg-card-subtle: #1a243d;
+      --border-color: #24324f;
+      --border-hover: #3b82f6;
+      --text-main: #cbd5e1;
+      --text-muted: #94a3b8;
+      --text-bright: #f8fafc;
+      --shadow-md: 0 4px 6px -1px rgba(0,0,0,0.4);
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: var(--font-main);
+      background: var(--bg-primary);
+      color: var(--text-main);
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      transition: background-color 0.25s ease, color 0.25s ease;
+    }
+
+    .container {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 0 24px;
+      width: 100%;
+    }
+
+    /* HEADER */
+    header.header-bar {
+      background: var(--bg-card);
+      border-bottom: 1px solid var(--border-color);
+      padding: 20px 0;
+      box-shadow: var(--shadow-sm);
+    }
+
+    .header-content {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 16px;
+    }
+
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+    }
+
+    .brand-icon {
+      font-size: 2rem;
+      line-height: 1;
+      background: linear-gradient(135deg, rgba(37, 99, 235, 0.1), rgba(124, 58, 237, 0.1));
+      border: 1px solid rgba(37, 99, 235, 0.2);
+      padding: 10px;
+      border-radius: var(--radius-md);
+    }
+
+    .brand-text h1 {
+      font-family: var(--font-title);
+      font-size: 1.45rem;
+      font-weight: 800;
+      color: var(--text-bright);
+    }
+
+    .brand-text p {
+      font-size: 0.85rem;
+      color: var(--text-muted);
+    }
+
+    .btn-theme {
+      background: var(--bg-card-subtle);
+      border: 1px solid var(--border-color);
+      color: var(--text-main);
+      padding: 8px 16px;
+      border-radius: var(--radius-sm);
+      font-size: 0.85rem;
+      font-weight: 600;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      transition: all 0.2s ease;
+    }
+
+    .btn-theme:hover {
+      background: var(--border-color);
+    }
+
+    /* HERO */
+    .hero {
+      padding: 50px 0 35px 0;
+      text-align: center;
+    }
+
+    .hero-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      background: rgba(37, 99, 235, 0.08);
+      border: 1px solid rgba(37, 99, 235, 0.25);
+      color: var(--accent-blue);
+      padding: 6px 14px;
+      border-radius: 999px;
+      font-size: 0.8rem;
+      font-weight: 700;
+      letter-spacing: 0.04em;
+      text-transform: uppercase;
+      margin-bottom: 18px;
+    }
+
+    .hero h2 {
+      font-family: var(--font-title);
+      font-size: 2.5rem;
+      font-weight: 800;
+      color: var(--text-bright);
+      line-height: 1.2;
+      max-width: 850px;
+      margin: 0 auto 16px auto;
+    }
+
+    .hero p {
+      font-size: 1.1rem;
+      color: var(--text-muted);
+      max-width: 720px;
+      margin: 0 auto;
+      line-height: 1.6;
+    }
+
+    /* MODULE CARDS GRID */
+    .cards-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(330px, 1fr));
+      gap: 26px;
+      margin-top: 20px;
+      margin-bottom: 60px;
+    }
+
+    .module-card {
+      background: var(--bg-card);
+      border: 1px solid var(--border-color);
+      border-radius: var(--radius-lg);
+      padding: 28px;
+      box-shadow: var(--shadow-md);
+      display: flex;
+      flex-direction: column;
+      text-decoration: none;
+      color: inherit;
+      position: relative;
+      overflow: hidden;
+      transition: transform 0.25s ease, box-shadow 0.25s ease, border-color 0.25s ease;
+    }
+
+    .module-card:hover {
+      transform: translateY(-6px);
+      box-shadow: var(--shadow-lg);
+      border-color: var(--accent-blue);
+    }
+
+    .card-stripe {
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: 6px;
+    }
+
+    .stripe-blue { background: linear-gradient(90deg, #2563eb, #3b82f6); }
+    .stripe-emerald { background: linear-gradient(90deg, #059669, #10b981); }
+    .stripe-purple { background: linear-gradient(90deg, #7c3aed, #a855f7); }
+
+    .card-top {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 18px;
+    }
+
+    .card-icon {
+      font-size: 2.2rem;
+      line-height: 1;
+    }
+
+    .card-stage-pill {
+      font-size: 0.725rem;
+      font-weight: 800;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      padding: 4px 10px;
+      border-radius: 999px;
+    }
+
+    .pill-blue { background: rgba(37, 99, 235, 0.1); color: #2563eb; }
+    .pill-emerald { background: rgba(5, 150, 105, 0.1); color: #059669; }
+    .pill-purple { background: rgba(124, 58, 237, 0.1); color: #7c3aed; }
+
+    .card-title {
+      font-family: var(--font-title);
+      font-size: 1.35rem;
+      font-weight: 800;
+      color: var(--text-bright);
+      margin-bottom: 10px;
+      line-height: 1.3;
+    }
+
+    .card-desc {
+      font-size: 0.9rem;
+      color: var(--text-muted);
+      line-height: 1.55;
+      margin-bottom: 22px;
+      flex-grow: 1;
+    }
+
+    .card-features {
+      list-style: none;
+      margin-bottom: 24px;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+
+    .card-features li {
+      font-size: 0.825rem;
+      color: var(--text-main);
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .card-features li::before {
+      content: '✓';
+      color: var(--accent-emerald);
+      font-weight: 800;
+    }
+
+    .btn-launch {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      width: 100%;
+      padding: 12px 18px;
+      border-radius: var(--radius-sm);
+      font-family: var(--font-title);
+      font-size: 0.95rem;
+      font-weight: 700;
+      color: #ffffff;
+      background: var(--accent-blue);
+      border: none;
+      cursor: pointer;
+      transition: all 0.2s ease;
+    }
+
+    .module-card:hover .btn-launch {
+      box-shadow: 0 4px 12px rgba(37, 99, 235, 0.35);
+    }
+
+    .btn-emerald { background: var(--accent-emerald); }
+    .module-card:hover .btn-emerald { box-shadow: 0 4px 12px rgba(5, 150, 105, 0.35); }
+
+    .btn-purple { background: var(--accent-purple); }
+    .module-card:hover .btn-purple { box-shadow: 0 4px 12px rgba(124, 58, 237, 0.35); }
+
+    /* FOOTER */
+    footer {
+      margin-top: auto;
+      background: var(--bg-card);
+      border-top: 1px solid var(--border-color);
+      padding: 24px 0;
+      text-align: center;
+      font-size: 0.85rem;
+      color: var(--text-muted);
+    }
+  </style>
+</head>
+<body>
+
+  <header class="header-bar">
+    <div class="container header-content">
+      <div class="brand">
+        <div class="brand-icon">🏛️</div>
+        <div class="brand-text">
+          <h1>Diseño de Concreto Armado I</h1>
+          <p>Portal de Simuladores y Material Educativo Interactivo</p>
+        </div>
+      </div>
+
+      <button id="btn-theme" class="btn-theme" onclick="toggleTheme()">
+        <span id="theme-icon">🌙</span>
+        <span id="theme-text">Modo Oscuro</span>
+      </button>
+    </div>
+  </header>
+
+  <main class="container">
+    <section class="hero">
+      <div class="hero-badge">🎓 Laboratorio Virtual Interactivo</div>
+      <h2>Aprende Mecánica y Diseño de Concreto Armado</h2>
+      <p>
+        Explora las tres herramientas didácticas interactivas diseñadas para visualizar el comportamiento seccional no lineal, desde la mecánica fibra a fibra hasta la ductilidad por curvatura.
+      </p>
+    </section>
+
+    <div class="cards-grid">
+      <!-- CARD 1: CÁLCULO DE UN PUNTO -->
+      <a href="calculo_punto_fibras.html" class="module-card">
+        <div class="card-stripe stripe-blue"></div>
+        <div class="card-top">
+          <div class="card-icon">📘</div>
+          <span class="card-stage-pill pill-blue">Etapa 1 · Mecánica Seccional</span>
+        </div>
+        <h3 class="card-title">Cálculo de un Punto (P, M) con Fibras</h3>
+        <p class="card-desc">
+          Enfocado exclusivamente en la cinemática, el modelo de Hognestad, la lupa paso a paso fibra por fibra y el equilibrio estático de fuerzas internas sin distracciones.
+        </p>
+        <ul class="card-features">
+          <li>Cinemática de Euler-Bernoulli</li>
+          <li>Lupa didáctica con desglose paso a paso</li>
+          <li>Balanza gráfica de equilibrio estático</li>
+          <li>Convergencia de discretización numérica</li>
+        </ul>
+        <div class="btn-launch">
+          <span>Abrir Módulo 1</span>
+          <span>→</span>
+        </div>
+      </a>
+
+      <!-- CARD 2: DIAGRAMA DE INTERACCIÓN COMPLETO -->
+      <a href="material_educativo_fibras.html" class="module-card">
+        <div class="card-stripe stripe-emerald"></div>
+        <div class="card-top">
+          <div class="card-icon">📗</div>
+          <span class="card-stage-pill pill-emerald">Etapa 2 · Diseño y Envolvente</span>
+        </div>
+        <h3 class="card-title">Diagrama de Interacción Completo (P - M)</h3>
+        <p class="card-desc">
+          Aprende el comportamiento global a flexocompresión con la envolvente completa de resistencia nominal y de diseño con factores de reducción según NSR-10 / ACI 318.
+        </p>
+        <ul class="card-features">
+          <li>Curva completa de interacción (Pn vs Mn)</li>
+          <li>Factores de reducción de resistencia φ</li>
+          <li>Clasificación de tipos de falla (Tracción / Compresión)</li>
+          <li>5 paneles gráficos dinámicos sincronizados</li>
+        </ul>
+        <div class="btn-launch btn-emerald">
+          <span>Abrir Módulo 2</span>
+          <span>→</span>
+        </div>
+      </a>
+
+      <!-- CARD 3: MOMENTO - CURVATURA -->
+      <a href="momento_curvatura_educativo.html" class="module-card">
+        <div class="card-stripe stripe-purple"></div>
+        <div class="card-top">
+          <div class="card-icon">🌀</div>
+          <span class="card-stage-pill pill-purple">Etapa 3 · No Lineal y Ductilidad</span>
+        </div>
+        <h3 class="card-title">Diagrama Momento - Curvatura (M - φ)</h3>
+        <p class="card-desc">
+          Descubre el "Momento Eureka": cómo nace la curva Momento-Curvatura cortando la familia de curvas de interacción a carga axial constante P.
+        </p>
+        <ul class="card-features">
+          <li>Vista dual sincronizada (Familia P-M vs M-φ)</li>
+          <li>Simulador animado paso a paso</li>
+          <li>Cálculo de ductilidad seccional (μφ = φu / φy)</li>
+          <li>Presets de viga, columna y muro estructural</li>
+        </ul>
+        <div class="btn-launch btn-purple">
+          <span>Abrir Módulo 3</span>
+          <span>→</span>
+        </div>
+      </a>
+    </div>
+  </main>
+
+  <footer>
+    <div class="container">
+      <p>Material Educativo para el Curso de <strong>Diseño de Concreto Armado I</strong></p>
+      <p style="margin-top:4px; opacity:0.75; font-size:0.775rem;">Desarrollado con HTML5, CSS y JavaScript Vanilla. Compatible con cualquier navegador web moderno.</p>
+    </div>
+  </footer>
+
+  <script>
+  function toggleTheme() {
+    const html = document.documentElement;
+    const isDark = html.getAttribute('data-theme') === 'dark';
+    const newTheme = isDark ? 'light' : 'dark';
+    html.setAttribute('data-theme', newTheme);
+    document.getElementById('theme-icon').textContent = newTheme === 'dark' ? '☀️' : '🌙';
+    document.getElementById('theme-text').textContent = newTheme === 'dark' ? 'Modo Claro' : 'Modo Oscuro';
+    localStorage.setItem('concreto_portal_theme', newTheme);
+  }
+
+  window.addEventListener('DOMContentLoaded', () => {
+    const savedTheme = localStorage.getItem('concreto_portal_theme') || 'light';
+    if (savedTheme === 'dark') {
+      document.documentElement.setAttribute('data-theme', 'dark');
+      document.getElementById('theme-icon').textContent = '☀️';
+      document.getElementById('theme-text').textContent = 'Modo Claro';
+    }
+  });
+  </script>
+</body>
+</html>

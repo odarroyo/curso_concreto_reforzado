@@ -1,0 +1,40 @@
+# 🏛️ Curso de Diseño de Concreto Armado I - Herramientas Interactivas
+
+Plataforma web didáctica para la visualización y aprendizaje de la mecánica seccional no lineal, diagramas de interacción y momento-curvatura en concreto armado.
+
+🌐 **Portal Web Oficial:** [https://odarroyo.github.io/curso_concreto_reforzado/](https://odarroyo.github.io/curso_concreto_reforzado/)
+
+---
+
+## 📚 Módulos Educativos
+
+### 1. 📘 [Cálculo de un Punto (P, M) con Fibras](https://odarroyo.github.io/curso_concreto_reforzado/calculo_punto_fibras.html)
+- Cinemática de deformaciones planas de Euler-Bernoulli.
+- Modelo constitutivo de Hognestad no confinado y acero elastoplástico.
+- **Lupa didáctica:** Sustitución y cálculo numérico paso a paso ($y_i \to \varepsilon_i \to \sigma_i \to F_i \to d_i \to M_i$).
+- Balanza de equilibrio estático de fuerzas axiales y momentos flectores.
+- Convergencia de discretización numérica (5 a 100 fibras).
+
+### 2. 📗 [Diagrama de Interacción Completo (P - M)](https://odarroyo.github.io/curso_concreto_reforzado/material_educativo_fibras.html)
+- Envolvente completa de flexocompresión nominal $(P_n, M_n)$ y de diseño $(P_u, M_u)$.
+- Factores de reducción de resistencia $\phi$ según NSR-10 / ACI 318.
+- Clasificación de modos de falla (Falla dúctil controlada por tracción, balanceada y controlada por compresión).
+- 5 paneles dinámicos sincronizados a 60 FPS.
+
+### 3. 🌀 [Diagrama Momento - Curvatura (M - φ)](https://odarroyo.github.io/curso_concreto_reforzado/momento_curvatura_educativo.html)
+- **El "Momento Eureka":** Construcción de la curva $M-\phi$ a partir de la familia de curvas de interacción $P-M$ a diferentes niveles de deformación $\varepsilon_c$ cortadas a carga axial constante $P_{\text{target}}$.
+- Simulador animado paso a paso con seguimiento de la mecánica interna.
+- Cálculo de ductilidad seccional $\mu_\phi = \phi_u / \phi_y$ y rigidez secante elástica.
+- Presets para vigas (flexión pura), columnas sismorresistentes y muros estructurales.
+
+---
+
+## 💻 Características Técnicas
+- **100% Autocontenido:** Desarrollado con HTML5, CSS moderno y JavaScript Vanilla.
+- **Sin Dependencias:** No requiere instalación de Python, Jupyter ni servidores.
+- **Multiplataforma:** Compatible con navegadores en PC, Mac, tablets y celulares.
+- **Modo Claro / Modo Oscuro:** Alto contraste para proyección en clase o estudio nocturno.
+- **Exportación:** Generación de archivos CSV y código LaTeX para informes de laboratorio.
+
+---
+Prof. Orlando Arroyo — *Diseño de Concreto Armado I*

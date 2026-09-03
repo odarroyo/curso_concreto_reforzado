@@ -1,0 +1,2282 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Diseño de Concreto Armado I - Diagrama Momento - Curvatura (M - φ)</title>
+  <!-- Google Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500;600;700&family=Outfit:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <!-- MathJax for rendering LaTeX math formulas -->
+  <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+  <style>
+    :root {
+      --bg-primary: #f8fafc;
+      --bg-secondary: #ffffff;
+      --bg-card: #ffffff;
+      --bg-card-subtle: #f1f5f9;
+      --border-color: #e2e8f0;
+      --border-focus: #3b82f6;
+      --text-main: #1e293b;
+      --text-muted: #64748b;
+      --text-bright: #0f172a;
+
+      --accent-blue: #2563eb;
+      --accent-blue-light: #3b82f6;
+      --accent-cyan: #0891b2;
+      --accent-purple: #7c3aed;
+      --accent-amber: #d97706;
+      --accent-emerald: #059669;
+      --accent-rose: #e11d48;
+      --color-comp: #ea580c;
+      --color-tens: #0284c7;
+
+      --shadow-sm: 0 1px 2px rgba(0,0,0,0.05);
+      --shadow-md: 0 4px 6px -1px rgba(0,0,0,0.07), 0 2px 4px -2px rgba(0,0,0,0.05);
+      --shadow-lg: 0 10px 15px -3px rgba(0,0,0,0.08), 0 4px 6px -4px rgba(0,0,0,0.04);
+      --radius-sm: 6px;
+      --radius-md: 10px;
+      --radius-lg: 16px;
+
+      --font-main: 'Inter', system-ui, -apple-system, sans-serif;
+      --font-title: 'Outfit', system-ui, sans-serif;
+      --font-mono: 'JetBrains Mono', monospace;
+    }
+
+    [data-theme="dark"] {
+      --bg-primary: #0b0f19;
+      --bg-secondary: #111827;
+      --bg-card: #151e32;
+      --bg-card-subtle: #1a243d;
+      --border-color: #24324f;
+      --border-focus: #60a5fa;
+      --text-main: #cbd5e1;
+      --text-muted: #94a3b8;
+      --text-bright: #f8fafc;
+      --shadow-sm: 0 1px 2px rgba(0,0,0,0.3);
+      --shadow-md: 0 4px 6px -1px rgba(0,0,0,0.4);
+      --shadow-lg: 0 10px 15px -3px rgba(0,0,0,0.5);
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: var(--font-main);
+      background: var(--bg-primary);
+      color: var(--text-main);
+      line-height: 1.5;
+      padding-bottom: 60px;
+      transition: background-color 0.25s ease, color 0.25s ease;
+    }
+
+    .container {
+      max-width: 1440px;
+      margin: 0 auto;
+      padding: 0 24px;
+    }
+
+    /* TOP HEADER */
+    header.header-bar {
+      background: var(--bg-card);
+      border-bottom: 1px solid var(--border-color);
+      padding: 18px 0;
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      box-shadow: var(--shadow-sm);
+    }
+
+    .header-content {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 16px;
+      flex-wrap: wrap;
+    }
+
+    .header-title-area h1 {
+      font-family: var(--font-title);
+      font-size: 1.45rem;
+      font-weight: 800;
+      color: var(--text-bright);
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .header-title-area p {
+      font-size: 0.85rem;
+      color: var(--text-muted);
+      margin-top: 2px;
+    }
+
+    .header-badges {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .badge-stage {
+      background: rgba(124, 58, 237, 0.1);
+      color: var(--accent-purple);
+      border: 1px solid rgba(124, 58, 237, 0.3);
+      padding: 5px 12px;
+      border-radius: 999px;
+      font-size: 0.75rem;
+      font-weight: 700;
+      letter-spacing: 0.04em;
+      text-transform: uppercase;
+    }
+
+    .btn-theme-toggle {
+      background: var(--bg-card-subtle);
+      border: 1px solid var(--border-color);
+      color: var(--text-main);
+      padding: 8px 14px;
+      border-radius: var(--radius-md);
+      font-family: var(--font-main);
+      font-size: 0.85rem;
+      font-weight: 600;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      transition: all 0.2s ease;
+    }
+
+    .btn-theme-toggle:hover {
+      background: var(--border-color);
+    }
+
+    /* CONCEPT CALLOUT BANNER */
+    .concept-banner {
+      background: linear-gradient(135deg, rgba(37, 99, 235, 0.08) 0%, rgba(124, 58, 237, 0.08) 100%);
+      border: 1px solid rgba(37, 99, 235, 0.2);
+      border-radius: var(--radius-lg);
+      padding: 16px 20px;
+      margin-top: 20px;
+      display: flex;
+      align-items: flex-start;
+      gap: 14px;
+    }
+
+    .concept-banner .icon {
+      font-size: 1.6rem;
+      line-height: 1;
+    }
+
+    .concept-banner .text h3 {
+      font-family: var(--font-title);
+      font-size: 1.05rem;
+      font-weight: 700;
+      color: var(--accent-blue);
+      margin-bottom: 4px;
+    }
+
+    .concept-banner .text p {
+      font-size: 0.875rem;
+      color: var(--text-main);
+    }
+
+    /* PRESETS BAR */
+    .presets-bar {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      flex-wrap: wrap;
+      margin-top: 16px;
+      background: var(--bg-card);
+      border: 1px solid var(--border-color);
+      border-radius: var(--radius-md);
+      padding: 12px 18px;
+    }
+
+    .preset-label {
+      font-size: 0.825rem;
+      font-weight: 700;
+      color: var(--text-muted);
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+    }
+
+    .preset-btn {
+      background: var(--bg-card-subtle);
+      border: 1px solid var(--border-color);
+      color: var(--text-main);
+      padding: 6px 14px;
+      border-radius: var(--radius-sm);
+      font-size: 0.825rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .preset-btn:hover {
+      border-color: var(--accent-blue);
+      color: var(--accent-blue);
+    }
+
+    .preset-btn.active {
+      background: var(--accent-blue);
+      border-color: var(--accent-blue);
+      color: #ffffff;
+      box-shadow: 0 0 10px rgba(37, 99, 235, 0.35);
+    }
+
+    /* AXIAL FORCE CONTROL CARD */
+    .axial-control-card {
+      background: var(--bg-card);
+      border: 2px solid var(--accent-rose);
+      border-radius: var(--radius-lg);
+      padding: 18px 22px;
+      margin-top: 18px;
+      box-shadow: var(--shadow-sm);
+    }
+
+    .axial-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 12px;
+      margin-bottom: 12px;
+    }
+
+    .axial-title {
+      font-family: var(--font-title);
+      font-size: 1.15rem;
+      font-weight: 800;
+      color: var(--accent-rose);
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .axial-metric-pill {
+      background: rgba(225, 29, 72, 0.1);
+      border: 1px solid rgba(225, 29, 72, 0.3);
+      color: var(--accent-rose);
+      font-family: var(--font-mono);
+      font-size: 0.95rem;
+      font-weight: 700;
+      padding: 6px 14px;
+      border-radius: var(--radius-sm);
+    }
+
+    .axial-slider-row {
+      display: flex;
+      align-items: center;
+      gap: 20px;
+    }
+
+    .slider-axial {
+      flex: 1;
+      -webkit-appearance: none;
+      height: 10px;
+      border-radius: 5px;
+      background: var(--border-color);
+      outline: none;
+    }
+
+    .slider-axial::-webkit-slider-thumb {
+      -webkit-appearance: none;
+      width: 24px;
+      height: 24px;
+      border-radius: 50%;
+      background: var(--accent-rose);
+      cursor: pointer;
+      border: 3px solid #ffffff;
+      box-shadow: 0 2px 6px rgba(0,0,0,0.3);
+    }
+
+    .axial-ticks {
+      display: flex;
+      justify-content: space-between;
+      font-size: 0.75rem;
+      color: var(--text-muted);
+      font-family: var(--font-mono);
+      margin-top: 6px;
+    }
+
+    .axial-quick-buttons {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      margin-top: 10px;
+      flex-wrap: wrap;
+    }
+
+    .quick-p-btn {
+      background: var(--bg-card-subtle);
+      border: 1px solid var(--border-color);
+      color: var(--text-main);
+      font-size: 0.775rem;
+      font-family: var(--font-mono);
+      padding: 4px 10px;
+      border-radius: var(--radius-sm);
+      cursor: pointer;
+    }
+
+    .quick-p-btn:hover {
+      background: var(--border-color);
+      color: var(--accent-rose);
+    }
+
+    /* SECTION & MATERIAL PARAMS ACCORDION */
+    .params-row {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+      gap: 12px;
+      margin-top: 14px;
+    }
+
+    .param-box {
+      background: var(--bg-card);
+      border: 1px solid var(--border-color);
+      border-radius: var(--radius-md);
+      padding: 10px 14px;
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+    }
+
+    .param-box label {
+      font-size: 0.75rem;
+      font-weight: 700;
+      color: var(--text-muted);
+      text-transform: uppercase;
+    }
+
+    .param-box input {
+      background: var(--bg-card-subtle);
+      border: 1px solid var(--border-color);
+      border-radius: var(--radius-sm);
+      padding: 6px 10px;
+      font-family: var(--font-mono);
+      font-size: 0.95rem;
+      font-weight: 700;
+      color: var(--text-bright);
+      outline: none;
+      width: 100%;
+    }
+
+    .param-box input:focus {
+      border-color: var(--accent-blue);
+    }
+
+    /* STEP-BY-STEP PROGRESSION CONTROLS (DEFORMATION SLIDER) */
+    .step-control-card {
+      background: var(--bg-card);
+      border: 1px solid var(--border-color);
+      border-radius: var(--radius-lg);
+      padding: 16px 22px;
+      margin-top: 16px;
+      box-shadow: var(--shadow-sm);
+    }
+
+    .step-control-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 12px;
+      margin-bottom: 12px;
+    }
+
+    .step-control-title {
+      font-family: var(--font-title);
+      font-size: 1.1rem;
+      font-weight: 800;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .anim-buttons {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .btn-step {
+      background: var(--bg-card-subtle);
+      border: 1px solid var(--border-color);
+      color: var(--text-main);
+      padding: 6px 14px;
+      border-radius: var(--radius-sm);
+      font-size: 0.825rem;
+      font-weight: 700;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 5px;
+      transition: all 0.15s ease;
+    }
+
+    .btn-step:hover {
+      background: var(--border-color);
+    }
+
+    .btn-play {
+      background: var(--accent-emerald);
+      color: #ffffff;
+      border: none;
+    }
+
+    .btn-play:hover {
+      background: #047857;
+    }
+
+    .slider-ec {
+      width: 100%;
+      -webkit-appearance: none;
+      height: 8px;
+      border-radius: 4px;
+      background: var(--border-color);
+      outline: none;
+    }
+
+    .slider-ec::-webkit-slider-thumb {
+      -webkit-appearance: none;
+      width: 22px;
+      height: 22px;
+      border-radius: 50%;
+      background: var(--accent-purple);
+      cursor: pointer;
+      border: 3px solid #ffffff;
+      box-shadow: 0 2px 5px rgba(0,0,0,0.3);
+    }
+
+    .step-pills {
+      display: flex;
+      justify-content: space-between;
+      margin-top: 8px;
+      overflow-x: auto;
+      gap: 4px;
+    }
+
+    .step-pill-item {
+      font-family: var(--font-mono);
+      font-size: 0.725rem;
+      padding: 3px 8px;
+      border-radius: 4px;
+      background: var(--bg-card-subtle);
+      color: var(--text-muted);
+      cursor: pointer;
+      white-space: nowrap;
+      border: 1px solid transparent;
+    }
+
+    .step-pill-item.active {
+      background: rgba(124, 58, 237, 0.15);
+      color: var(--accent-purple);
+      font-weight: 700;
+      border-color: rgba(124, 58, 237, 0.4);
+    }
+
+    /* THE DUAL CANVAS VIEW (THE EUREKA MOMENT) */
+    .dual-chart-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 20px;
+      margin-top: 20px;
+    }
+
+    @media (max-width: 1024px) {
+      .dual-chart-grid {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    .chart-card {
+      background: var(--bg-card);
+      border: 1px solid var(--border-color);
+      border-radius: var(--radius-lg);
+      padding: 18px;
+      box-shadow: var(--shadow-md);
+      display: flex;
+      flex-direction: column;
+    }
+
+    .chart-card-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      margin-bottom: 12px;
+      gap: 12px;
+    }
+
+    .chart-card-title {
+      font-family: var(--font-title);
+      font-size: 1.15rem;
+      font-weight: 800;
+      color: var(--text-bright);
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .chart-card-subtitle {
+      font-size: 0.8rem;
+      color: var(--text-muted);
+      margin-top: 2px;
+    }
+
+    .canvas-container {
+      width: 100%;
+      height: 440px;
+      position: relative;
+      background: var(--bg-primary);
+      border-radius: var(--radius-md);
+      border: 1px solid var(--border-color);
+      overflow: hidden;
+    }
+
+    .canvas-container canvas {
+      width: 100%;
+      height: 100%;
+      display: block;
+    }
+
+    .chart-footer-metrics {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(130px, 1fr));
+      gap: 10px;
+      margin-top: 14px;
+    }
+
+    .mini-metric {
+      background: var(--bg-card-subtle);
+      border: 1px solid var(--border-color);
+      border-radius: var(--radius-sm);
+      padding: 8px 12px;
+    }
+
+    .mini-metric .label {
+      font-size: 0.7rem;
+      color: var(--text-muted);
+      text-transform: uppercase;
+      font-weight: 700;
+    }
+
+    .mini-metric .val {
+      font-family: var(--font-mono);
+      font-size: 1rem;
+      font-weight: 800;
+      color: var(--text-bright);
+      margin-top: 2px;
+    }
+
+    /* SECTION MECHANICS (4 PANELS FOR THE ACTIVE POINT) */
+    .mechanics-section {
+      background: var(--bg-card);
+      border: 1px solid var(--border-color);
+      border-radius: var(--radius-lg);
+      padding: 20px;
+      margin-top: 20px;
+      box-shadow: var(--shadow-md);
+    }
+
+    .mechanics-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 16px;
+      flex-wrap: wrap;
+      gap: 12px;
+    }
+
+    .mechanics-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+      gap: 16px;
+    }
+
+    .mechanic-panel {
+      background: var(--bg-card-subtle);
+      border: 1px solid var(--border-color);
+      border-radius: var(--radius-md);
+      padding: 14px;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .mechanic-panel-title {
+      font-family: var(--font-title);
+      font-size: 0.925rem;
+      font-weight: 700;
+      margin-bottom: 10px;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .mini-canvas-container {
+      width: 100%;
+      height: 250px;
+      position: relative;
+      background: var(--bg-card);
+      border: 1px solid var(--border-color);
+      border-radius: var(--radius-sm);
+    }
+
+    .mini-canvas-container canvas {
+      width: 100%;
+      height: 100%;
+      display: block;
+    }
+
+    /* EQUILIBRIUM BALANCE CARD */
+    .balance-box {
+      margin-top: 14px;
+      padding: 14px 18px;
+      background: var(--bg-card-subtle);
+      border: 1px solid var(--border-color);
+      border-radius: var(--radius-md);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 14px;
+    }
+
+    .balance-stat {
+      font-family: var(--font-mono);
+      font-size: 0.9rem;
+    }
+
+    /* DATA TABLE */
+    .table-card {
+      background: var(--bg-card);
+      border: 1px solid var(--border-color);
+      border-radius: var(--radius-lg);
+      padding: 20px;
+      margin-top: 20px;
+      box-shadow: var(--shadow-md);
+    }
+
+    .table-responsive {
+      overflow-x: auto;
+      border: 1px solid var(--border-color);
+      border-radius: var(--radius-md);
+      margin-top: 14px;
+    }
+
+    table.calc-table {
+      width: 100%;
+      border-collapse: collapse;
+      font-family: var(--font-mono);
+      font-size: 0.825rem;
+      text-align: right;
+    }
+
+    table.calc-table th {
+      background: var(--bg-card-subtle);
+      color: var(--text-main);
+      font-weight: 700;
+      padding: 10px 14px;
+      border-bottom: 1px solid var(--border-color);
+      white-space: nowrap;
+    }
+
+    table.calc-table td {
+      padding: 8px 14px;
+      border-bottom: 1px solid var(--border-color);
+      white-space: nowrap;
+    }
+
+    table.calc-table tr:hover {
+      background: rgba(37, 99, 235, 0.05);
+    }
+
+    table.calc-table tr.active-row {
+      background: rgba(124, 58, 237, 0.12);
+      font-weight: 700;
+    }
+
+    /* CONCEPT QUIZ SECTION */
+    .quiz-section {
+      background: var(--bg-card);
+      border: 1px solid var(--border-color);
+      border-radius: var(--radius-lg);
+      padding: 22px;
+      margin-top: 20px;
+      box-shadow: var(--shadow-md);
+    }
+
+    .quiz-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+      gap: 16px;
+      margin-top: 16px;
+    }
+
+    .quiz-card {
+      background: var(--bg-card-subtle);
+      border: 1px solid var(--border-color);
+      border-radius: var(--radius-md);
+      padding: 16px;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+
+    .quiz-q {
+      font-weight: 700;
+      font-size: 0.9rem;
+      color: var(--text-bright);
+    }
+
+    .quiz-btn {
+      background: var(--bg-card);
+      border: 1px solid var(--border-color);
+      color: var(--text-main);
+      padding: 8px 12px;
+      border-radius: var(--radius-sm);
+      text-align: left;
+      font-size: 0.8rem;
+      cursor: pointer;
+      transition: all 0.15s ease;
+    }
+
+    .quiz-btn:hover {
+      border-color: var(--accent-blue);
+    }
+
+    .quiz-answer {
+      display: none;
+      padding: 10px;
+      border-radius: var(--radius-sm);
+      font-size: 0.8rem;
+      line-height: 1.4;
+      margin-top: 6px;
+    }
+
+    .quiz-answer.show { display: block; }
+    .quiz-answer.correct { background: rgba(5, 150, 105, 0.1); border: 1px solid rgba(5, 150, 105, 0.3); color: var(--accent-emerald); }
+  </style>
+</head>
+<body>
+
+  <!-- HEADER -->
+  <header class="header-bar">
+    <div class="container header-content">
+      <div class="header-title-area">
+        <h1>
+          <span>🌀</span>
+          <span>Diagrama Momento - Curvatura (\(M - \phi\))</span>
+        </h1>
+        <p>Análisis Seccional No Lineal a Carga Axial Constante \(P\) a partir de la Familia de Curvas de Interacción</p>
+      </div>
+
+      <div class="header-badges">
+        <a href="index.html" class="btn-theme-toggle" style="text-decoration:none;">🏠 Portal Principal</a>
+        <span class="badge-stage">Etapa Avanzada · Análisis No Lineal</span>
+        <button id="btn-theme-toggle" class="btn-theme-toggle" onclick="toggleTheme()">
+          <span id="theme-icon">🌙</span>
+          <span id="theme-text">Modo Oscuro</span>
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <main class="container">
+
+    <!-- CONCEPT BANNER -->
+    <div class="concept-banner">
+      <div class="icon">💡</div>
+      <div class="text">
+        <h3>El "Momento Eureka": ¿Cómo nace la curva Momento - Curvatura?</h3>
+        <p>
+          Un diagrama de interacción \(P-M\) convencional se calcula para una <strong>única deformación última</strong> (\(\varepsilon_{cu} = 0.003\)). 
+          Si en cambio calculamos la <strong>familia de curvas \(P-M\)</strong> para deformaciones progresivas del concreto (\(\varepsilon_c = 0.0005 \to 0.0050\)) y trazamos una <strong>línea horizontal a carga axial constante \(P\)</strong>, cada punto de corte nos da el momento resistente \(M_i\) y la curvatura \(\phi_i = \varepsilon_{c,i} / c_i\). 
+          <strong>¡El diagrama \(M - \phi\) es el corte transversal de esa familia de curvas!</strong>
+        </p>
+      </div>
+    </div>
+
+    <!-- PRESETS BAR -->
+    <div class="presets-bar">
+      <span class="preset-label">Casos de Estudio:</span>
+      <button class="preset-btn active" id="btn-pre-rect" onclick="loadPreset('rect')">📌 Columna 40×40 cm (3 Capas)</button>
+      <button class="preset-btn" id="btn-pre-wall" onclick="loadPreset('wall')">🏛️ Muro h = 2.20 m (Momento_curvatura_v2)</button>
+      <button class="preset-btn" id="btn-pre-beam" onclick="loadPreset('beam')">📐 Viga 40×40 cm (Flexión Pura, P = 0)</button>
+      <button class="preset-btn" id="btn-pre-25" onclick="loadPreset('25')">⚡ Columna Base 25×25 cm</button>
+    </div>
+
+    <!-- AXIAL FORCE TARGET CONTROL (THE CUTTING LINE) -->
+    <div class="axial-control-card">
+      <div class="axial-header">
+        <div class="axial-title">
+          <span>⚖️</span>
+          <span>Nivel de Carga Axial Constante (\(P_{\text{target}}\)) — La Línea de Corte</span>
+        </div>
+        <div class="axial-metric-pill" id="axial-metric-pill">
+          P = 500.0 kN (11% de P₀)
+        </div>
+      </div>
+
+      <div class="axial-slider-row">
+        <input type="range" id="slider-axial" class="slider-axial" min="0" max="4000" step="10" value="500" oninput="onAxialSliderChange(this.value)">
+      </div>
+
+      <div class="axial-ticks">
+        <span>P = 0 (Flexión Pura)</span>
+        <span id="tick-p-mid">P = 20% P₀</span>
+        <span id="tick-p-max">P_max</span>
+      </div>
+
+      <div class="axial-quick-buttons">
+        <span style="font-size:0.75rem; font-weight:700; color:var(--text-muted);">Accesos directos:</span>
+        <button class="quick-p-btn" onclick="setAxialRatio(0)">P = 0 (Viga)</button>
+        <button class="quick-p-btn" onclick="setAxialRatio(0.10)">P = 10% P₀</button>
+        <button class="quick-p-btn" onclick="setAxialRatio(0.20)">P = 20% P₀ (Sismo)</button>
+        <button class="quick-p-btn" onclick="setAxialRatio(0.30)">P = 30% P₀ (Muro v2)</button>
+        <button class="quick-p-btn" onclick="setAxialRatio(0.45)">P = 45% P₀ (Alta compresión)</button>
+      </div>
+    </div>
+
+    <!-- SECTION PARAMETERS -->
+    <div class="params-row">
+      <div class="param-box">
+        <label>Base (b)</label>
+        <input type="number" id="input-b" value="40" min="10" max="200" step="1" oninput="onParamChange()">
+      </div>
+      <div class="param-box">
+        <label>Peralte (h)</label>
+        <input type="number" id="input-h" value="40" min="10" max="300" step="1" oninput="onParamChange()">
+      </div>
+      <div class="param-box">
+        <label>f'c (MPa)</label>
+        <input type="number" id="input-fc" value="28" min="14" max="70" step="1" oninput="onParamChange()">
+      </div>
+      <div class="param-box">
+        <label>fy (MPa)</label>
+        <input type="number" id="input-fy" value="420" min="280" max="550" step="10" oninput="onParamChange()">
+      </div>
+      <div class="param-box">
+        <label>Es (MPa)</label>
+        <input type="number" id="input-es" value="210000" min="180000" max="220000" step="5000" oninput="onParamChange()">
+      </div>
+    </div>
+
+    <!-- STEP-BY-STEP PROGRESSION / ANIMATION -->
+    <div class="step-control-card">
+      <div class="step-control-header">
+        <div class="step-control-title">
+          <span>⏱️</span>
+          <span>Control de Deformación Progresiva: \(\varepsilon_c = \)<strong id="lbl-active-ec" style="color:var(--accent-purple); font-family:var(--font-mono); margin-left:6px;">0.0030</strong></span>
+        </div>
+
+        <div class="anim-buttons">
+          <button class="btn-step" onclick="prevStep()">◀ Anterior</button>
+          <button class="btn-step btn-play" id="btn-play-anim" onclick="toggleAnimation()">▶️ Animar</button>
+          <button class="btn-step" onclick="nextStep()">Siguiente ▶</button>
+        </div>
+      </div>
+
+      <input type="range" id="slider-ec" class="slider-ec" min="0" max="9" step="1" value="5" oninput="onEcSliderChange(this.value)">
+
+      <div class="step-pills" id="step-pills-container">
+        <!-- Filled dynamically: 0.0005, 0.0010, ... 0.0050 -->
+      </div>
+    </div>
+
+    <!-- DUAL CHART GRID (THE EUREKA VIEW) -->
+    <div class="dual-chart-grid">
+      <!-- LEFT: FAMILY OF P-M CURVES -->
+      <div class="chart-card">
+        <div class="chart-card-header">
+          <div>
+            <div class="chart-card-title">
+              <span>📊</span>
+              <span>1. Familia de Curvas \(P - M\)</span>
+            </div>
+            <div class="chart-card-subtitle">Corte a \(P = \text{cte}\) a diferentes \(\varepsilon_c\) (Momento_curvatura_v2)</div>
+          </div>
+        </div>
+
+        <div class="canvas-container">
+          <canvas id="canvas-pm-family"></canvas>
+        </div>
+
+        <div class="chart-footer-metrics">
+          <div class="mini-metric">
+            <div class="label">Carga Aplicada P</div>
+            <div class="val" id="metric-p-applied" style="color:var(--accent-rose);">500.0 kN</div>
+          </div>
+          <div class="mini-metric">
+            <div class="label">Curva Activa \(\varepsilon_c\)</div>
+            <div class="val" id="metric-active-ec" style="color:var(--accent-purple);">0.0030</div>
+          </div>
+          <div class="mini-metric">
+            <div class="label">Momento Intersección</div>
+            <div class="val" id="metric-inter-m" style="color:var(--accent-blue);">161.5 kN·m</div>
+          </div>
+          <div class="mini-metric">
+            <div class="label">Eje Neutro c</div>
+            <div class="val" id="metric-inter-c">8.68 cm</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- RIGHT: MOMENT - CURVATURE DIAGRAM -->
+      <div class="chart-card">
+        <div class="chart-card-header">
+          <div>
+            <div class="chart-card-title">
+              <span>📈</span>
+              <span>2. Diagrama Momento - Curvatura (\(M - \phi\))</span>
+            </div>
+            <div class="chart-card-subtitle">Curva resultante construida uniendo los puntos de corte</div>
+          </div>
+        </div>
+
+        <div class="canvas-container">
+          <canvas id="canvas-m-phi"></canvas>
+        </div>
+
+        <div class="chart-footer-metrics">
+          <div class="mini-metric">
+            <div class="label">Curvatura Activa \(\phi\)</div>
+            <div class="val" id="metric-active-phi" style="color:var(--accent-emerald);">0.0345 1/m</div>
+          </div>
+          <div class="mini-metric">
+            <div class="label">Momento Fluencia My</div>
+            <div class="val" id="metric-my" style="color:var(--accent-amber);">145.2 kN·m</div>
+          </div>
+          <div class="mini-metric">
+            <div class="label">Momento Máximo Mmax</div>
+            <div class="val" id="metric-mmax" style="color:var(--accent-blue);">161.5 kN·m</div>
+          </div>
+          <div class="mini-metric">
+            <div class="label">Ductilidad \(\mu_\phi = \phi_u / \phi_y\)</div>
+            <div class="val" id="metric-ductility" style="color:var(--accent-purple);">3.82</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- SECTION MECHANICS AT ACTIVE STEP (4 SUBPANELS) -->
+    <div class="mechanics-section">
+      <div class="mechanics-header">
+        <div>
+          <h3 style="font-family:var(--font-title); font-size:1.15rem; font-weight:800; color:var(--text-bright);">
+            🔬 Mecánica Interna de la Sección en el Punto Activo
+          </h3>
+          <p style="font-size:0.8rem; color:var(--text-muted);">
+            Visualización física de deformaciones \(\varepsilon(y)\), esfuerzos \(\sigma(y)\) y equilibrio para \(\varepsilon_c = \)<span id="mech-ec-title">0.0030</span>
+          </p>
+        </div>
+      </div>
+
+      <div class="mechanics-grid">
+        <!-- Subpanel 1: Section & Fibers -->
+        <div class="mechanic-panel">
+          <div class="mechanic-panel-title">
+            <span>📐</span>
+            <span>Sección y Eje Neutro</span>
+          </div>
+          <div class="mini-canvas-container">
+            <canvas id="canvas-sub-section"></canvas>
+          </div>
+        </div>
+
+        <!-- Subpanel 2: Strains -->
+        <div class="mechanic-panel">
+          <div class="mechanic-panel-title">
+            <span>📏</span>
+            <span>Deformaciones (\(\tan\theta = \phi\))</span>
+          </div>
+          <div class="mini-canvas-container">
+            <canvas id="canvas-sub-strains"></canvas>
+          </div>
+        </div>
+
+        <!-- Subpanel 3: Stresses -->
+        <div class="mechanic-panel">
+          <div class="mechanic-panel-title">
+            <span>🧱</span>
+            <span>Esfuerzos \(\sigma\) (Hognestad)</span>
+          </div>
+          <div class="mini-canvas-container">
+            <canvas id="canvas-sub-stresses"></canvas>
+          </div>
+        </div>
+
+        <!-- Subpanel 4: Forces & Arms -->
+        <div class="mechanic-panel">
+          <div class="mechanic-panel-title">
+            <span>⚖️</span>
+            <span>Fuerzas Internas (\(\sum F = P\))</span>
+          </div>
+          <div class="mini-canvas-container">
+            <canvas id="canvas-sub-forces"></canvas>
+          </div>
+        </div>
+      </div>
+
+      <!-- Equilibrium verification bar -->
+      <div class="balance-box">
+        <div class="balance-stat">
+          <span style="color:var(--text-muted);">Concreto (\(\sum F_c\)): </span>
+          <strong id="bal-sum-fc" style="color:var(--color-comp);">+610.2 kN</strong>
+        </div>
+        <div class="balance-stat">
+          <span style="color:var(--text-muted);">Acero (\(\sum F_s\)): </span>
+          <strong id="bal-sum-fs" style="color:var(--color-tens);">-110.2 kN</strong>
+        </div>
+        <div class="balance-stat">
+          <span style="color:var(--text-muted);">Total Interno: </span>
+          <strong id="bal-p-int">+500.0 kN</strong>
+        </div>
+        <div class="balance-stat">
+          <span style="color:var(--text-muted);">Carga Objetivo \(P\): </span>
+          <strong id="bal-p-target" style="color:var(--accent-rose);">500.0 kN</strong>
+        </div>
+        <div class="balance-stat">
+          <span style="color:var(--text-muted);">Error de Equilibrio: </span>
+          <strong id="bal-error" style="color:var(--accent-emerald);">0.00 kN (OK)</strong>
+        </div>
+      </div>
+    </div>
+
+    <!-- DATA TABLE -->
+    <div class="table-card">
+      <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:12px;">
+        <h3 style="font-family:var(--font-title); font-size:1.15rem; font-weight:800;">
+          📋 Tabla Numérica: Puntos del Diagrama Momento - Curvatura
+        </h3>
+        <div style="display:flex; gap:8px;">
+          <button class="btn-step" onclick="downloadCSV()">📥 Descargar CSV</button>
+          <button class="btn-step" onclick="copyLaTeX()">📋 Copiar Código LaTeX</button>
+        </div>
+      </div>
+
+      <div class="table-responsive">
+        <table class="calc-table" id="data-table">
+          <thead>
+            <tr>
+              <th style="text-align:center;">Paso</th>
+              <th>\(\varepsilon_c\) (tope)</th>
+              <th>\(c\) (cm)</th>
+              <th>\(\phi\) (1/m)</th>
+              <th>\(\phi\) (rad/km)</th>
+              <th>\(M\) (kN·m)</th>
+              <th>\(\varepsilon_s\) (tracción)</th>
+              <th>\(f_s\) (MPa)</th>
+              <th style="text-align:center;">Estado Sección</th>
+            </tr>
+          </thead>
+          <tbody id="table-body">
+            <!-- Populated dynamically -->
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- CONCEPT QUIZ SECTION -->
+    <div class="quiz-section">
+      <h3 style="font-family:var(--font-title); font-size:1.2rem; font-weight:800; margin-bottom:6px;">
+        🧠 Desafíos Conceptuales: Autoevaluación
+      </h3>
+      <p style="font-size:0.85rem; color:var(--text-muted);">
+        Pon a prueba tu comprensión física del diagrama Momento - Curvatura:
+      </p>
+
+      <div class="quiz-grid">
+        <div class="quiz-card">
+          <div class="quiz-q">1. ¿Qué ocurre con la ductilidad de la sección (\(\mu_\phi\)) si aumentamos la carga axial \(P\)?</div>
+          <button class="quiz-btn" onclick="toggleQuizAnswer(1)">Ver Explicación Física</button>
+          <div class="quiz-answer" id="quiz-ans-1">
+            <strong>Disminuye drásticamente.</strong> A mayor carga axial \(P\), el eje neutro \(c\) debe profundizarse para que haya más área comprimida de concreto. Como \(\phi = \varepsilon_c / c\), un \(c\) mayor reduce la curvatura última \(\phi_u\) y hace que el concreto alcance antes su límite de aplastamiento, produciendo una falla frágil y poco dúctil.
+          </div>
+        </div>
+
+        <div class="quiz-card">
+          <div class="quiz-q">2. ¿Qué representa la pendiente inicial de la curva \(M - \phi\)?</div>
+          <button class="quiz-btn" onclick="toggleQuizAnswer(2)">Ver Explicación Física</button>
+          <div class="quiz-answer" id="quiz-ans-2">
+            <strong>La rigidez a flexión elástica \((EI)\).</strong> En mecánica de materiales, \(M = EI \cdot \phi \implies \frac{dM}{d\phi} = EI\). La pendiente antes del agrietamiento representa la rigidez no agrietada \(E_c I_g\), y luego de la fluencia del acero la pendiente cae casi a cero (meseta plástica).
+          </div>
+        </div>
+
+        <div class="quiz-card">
+          <div class="quiz-q">3. ¿Por qué el momento flector desciende después del pico (\(\varepsilon_c > 0.0035\))?</div>
+          <button class="quiz-btn" onclick="toggleQuizAnswer(3)">Ver Explicación Física</button>
+          <div class="quiz-answer" id="quiz-ans-3">
+            <strong>Por el aplastamiento y ablandamiento del concreto (softening).</strong> Según el modelo de Hognestad, tras superar la deformación pico \(\varepsilon_0\), el concreto pierde esfuerzo (\(\sigma < f'_c\)) debido al microagrietamiento progresivo y desprendimiento del recubrimiento, reduciendo la fuerza de compresión disponible.
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </main>
+
+  <script>
+  /* ==========================================================================
+     GLOBAL STATE & CONSTITUTIVE MODELS
+     ========================================================================== */
+  const state = {
+    theme: 'light',
+    preset: 'rect', // 'rect', 'wall', 'beam', '25'
+    b: 40.0,        // cm
+    h: 40.0,        // cm
+    fc: 28.0,       // MPa
+    fy: 420.0,      // MPa
+    Es: 210000.0,   // MPa
+    P: 500.0,       // kN (constant axial load)
+    activeStepIdx: 5, // index into e1s list (default 0.0030)
+    isAnimating: false,
+    animTimer: null,
+    // Discretized fibers and steel layers
+    fibers: [],     // { y (cm), area (cm²) }
+    steel: [],      // { y (cm), area (cm²) }
+    // Calculation cache
+    e1List: [0.0005, 0.0010, 0.0015, 0.0020, 0.0025, 0.0030, 0.0035, 0.0040, 0.0045, 0.0050],
+    pmCurves: [],   // [ { ec, points: [ { P, M, c } ] } ]
+    mPhiPoints: [], // [ { ec, c, phi, M, P, max_es, fs_bot, stateStr } ]
+    P0: 4500.0      // Nominal axial capacity
+  };
+
+  // Constitutive model: Steel elastoplastic
+  function sigmaSteel(es, Es, fy) {
+    const fs = es * Es;
+    if (fs > fy) return fy;
+    if (fs < -fy) return -fy;
+    return fs;
+  }
+
+  // Constitutive model: Concrete unconfined Hognestad
+  function sigmaConc(ec, fc) {
+    if (ec <= 0) return 0.0;
+    const Ec = 4400.0 * Math.sqrt(fc);
+    const e0 = 1.8 * fc / Ec;
+    const eu = 0.0038;
+    const m = -0.15 * fc / (eu - e0);
+    if (ec <= e0) {
+      return fc * (2.0 * (ec / e0) - Math.pow(ec / e0, 2));
+    } else if (ec <= eu) {
+      return fc + m * (ec - e0);
+    } else {
+      return 0.0;
+    }
+  }
+
+  // Pure axial capacity P0
+  function calcP0() {
+    const Ag = state.b * state.h;
+    const Ast = state.steel.reduce((acc, s) => acc + s.area, 0);
+    const Ac = Ag - Ast;
+    // P0 in kN: (0.85 * f'c * Ac + fy * Ast) / 10
+    return (0.85 * state.fc * Ac + state.fy * Ast) / 10.0;
+  }
+
+  // Evaluate section equilibrium and moment for given (c, ec)
+  function evalSection(c, ec) {
+    const yhat = state.h / 2.0; // cm
+    let sumFc = 0.0;
+    let sumMc = 0.0;
+    let sumFs = 0.0;
+    let sumMs = 0.0;
+
+    // Concrete fibers
+    const concDetails = state.fibers.map(fib => {
+      const eps = ec * (c - fib.y) / c;
+      const sig = sigmaConc(eps, state.fc); // MPa
+      const F = sig * fib.area / 10.0;      // kN
+      const arm = (yhat - fib.y) / 100.0;   // m
+      const M = F * arm;                    // kN·m
+      sumFc += F;
+      sumMc += M;
+      return { y: fib.y, area: fib.area, eps, sig, F, arm, M };
+    });
+
+    // Steel layers
+    let maxTensionEs = 0.0;
+    let botFs = 0.0;
+    const steelDetails = state.steel.map((s, idx) => {
+      const eps = ec * (c - s.y) / c;
+      const sig = sigmaSteel(eps, state.Es, state.fy); // MPa
+      const F = sig * s.area / 10.0;                   // kN
+      const arm = (yhat - s.y) / 100.0;                // m
+      const M = F * arm;                               // kN·m
+      sumFs += F;
+      sumMs += M;
+      if (eps < maxTensionEs) maxTensionEs = eps;
+      if (idx === state.steel.length - 1) botFs = sig;
+      return { y: s.y, area: s.area, eps, sig, F, arm, M };
+    });
+
+    const P = sumFc + sumFs;
+    const M = sumMc + sumMs;
+
+    return {
+      P, M, c, ec, sumFc, sumFs, sumMc, sumMs,
+      concDetails, steelDetails, maxTensionEs, botFs
+    };
+  }
+
+  // Solve c for a target axial load P_target via Bisection
+  function solveCForP(ec, Ptarget) {
+    let cLow = 0.01;            // 0.01 cm
+    let cHigh = state.h * 15.0; // very deep neutral axis for pure compression
+
+    for (let iter = 0; iter < 45; iter++) {
+      const cMid = 0.5 * (cLow + cHigh);
+      const res = evalSection(cMid, ec);
+      if (res.P < Ptarget) {
+        cLow = cMid;
+      } else {
+        cHigh = cMid;
+      }
+    }
+
+    const cSol = 0.5 * (cLow + cHigh);
+    return evalSection(cSol, ec);
+  }
+
+  // Generate full P-M interaction curve for a given ec
+  function generatePMCurve(ec, nSteps = 100) {
+    const points = [];
+    // Sweep c from near 0 to deep
+    const cMin = 0.2;
+    const cMax = state.h * 2.0;
+
+    for (let i = 0; i <= nSteps; i++) {
+      // Non-linear spacing to give more density near balanced point
+      const t = i / nSteps;
+      const c = cMin + (cMax - cMin) * Math.pow(t, 1.6);
+      const res = evalSection(c, ec);
+      points.push({ c: res.c, P: res.P, M: res.M });
+    }
+    return { ec, points };
+  }
+
+  /* ==========================================================================
+     PRESETS DEFINITION
+     ========================================================================== */
+  function loadPreset(key) {
+    state.preset = key;
+    document.querySelectorAll('.preset-btn').forEach(btn => btn.classList.remove('active'));
+
+    if (key === 'rect') {
+      document.getElementById('btn-pre-rect').classList.add('active');
+      state.b = 40.0;
+      state.h = 40.0;
+      state.fc = 28.0;
+      state.fy = 420.0;
+      state.Es = 210000.0;
+      state.P = 500.0;
+
+      // 40 fibers
+      const ndiv = 40;
+      const dy = state.h / ndiv;
+      state.fibers = [];
+      for (let i = 0; i < ndiv; i++) {
+        state.fibers.push({ y: (i + 0.5) * dy, area: dy * state.b });
+      }
+      // 3 steel layers
+      state.steel = [
+        { y: 5.0, area: 4.0 },
+        { y: 20.0, area: 4.0 },
+        { y: 35.0, area: 4.0 }
+      ];
+    } else if (key === 'wall') {
+      document.getElementById('btn-pre-wall').classList.add('active');
+      state.b = 20.0;
+      state.h = 220.0; // 2.20 m
+      state.fc = 21.0;
+      state.fy = 420.0;
+      state.Es = 210000.0;
+      state.P = 3690.0; // 30% P0 in notebook
+
+      // 22 fibers matching notebook
+      const ndiv = 22;
+      state.fibers = [];
+      for (let i = 0; i < ndiv; i++) {
+        state.fibers.push({ y: (5.0 + 10.0 * i), area: 200.0 }); // 10 cm * 20 cm = 200 cm²
+      }
+      // 29 steel layers matching notebook
+      state.steel = [];
+      for (let i = 0; i < 29; i++) {
+        const diam = (i % 2 === 0) ? 1.6 : 1.2; // cm
+        const area = 2.0 * Math.PI * Math.pow(diam, 2) / 4.0;
+        state.steel.push({ y: 5.0 + 7.5 * i, area: area });
+      }
+    } else if (key === 'beam') {
+      document.getElementById('btn-pre-beam').classList.add('active');
+      state.b = 40.0;
+      state.h = 40.0;
+      state.fc = 28.0;
+      state.fy = 420.0;
+      state.Es = 210000.0;
+      state.P = 0.0; // Pure flexure
+
+      const ndiv = 40;
+      const dy = state.h / ndiv;
+      state.fibers = [];
+      for (let i = 0; i < ndiv; i++) {
+        state.fibers.push({ y: (i + 0.5) * dy, area: dy * state.b });
+      }
+      state.steel = [
+        { y: 5.0, area: 4.0 },
+        { y: 20.0, area: 4.0 },
+        { y: 35.0, area: 4.0 }
+      ];
+    } else if (key === '25') {
+      document.getElementById('btn-pre-25').classList.add('active');
+      state.b = 25.0;
+      state.h = 25.0;
+      state.fc = 21.0;
+      state.fy = 420.0;
+      state.Es = 210000.0;
+      state.P = 250.0;
+
+      const ndiv = 25;
+      const dy = state.h / ndiv;
+      state.fibers = [];
+      for (let i = 0; i < ndiv; i++) {
+        state.fibers.push({ y: (i + 0.5) * dy, area: dy * state.b });
+      }
+      state.steel = [
+        { y: 5.0, area: 6.0 },
+        { y: 12.5, area: 4.0 },
+        { y: 20.0, area: 6.0 }
+      ];
+    }
+
+    // Sync input values
+    document.getElementById('input-b').value = state.b;
+    document.getElementById('input-h').value = state.h;
+    document.getElementById('input-fc').value = state.fc;
+    document.getElementById('input-fy').value = state.fy;
+    document.getElementById('input-es').value = state.Es;
+
+    recalculateAll();
+  }
+
+  function onParamChange() {
+    state.b = parseFloat(document.getElementById('input-b').value) || 40.0;
+    state.h = parseFloat(document.getElementById('input-h').value) || 40.0;
+    state.fc = parseFloat(document.getElementById('input-fc').value) || 28.0;
+    state.fy = parseFloat(document.getElementById('input-fy').value) || 420.0;
+    state.Es = parseFloat(document.getElementById('input-es').value) || 210000.0;
+
+    // Regenerate fibers proportionally
+    const ndiv = 40;
+    const dy = state.h / ndiv;
+    state.fibers = [];
+    for (let i = 0; i < ndiv; i++) {
+      state.fibers.push({ y: (i + 0.5) * dy, area: dy * state.b });
+    }
+    // Proportional steel layers
+    const rec = Math.max(3.5, Math.min(6.0, state.h * 0.1));
+    state.steel = [
+      { y: rec, area: 4.0 },
+      { y: state.h / 2.0, area: 4.0 },
+      { y: state.h - rec, area: 4.0 }
+    ];
+
+    recalculateAll();
+  }
+
+  function setAxialRatio(ratio) {
+    state.P0 = calcP0();
+    state.P = Math.round(state.P0 * ratio * 10) / 10.0;
+    document.getElementById('slider-axial').value = state.P;
+    recalculateAll();
+  }
+
+  function onAxialSliderChange(val) {
+    state.P = parseFloat(val);
+    recalculateAll();
+  }
+
+  function onEcSliderChange(idx) {
+    state.activeStepIdx = parseInt(idx, 10);
+    updateActiveStepViews();
+  }
+
+  function prevStep() {
+    if (state.activeStepIdx > 0) {
+      state.activeStepIdx--;
+      document.getElementById('slider-ec').value = state.activeStepIdx;
+      updateActiveStepViews();
+    }
+  }
+
+  function nextStep() {
+    if (state.activeStepIdx < state.e1List.length - 1) {
+      state.activeStepIdx++;
+      document.getElementById('slider-ec').value = state.activeStepIdx;
+      updateActiveStepViews();
+    }
+  }
+
+  function toggleAnimation() {
+    const btn = document.getElementById('btn-play-anim');
+    if (state.isAnimating) {
+      clearInterval(state.animTimer);
+      state.isAnimating = false;
+      btn.innerHTML = '▶️ Animar';
+      btn.classList.add('btn-play');
+    } else {
+      state.isAnimating = true;
+      btn.innerHTML = '⏸ Pausar';
+      btn.classList.remove('btn-play');
+
+      state.animTimer = setInterval(() => {
+        if (state.activeStepIdx >= state.e1List.length - 1) {
+          state.activeStepIdx = 0;
+        } else {
+          state.activeStepIdx++;
+        }
+        document.getElementById('slider-ec').value = state.activeStepIdx;
+        updateActiveStepViews();
+      }, 1200);
+    }
+  }
+
+  /* ==========================================================================
+     RECALCULATE EVERYTHING
+     ========================================================================== */
+  function recalculateAll() {
+    state.P0 = calcP0();
+
+    // Adjust axial slider bounds
+    const sliderAxial = document.getElementById('slider-axial');
+    const pMax = Math.round(state.P0 * 0.75 / 50) * 50;
+    sliderAxial.max = Math.max(1000, pMax);
+    if (state.P > sliderAxial.max) state.P = sliderAxial.max;
+    sliderAxial.value = state.P;
+
+    // Update axial badges
+    const pRatio = ((state.P / state.P0) * 100).toFixed(0);
+    document.getElementById('axial-metric-pill').textContent = `P = ${state.P.toFixed(1)} kN (${pRatio}% de P₀ = ${state.P0.toFixed(0)} kN)`;
+    document.getElementById('tick-p-mid').textContent = `P = ${(state.P0 * 0.2).toFixed(0)} kN (20%)`;
+    document.getElementById('tick-p-max').textContent = `P_max = ${pMax} kN`;
+
+    // 1. Generate family of P-M curves
+    state.pmCurves = state.e1List.map(ec => generatePMCurve(ec, 80));
+
+    // 2. Solve M-phi points for each ec at P = state.P
+    const ey = state.fy / state.Es;
+    state.mPhiPoints = [];
+
+    state.e1List.forEach((ec, idx) => {
+      const res = solveCForP(ec, state.P);
+      const phi = ec / (res.c / 100.0); // 1/m (c in cm -> m)
+      const isYield = Math.abs(res.botFs) >= state.fy - 1e-3;
+      
+      let stateStr = 'Régimen Elástico';
+      if (ec > 0.0035) stateStr = 'Aplastamiento Concreto';
+      else if (isYield) stateStr = 'Fluencia de Acero';
+
+      state.mPhiPoints.push({
+        idx: idx + 1,
+        ec,
+        c: res.c,
+        phi,
+        phiRadKm: phi * 1000.0,
+        M: res.M,
+        P: res.P,
+        max_es: res.maxTensionEs,
+        fs_bot: res.botFs,
+        isYield,
+        stateStr,
+        details: res
+      });
+    });
+
+    // Populate step pills
+    const pillsContainer = document.getElementById('step-pills-container');
+    pillsContainer.innerHTML = '';
+    state.e1List.forEach((ec, idx) => {
+      const pill = document.createElement('div');
+      pill.className = `step-pill-item ${idx === state.activeStepIdx ? 'active' : ''}`;
+      pill.textContent = `ε = ${ec.toFixed(4)}`;
+      pill.onclick = () => {
+        state.activeStepIdx = idx;
+        document.getElementById('slider-ec').value = idx;
+        updateActiveStepViews();
+      };
+      pillsContainer.appendChild(pill);
+    });
+
+    // Update table & views
+    updateTable();
+    updateActiveStepViews();
+  }
+
+  /* ==========================================================================
+     UPDATE ACTIVE STEP VIEWS (CANVASES & METRICS)
+     ========================================================================== */
+  function updateActiveStepViews() {
+    const activePt = state.mPhiPoints[state.activeStepIdx];
+    if (!activePt) return;
+
+    // Update active labels
+    document.getElementById('lbl-active-ec').textContent = activePt.ec.toFixed(4);
+    document.getElementById('mech-ec-title').textContent = activePt.ec.toFixed(4);
+
+    // Update step pills
+    const pills = document.querySelectorAll('.step-pill-item');
+    pills.forEach((p, idx) => {
+      if (idx === state.activeStepIdx) p.classList.add('active');
+      else p.classList.remove('active');
+    });
+
+    // Highlight row in table
+    const rows = document.querySelectorAll('#table-body tr');
+    rows.forEach((r, idx) => {
+      if (idx === state.activeStepIdx) r.classList.add('active-row');
+      else r.classList.remove('active-row');
+    });
+
+    // Update metrics
+    document.getElementById('metric-p-applied').textContent = `${state.P.toFixed(1)} kN`;
+    document.getElementById('metric-active-ec').textContent = activePt.ec.toFixed(4);
+    document.getElementById('metric-inter-m').textContent = `${activePt.M.toFixed(1)} kN·m`;
+    document.getElementById('metric-inter-c').textContent = `${activePt.c.toFixed(2)} cm`;
+    document.getElementById('metric-active-phi').textContent = `${activePt.phi.toFixed(4)} 1/m`;
+
+    // Find Yield point (My, phiy)
+    const yieldPt = state.mPhiPoints.find(p => p.isYield) || state.mPhiPoints[0];
+    const maxPt = state.mPhiPoints.reduce((max, p) => p.M > max.M ? p : max, state.mPhiPoints[0]);
+    const ultPt = state.mPhiPoints[state.mPhiPoints.length - 1];
+    const ductility = yieldPt.phi > 1e-6 ? (ultPt.phi / yieldPt.phi).toFixed(2) : 'N/A';
+
+    document.getElementById('metric-my').textContent = `${yieldPt.M.toFixed(1)} kN·m`;
+    document.getElementById('metric-mmax').textContent = `${maxPt.M.toFixed(1)} kN·m`;
+    document.getElementById('metric-ductility').textContent = ductility;
+
+    // Update equilibrium balance box
+    document.getElementById('bal-sum-fc').textContent = `${activePt.details.sumFc >= 0 ? '+' : ''}${activePt.details.sumFc.toFixed(1)} kN`;
+    document.getElementById('bal-sum-fs').textContent = `${activePt.details.sumFs >= 0 ? '+' : ''}${activePt.details.sumFs.toFixed(1)} kN`;
+    document.getElementById('bal-p-int').textContent = `${activePt.details.P.toFixed(1)} kN`;
+    document.getElementById('bal-p-target').textContent = `${state.P.toFixed(1)} kN`;
+    const err = Math.abs(activePt.details.P - state.P);
+    document.getElementById('bal-error').textContent = `${err.toFixed(3)} kN (${err < 0.1 ? 'OK' : 'Buscando'})`;
+
+    // Draw all canvases
+    drawPMFamily(activePt);
+    drawMPhiDiagram(activePt, yieldPt, maxPt);
+    drawSubSection(activePt);
+    drawSubStrains(activePt);
+    drawSubStresses(activePt);
+    drawSubForces(activePt);
+  }
+
+  /* ==========================================================================
+     CANVAS HELPER
+     ========================================================================== */
+  function setupCanvas(id) {
+    const canvas = document.getElementById(id);
+    const dpr = window.devicePixelRatio || 1;
+    const rect = canvas.getBoundingClientRect();
+    canvas.width = rect.width * dpr;
+    canvas.height = rect.height * dpr;
+    const ctx = canvas.getContext('2d');
+    ctx.scale(dpr, dpr);
+    return { ctx, width: rect.width, height: rect.height };
+  }
+
+  /* ==========================================================================
+     CANVAS 1: FAMILY OF P-M INTERACTION CURVES
+     ========================================================================== */
+  function drawPMFamily(activePt) {
+    const { ctx, width, height } = setupCanvas('canvas-pm-family');
+    ctx.clearRect(0, 0, width, height);
+
+    const padL = 60, padR = 25, padT = 35, padB = 45;
+    const plotW = width - padL - padR;
+    const plotH = height - padT - padB;
+
+    // Determine max bounds
+    let maxM = 10.0;
+    let maxP = 100.0;
+    let minP = -50.0;
+
+    state.pmCurves.forEach(curve => {
+      curve.points.forEach(pt => {
+        if (pt.M > maxM) maxM = pt.M;
+        if (pt.P > maxP) maxP = pt.P;
+        if (pt.P < minP) minP = pt.P;
+      });
+    });
+
+    maxM = Math.ceil(maxM * 1.15 / 50) * 50;
+    maxP = Math.ceil(maxP * 1.1 / 100) * 100;
+    minP = Math.floor(minP * 1.1 / 100) * 100;
+
+    const toX = m => padL + (m / maxM) * plotW;
+    const toY = p => padT + plotH - ((p - minP) / (maxP - minP)) * plotH;
+
+    // Grid lines
+    ctx.strokeStyle = state.theme === 'dark' ? '#1f293d' : '#e2e8f0';
+    ctx.lineWidth = 1;
+
+    const nTicksX = 5;
+    for (let i = 0; i <= nTicksX; i++) {
+      const val = (maxM / nTicksX) * i;
+      const x = toX(val);
+      ctx.beginPath();
+      ctx.moveTo(x, padT);
+      ctx.lineTo(x, padT + plotH);
+      ctx.stroke();
+
+      ctx.fillStyle = state.theme === 'dark' ? '#94a3b8' : '#64748b';
+      ctx.font = '10px "JetBrains Mono"';
+      ctx.textAlign = 'center';
+      ctx.fillText(val.toFixed(0), x, padT + plotH + 16);
+    }
+
+    const nTicksY = 6;
+    for (let i = 0; i <= nTicksY; i++) {
+      const val = minP + ((maxP - minP) / nTicksY) * i;
+      const y = toY(val);
+      ctx.beginPath();
+      ctx.moveTo(padL, y);
+      ctx.lineTo(padL + plotW, y);
+      ctx.stroke();
+
+      ctx.fillStyle = state.theme === 'dark' ? '#94a3b8' : '#64748b';
+      ctx.font = '10px "JetBrains Mono"';
+      ctx.textAlign = 'right';
+      ctx.fillText(val.toFixed(0), padL - 8, y + 4);
+    }
+
+    // Axes titles
+    ctx.fillStyle = state.theme === 'dark' ? '#cbd5e1' : '#1e293b';
+    ctx.font = 'bold 11px "Outfit"';
+    ctx.textAlign = 'center';
+    ctx.fillText('Momento Flector M (kN·m)', padL + plotW / 2, height - 10);
+
+    ctx.save();
+    ctx.translate(16, padT + plotH / 2);
+    ctx.rotate(-Math.PI / 2);
+    ctx.fillText('Carga Axial P (kN)', 0, 0);
+    ctx.restore();
+
+    // Draw family of P-M curves
+    state.pmCurves.forEach((curve, idx) => {
+      const isCurrent = idx === state.activeStepIdx;
+      // Color gradient from teal to violet
+      const hue = 180 + (idx / state.pmCurves.length) * 100;
+      ctx.strokeStyle = isCurrent ? '#7c3aed' : `hsla(${hue}, 70%, 50%, 0.45)`;
+      ctx.lineWidth = isCurrent ? 3 : 1.5;
+
+      ctx.beginPath();
+      curve.points.forEach((pt, pIdx) => {
+        const x = toX(Math.max(0, pt.M));
+        const y = toY(pt.P);
+        if (pIdx === 0) ctx.moveTo(x, y);
+        else ctx.lineTo(x, y);
+      });
+      ctx.stroke();
+
+      // Label at top of curve
+      if (idx % 2 === 1 || isCurrent) {
+        const topPt = curve.points[curve.points.length - 1];
+        ctx.fillStyle = isCurrent ? '#7c3aed' : (state.theme === 'dark' ? '#94a3b8' : '#64748b');
+        ctx.font = isCurrent ? 'bold 10px "JetBrains Mono"' : '9px "JetBrains Mono"';
+        ctx.textAlign = 'left';
+        ctx.fillText(`ε=${curve.ec}`, toX(topPt.M) + 4, toY(topPt.P));
+      }
+    });
+
+    // Draw Horizontal Target Axial Load Line P = P_target
+    const yTarget = toY(state.P);
+    ctx.beginPath();
+    ctx.setLineDash([6, 4]);
+    ctx.moveTo(padL, yTarget);
+    ctx.lineTo(padL + plotW, yTarget);
+    ctx.strokeStyle = '#e11d48';
+    ctx.lineWidth = 2.5;
+    ctx.stroke();
+    ctx.setLineDash([]);
+
+    // Tag for P_target line
+    ctx.fillStyle = '#e11d48';
+    ctx.font = 'bold 11px "Outfit"';
+    ctx.textAlign = 'right';
+    ctx.fillText(`P = ${state.P.toFixed(0)} kN (Línea de Corte)`, padL + plotW - 10, yTarget - 8);
+
+    // Draw intersection dots for all computed M-phi points
+    state.mPhiPoints.forEach((pt, idx) => {
+      const isCurrent = idx === state.activeStepIdx;
+      const x = toX(pt.M);
+      const y = toY(state.P);
+
+      ctx.beginPath();
+      ctx.arc(x, y, isCurrent ? 8 : 4.5, 0, 2 * Math.PI);
+      ctx.fillStyle = isCurrent ? '#7c3aed' : '#2563eb';
+      ctx.fill();
+      ctx.strokeStyle = '#ffffff';
+      ctx.lineWidth = 2;
+      ctx.stroke();
+
+      if (isCurrent) {
+        // Pulsing ring
+        ctx.beginPath();
+        ctx.arc(x, y, 14, 0, 2 * Math.PI);
+        ctx.strokeStyle = 'rgba(124, 58, 237, 0.45)';
+        ctx.lineWidth = 2.5;
+        ctx.stroke();
+
+        ctx.fillStyle = '#7c3aed';
+        ctx.font = 'bold 11px "JetBrains Mono"';
+        ctx.textAlign = 'center';
+        ctx.fillText(`M = ${pt.M.toFixed(1)} kNm`, x, y - 18);
+      }
+    });
+  }
+
+  /* ==========================================================================
+     CANVAS 2: MOMENT - CURVATURE DIAGRAM
+     ========================================================================== */
+  function drawMPhiDiagram(activePt, yieldPt, maxPt) {
+    const { ctx, width, height } = setupCanvas('canvas-m-phi');
+    ctx.clearRect(0, 0, width, height);
+
+    const padL = 60, padR = 25, padT = 35, padB = 45;
+    const plotW = width - padL - padR;
+    const plotH = height - padT - padB;
+
+    let maxM = 50.0;
+    let maxPhi = 0.01;
+
+    state.mPhiPoints.forEach(pt => {
+      if (pt.M > maxM) maxM = pt.M;
+      if (pt.phi > maxPhi) maxPhi = pt.phi;
+    });
+
+    maxM = Math.ceil(maxM * 1.15 / 50) * 50;
+    maxPhi = Math.ceil(maxPhi * 1.15 * 100) / 100;
+
+    const toX = phi => padL + (phi / maxPhi) * plotW;
+    const toY = m => padT + plotH - (m / maxM) * plotH;
+
+    // Grid
+    ctx.strokeStyle = state.theme === 'dark' ? '#1f293d' : '#e2e8f0';
+    ctx.lineWidth = 1;
+
+    const nTicksX = 5;
+    for (let i = 0; i <= nTicksX; i++) {
+      const val = (maxPhi / nTicksX) * i;
+      const x = toX(val);
+      ctx.beginPath();
+      ctx.moveTo(x, padT);
+      ctx.lineTo(x, padT + plotH);
+      ctx.stroke();
+
+      ctx.fillStyle = state.theme === 'dark' ? '#94a3b8' : '#64748b';
+      ctx.font = '10px "JetBrains Mono"';
+      ctx.textAlign = 'center';
+      ctx.fillText(val.toFixed(3), x, padT + plotH + 16);
+    }
+
+    const nTicksY = 6;
+    for (let i = 0; i <= nTicksY; i++) {
+      const val = (maxM / nTicksY) * i;
+      const y = toY(val);
+      ctx.beginPath();
+      ctx.moveTo(padL, y);
+      ctx.lineTo(padL + plotW, y);
+      ctx.stroke();
+
+      ctx.fillStyle = state.theme === 'dark' ? '#94a3b8' : '#64748b';
+      ctx.font = '10px "JetBrains Mono"';
+      ctx.textAlign = 'right';
+      ctx.fillText(val.toFixed(0), padL - 8, y + 4);
+    }
+
+    // Axes titles
+    ctx.fillStyle = state.theme === 'dark' ? '#cbd5e1' : '#1e293b';
+    ctx.font = 'bold 11px "Outfit"';
+    ctx.textAlign = 'center';
+    ctx.fillText('Curvatura φ (1/m)', padL + plotW / 2, height - 10);
+
+    ctx.save();
+    ctx.translate(16, padT + plotH / 2);
+    ctx.rotate(-Math.PI / 2);
+    ctx.fillText('Momento Flector M (kN·m)', 0, 0);
+    ctx.restore();
+
+    // Draw continuous curve up to active point
+    ctx.beginPath();
+    ctx.moveTo(toX(0), toY(0));
+    state.mPhiPoints.forEach((pt, idx) => {
+      if (idx <= state.activeStepIdx) {
+        ctx.lineTo(toX(pt.phi), toY(pt.M));
+      }
+    });
+    ctx.strokeStyle = '#059669';
+    ctx.lineWidth = 3.5;
+    ctx.stroke();
+
+    // Remaining future curve as dashed
+    if (state.activeStepIdx < state.mPhiPoints.length - 1) {
+      ctx.beginPath();
+      ctx.setLineDash([5, 4]);
+      ctx.moveTo(toX(activePt.phi), toY(activePt.M));
+      for (let i = state.activeStepIdx + 1; i < state.mPhiPoints.length; i++) {
+        ctx.lineTo(toX(state.mPhiPoints[i].phi), toY(state.mPhiPoints[i].M));
+      }
+      ctx.strokeStyle = state.theme === 'dark' ? '#334155' : '#cbd5e1';
+      ctx.lineWidth = 2;
+      ctx.stroke();
+      ctx.setLineDash([]);
+    }
+
+    // Draw Yield Point marker (My, phiy)
+    if (yieldPt && yieldPt.isYield) {
+      const yX = toX(yieldPt.phi);
+      const yY = toY(yieldPt.M);
+      ctx.beginPath();
+      ctx.arc(yX, yY, 6, 0, 2 * Math.PI);
+      ctx.fillStyle = '#d97706';
+      ctx.fill();
+      ctx.strokeStyle = '#ffffff';
+      ctx.lineWidth = 1.5;
+      ctx.stroke();
+
+      ctx.fillStyle = '#d97706';
+      ctx.font = 'bold 10px "Outfit"';
+      ctx.textAlign = 'right';
+      ctx.fillText(`Fluencia (My=${yieldPt.M.toFixed(0)})`, yX - 10, yY - 8);
+    }
+
+    // Draw Maximum Moment marker
+    if (maxPt) {
+      const mX = toX(maxPt.phi);
+      const mY = toY(maxPt.M);
+      ctx.beginPath();
+      ctx.arc(mX, mY, 6, 0, 2 * Math.PI);
+      ctx.fillStyle = '#2563eb';
+      ctx.fill();
+      ctx.strokeStyle = '#ffffff';
+      ctx.lineWidth = 1.5;
+      ctx.stroke();
+
+      ctx.fillStyle = '#2563eb';
+      ctx.font = 'bold 10px "Outfit"';
+      ctx.textAlign = 'center';
+      ctx.fillText(`Mmax=${maxPt.M.toFixed(0)}`, mX, mY - 12);
+    }
+
+    // Draw points on the curve
+    state.mPhiPoints.forEach((pt, idx) => {
+      const isCurrent = idx === state.activeStepIdx;
+      const x = toX(pt.phi);
+      const y = toY(pt.M);
+
+      ctx.beginPath();
+      ctx.arc(x, y, isCurrent ? 8 : 4.5, 0, 2 * Math.PI);
+      ctx.fillStyle = isCurrent ? '#7c3aed' : (idx <= state.activeStepIdx ? '#059669' : '#94a3b8');
+      ctx.fill();
+      ctx.strokeStyle = '#ffffff';
+      ctx.lineWidth = 2;
+      ctx.stroke();
+
+      if (isCurrent) {
+        ctx.beginPath();
+        ctx.arc(x, y, 14, 0, 2 * Math.PI);
+        ctx.strokeStyle = 'rgba(124, 58, 237, 0.45)';
+        ctx.lineWidth = 2.5;
+        ctx.stroke();
+
+        ctx.fillStyle = '#7c3aed';
+        ctx.font = 'bold 11px "JetBrains Mono"';
+        ctx.textAlign = 'left';
+        ctx.fillText(`(φ=${pt.phi.toFixed(4)}, M=${pt.M.toFixed(1)})`, x + 12, y + 4);
+      }
+    });
+  }
+
+  /* ==========================================================================
+     CANVAS 3: SUBPANEL SECTION & FIBERS
+     ========================================================================== */
+  function drawSubSection(activePt) {
+    const { ctx, width, height } = setupCanvas('canvas-sub-section');
+    ctx.clearRect(0, 0, width, height);
+
+    const pad = 25;
+    const scale = Math.min((width - 2 * pad) / state.b, (height - 2 * pad) / state.h);
+    const drawW = state.b * scale;
+    const drawH = state.h * scale;
+    const startX = (width - drawW) / 2;
+    const startY = (height - drawH) / 2;
+
+    // Draw fibers
+    activePt.details.concDetails.forEach(fib => {
+      const dyPix = (fib.area / state.b) * scale;
+      const fibY = startY + (fib.y - (fib.area / state.b) / 2.0) * scale;
+
+      let color;
+      if (fib.sig > 0) {
+        const ratio = Math.min(1.0, fib.sig / state.fc);
+        color = `rgba(234, 88, 12, ${0.2 + 0.7 * ratio})`;
+      } else {
+        color = state.theme === 'dark' ? 'rgba(8, 145, 178, 0.08)' : 'rgba(8, 145, 178, 0.1)';
+      }
+
+      ctx.fillStyle = color;
+      ctx.fillRect(startX, fibY, drawW, dyPix);
+      ctx.strokeStyle = state.theme === 'dark' ? '#24324f' : '#e2e8f0';
+      ctx.lineWidth = 0.8;
+      ctx.strokeRect(startX, fibY, drawW, dyPix);
+    });
+
+    // Section outline
+    ctx.strokeStyle = state.theme === 'dark' ? '#64748b' : '#334155';
+    ctx.lineWidth = 2;
+    ctx.strokeRect(startX, startY, drawW, drawH);
+
+    // Steel rebars
+    activePt.details.steelDetails.forEach(s => {
+      const sY = startY + s.y * scale;
+      const isYield = Math.abs(s.sig) >= state.fy - 1e-3;
+      const isComp = s.sig > 0;
+      const color = isYield ? '#e11d48' : (isComp ? '#ea580c' : '#0891b2');
+
+      const rebarXs = [startX + drawW * 0.25, startX + drawW * 0.75];
+      rebarXs.forEach(rx => {
+        ctx.beginPath();
+        ctx.arc(rx, sY, 6, 0, 2 * Math.PI);
+        ctx.fillStyle = color;
+        ctx.fill();
+        ctx.strokeStyle = '#ffffff';
+        ctx.lineWidth = 1.5;
+        ctx.stroke();
+      });
+    });
+
+    // Neutral axis line
+    const cY = startY + activePt.c * scale;
+    if (cY <= startY + drawH + 30) {
+      ctx.beginPath();
+      ctx.setLineDash([5, 4]);
+      ctx.moveTo(startX - 10, cY);
+      ctx.lineTo(startX + drawW + 10, cY);
+      ctx.strokeStyle = '#7c3aed';
+      ctx.lineWidth = 2;
+      ctx.stroke();
+      ctx.setLineDash([]);
+
+      ctx.fillStyle = '#7c3aed';
+      ctx.font = 'bold 10px "Outfit"';
+      ctx.textAlign = 'left';
+      ctx.fillText(`E.N. c = ${activePt.c.toFixed(1)} cm`, startX + drawW + 12, cY + 3);
+    }
+  }
+
+  /* ==========================================================================
+     CANVAS 4: SUBPANEL STRAIN PROFILE
+     ========================================================================== */
+  function drawSubStrains(activePt) {
+    const { ctx, width, height } = setupCanvas('canvas-sub-strains');
+    ctx.clearRect(0, 0, width, height);
+
+    const padX = 40, padY = 25;
+    const drawH = height - 2 * padY;
+    const drawW = width - 2 * padX;
+    const midX = padX + drawW * 0.45;
+    const startY = padY;
+    const scaleY = drawH / state.h;
+
+    // Zero axis
+    ctx.beginPath();
+    ctx.moveTo(midX, startY);
+    ctx.lineTo(midX, startY + drawH);
+    ctx.strokeStyle = state.theme === 'dark' ? '#334155' : '#cbd5e1';
+    ctx.lineWidth = 2;
+    ctx.stroke();
+
+    const epsTop = activePt.ec;
+    const epsBot = activePt.ec * (activePt.c - state.h) / activePt.c;
+    const epsMax = Math.max(0.005, Math.abs(epsBot) * 1.2, epsTop * 1.2);
+    const scaleEps = (drawW * 0.42) / epsMax;
+
+    const xTop = midX + epsTop * scaleEps;
+    const xBot = midX + epsBot * scaleEps;
+
+    // Linear profile
+    ctx.beginPath();
+    ctx.moveTo(xTop, startY);
+    ctx.lineTo(xBot, startY + drawH);
+    ctx.strokeStyle = '#2563eb';
+    ctx.lineWidth = 2.5;
+    ctx.stroke();
+
+    // Fill compression triangle
+    const cY = startY + activePt.c * scaleY;
+    if (activePt.c < state.h && activePt.c > 0) {
+      ctx.beginPath();
+      ctx.moveTo(midX, startY);
+      ctx.lineTo(xTop, startY);
+      ctx.lineTo(midX, cY);
+      ctx.closePath();
+      ctx.fillStyle = 'rgba(234, 88, 12, 0.2)';
+      ctx.fill();
+
+      // Tension triangle
+      ctx.beginPath();
+      ctx.moveTo(midX, cY);
+      ctx.lineTo(xBot, startY + drawH);
+      ctx.lineTo(midX, startY + drawH);
+      ctx.closePath();
+      ctx.fillStyle = 'rgba(8, 145, 178, 0.2)';
+      ctx.fill();
+    }
+
+    // Top & bottom labels
+    ctx.fillStyle = '#ea580c';
+    ctx.font = 'bold 10px "JetBrains Mono"';
+    ctx.textAlign = 'left';
+    ctx.fillText(`+${epsTop.toFixed(4)}`, xTop + 4, startY + 4);
+
+    ctx.fillStyle = '#0891b2';
+    ctx.textAlign = 'right';
+    ctx.fillText(`${epsBot.toFixed(4)}`, xBot - 4, startY + drawH + 4);
+
+    // Curvature inclination angle label
+    ctx.fillStyle = '#7c3aed';
+    ctx.font = 'bold 11px "Outfit"';
+    ctx.textAlign = 'center';
+    ctx.fillText(`φ = ${activePt.phi.toFixed(4)} 1/m`, midX, startY + drawH / 2);
+  }
+
+  /* ==========================================================================
+     CANVAS 5: SUBPANEL STRESSES
+     ========================================================================== */
+  function drawSubStresses(activePt) {
+    const { ctx, width, height } = setupCanvas('canvas-sub-stresses');
+    ctx.clearRect(0, 0, width, height);
+
+    const padX = 40, padY = 25;
+    const drawH = height - 2 * padY;
+    const drawW = width - 2 * padX;
+    const midX = padX + drawW * 0.35;
+    const startY = padY;
+    const scaleY = drawH / state.h;
+    const scaleSig = (drawW * 0.55) / Math.max(state.fc, 30.0);
+
+    // Zero stress line
+    ctx.beginPath();
+    ctx.moveTo(midX, startY);
+    ctx.lineTo(midX, startY + drawH);
+    ctx.strokeStyle = state.theme === 'dark' ? '#334155' : '#cbd5e1';
+    ctx.lineWidth = 2;
+    ctx.stroke();
+
+    // Continuous concrete curve
+    ctx.beginPath();
+    const cLimY = Math.min(state.h, Math.max(0, activePt.c));
+    for (let y = 0; y <= cLimY; y += 0.5) {
+      const eps = activePt.ec * (activePt.c - y) / activePt.c;
+      const sig = sigmaConc(eps, state.fc);
+      const px = midX + sig * scaleSig;
+      const py = startY + y * scaleY;
+      if (y === 0) ctx.moveTo(px, py);
+      else ctx.lineTo(px, py);
+    }
+    ctx.lineTo(midX, startY + cLimY * scaleY);
+    ctx.closePath();
+    ctx.fillStyle = 'rgba(234, 88, 12, 0.25)';
+    ctx.fill();
+    ctx.strokeStyle = '#ea580c';
+    ctx.lineWidth = 2;
+    ctx.stroke();
+
+    // Max stress label
+    ctx.fillStyle = '#ea580c';
+    ctx.font = 'bold 10px "JetBrains Mono"';
+    ctx.textAlign = 'left';
+    ctx.fillText(`fc=${state.fc}MPa`, midX + state.fc * scaleSig - 25, startY + 12);
+  }
+
+  /* ==========================================================================
+     CANVAS 6: SUBPANEL FORCES
+     ========================================================================== */
+  function drawSubForces(activePt) {
+    const { ctx, width, height } = setupCanvas('canvas-sub-forces');
+    ctx.clearRect(0, 0, width, height);
+
+    const padX = 35, padY = 25;
+    const drawH = height - 2 * padY;
+    const drawW = width - 2 * padX;
+    const midX = padX + drawW * 0.45;
+    const startY = padY;
+    const scaleY = drawH / state.h;
+
+    // Resultant concrete compression arrow
+    const fc = activePt.details.sumFc;
+    const fs = activePt.details.sumFs;
+    const maxF = Math.max(Math.abs(fc), Math.abs(fs), 100.0);
+    const scaleF = (drawW * 0.4) / maxF;
+
+    // Center line
+    ctx.beginPath();
+    ctx.moveTo(midX, startY);
+    ctx.lineTo(midX, startY + drawH);
+    ctx.strokeStyle = state.theme === 'dark' ? '#334155' : '#cbd5e1';
+    ctx.lineWidth = 1.5;
+    ctx.stroke();
+
+    // Concrete force vector (drawn at ~0.35 c)
+    const yFc = startY + Math.min(state.h * 0.8, activePt.c * 0.38) * scaleY;
+    const lenFc = fc * scaleF;
+    drawArrow(ctx, midX, yFc, midX + lenFc, yFc, '#ea580c', `ΣFc = +${fc.toFixed(0)} kN`);
+
+    // Steel tension force vector (drawn at bottom steel layer)
+    const botSteel = state.steel[state.steel.length - 1];
+    const yFs = startY + botSteel.y * scaleY;
+    const lenFs = fs * scaleF; // negative if tension -> points left
+    drawArrow(ctx, midX, yFs, midX + lenFs, yFs, '#0891b2', `ΣFs = ${fs.toFixed(0)} kN`);
+  }
+
+  function drawArrow(ctx, fromX, fromY, toX, toY, color, label) {
+    const headLen = 8;
+    const angle = Math.atan2(toY - fromY, toX - fromX);
+
+    ctx.beginPath();
+    ctx.moveTo(fromX, fromY);
+    ctx.lineTo(toX, toY);
+    ctx.strokeStyle = color;
+    ctx.lineWidth = 3;
+    ctx.stroke();
+
+    ctx.beginPath();
+    ctx.moveTo(toX, toY);
+    ctx.lineTo(toX - headLen * Math.cos(angle - Math.PI / 6), toY - headLen * Math.sin(angle - Math.PI / 6));
+    ctx.lineTo(toX - headLen * Math.cos(angle + Math.PI / 6), toY - headLen * Math.sin(angle + Math.PI / 6));
+    ctx.closePath();
+    ctx.fillStyle = color;
+    ctx.fill();
+
+    ctx.fillStyle = color;
+    ctx.font = 'bold 10px "JetBrains Mono"';
+    ctx.textAlign = toX >= fromX ? 'left' : 'right';
+    ctx.fillText(label, toX + (toX >= fromX ? 6 : -6), toY + 3);
+  }
+
+  /* ==========================================================================
+     DATA TABLE POPULATION
+     ========================================================================== */
+  function updateTable() {
+    const tbody = document.getElementById('table-body');
+    tbody.innerHTML = '';
+
+    state.mPhiPoints.forEach((pt, idx) => {
+      const tr = document.createElement('tr');
+      if (idx === state.activeStepIdx) tr.className = 'active-row';
+
+      tr.innerHTML = `
+        <td style="text-align:center;">${pt.idx}</td>
+        <td>${pt.ec.toFixed(4)}</td>
+        <td>${pt.c.toFixed(2)}</td>
+        <td style="color:var(--accent-emerald); font-weight:700;">${pt.phi.toFixed(4)}</td>
+        <td>${pt.phiRadKm.toFixed(2)}</td>
+        <td style="color:var(--accent-blue); font-weight:700;">${pt.M.toFixed(1)}</td>
+        <td style="color:${pt.max_es < 0 ? 'var(--color-tens)' : 'var(--color-comp)'};">${pt.max_es.toFixed(5)}</td>
+        <td>${pt.fs_bot.toFixed(1)}</td>
+        <td style="text-align:center;">
+          <span style="font-size:0.75rem; padding:2px 8px; border-radius:4px; font-weight:700; background:${pt.isYield ? 'rgba(217, 119, 6, 0.15)' : 'rgba(37, 99, 235, 0.1)'}; color:${pt.isYield ? 'var(--accent-amber)' : 'var(--accent-blue)'};">
+            ${pt.stateStr}
+          </span>
+        </td>
+      `;
+
+      tr.onclick = () => {
+        state.activeStepIdx = idx;
+        document.getElementById('slider-ec').value = idx;
+        updateActiveStepViews();
+      };
+
+      tbody.appendChild(tr);
+    });
+  }
+
+  /* ==========================================================================
+     CSV & LATEX EXPORT
+     ========================================================================== */
+  function downloadCSV() {
+    let csv = 'Paso,ec,c_cm,phi_1_m,phi_rad_km,M_kNm,eps_s_tracc,fs_MPa,Estado\n';
+    state.mPhiPoints.forEach(p => {
+      csv += `${p.idx},${p.ec},${p.c.toFixed(2)},${p.phi.toFixed(5)},${p.phiRadKm.toFixed(2)},${p.M.toFixed(2)},${p.max_es.toFixed(5)},${p.fs_bot.toFixed(1)},"${p.stateStr}"\n`;
+    });
+
+    const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement('a');
+    link.setAttribute('href', url);
+    link.setAttribute('download', `momento_curvatura_P_${state.P.toFixed(0)}kN.csv`);
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+  }
+
+  function copyLaTeX() {
+    let tex = `\\begin{table}[h!]\n\\centering\n\\caption{Diagrama Momento - Curvatura para $P = ${state.P.toFixed(1)}$~kN}\n`;
+    tex += `\\begin{tabular}{cccccccc}\n\\hline\n`;
+    tex += `Paso & $\\varepsilon_c$ & $c$~(cm) & $\\phi$~(1/m) & $M$~(kN$\\cdot$m) & $\\varepsilon_s$ & $f_s$~(MPa) & Estado \\\\\n\\hline\n`;
+    state.mPhiPoints.forEach(p => {
+      tex += `${p.idx} & ${p.ec.toFixed(4)} & ${p.c.toFixed(2)} & ${p.phi.toFixed(4)} & ${p.M.toFixed(1)} & ${p.max_es.toFixed(5)} & ${p.fs_bot.toFixed(1)} & ${p.stateStr} \\\\\n`;
+    });
+    tex += `\\hline\n\\end{tabular}\n\\end{table}`;
+
+    navigator.clipboard.writeText(tex).then(() => {
+      alert('¡Código LaTeX copiado al portapapeles exitosamente!');
+    }).catch(err => {
+      console.error('Error al copiar:', err);
+    });
+  }
+
+  /* ==========================================================================
+     QUIZ ACCORDION & THEME TOGGLE
+     ========================================================================== */
+  function toggleQuizAnswer(id) {
+    const el = document.getElementById(`quiz-ans-${id}`);
+    el.classList.toggle('show');
+    el.classList.toggle('correct');
+  }
+
+  function toggleTheme() {
+    const html = document.documentElement;
+    const isDark = html.getAttribute('data-theme') === 'dark';
+    const newTheme = isDark ? 'light' : 'dark';
+    html.setAttribute('data-theme', newTheme);
+    state.theme = newTheme;
+
+    document.getElementById('theme-icon').textContent = newTheme === 'dark' ? '☀️' : '🌙';
+    document.getElementById('theme-text').textContent = newTheme === 'dark' ? 'Modo Claro' : 'Modo Oscuro';
+    localStorage.setItem('concreto_theme', newTheme);
+
+    updateActiveStepViews();
+  }
+
+  // Window resize handler
+  window.addEventListener('resize', () => {
+    updateActiveStepViews();
+  });
+
+  // Initialization
+  window.addEventListener('DOMContentLoaded', () => {
+    const savedTheme = localStorage.getItem('concreto_theme') || 'light';
+    if (savedTheme === 'dark') {
+      document.documentElement.setAttribute('data-theme', 'dark');
+      state.theme = 'dark';
+      document.getElementById('theme-icon').textContent = '☀️';
+      document.getElementById('theme-text').textContent = 'Modo Claro';
+    }
+    loadPreset('rect');
+  });
+  </script>
+</body>
+</html>
