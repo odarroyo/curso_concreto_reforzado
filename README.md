@@ -33,6 +33,12 @@ Plataforma web didáctica para la visualización y aprendizaje de la mecánica s
 - Lupa didáctica para inspeccionar la ley constitutiva aplicada a cada elemento.
 - Comparativa en tiempo real con y sin confinamiento activo ($K = 1.3$ vs $K = 1.0$).
 
+### 5. 📈 [Diagrama de Interacción P - M Confinado](https://odarroyo.github.io/curso_concreto_reforzado/diagrama_interaccion_confinado.html)
+- Superposición interactiva de las dos envolventes: **Confinada (Púrpura Mander)** vs **No Confinada (Naranja Hognestad)**.
+- Cuantificación en tiempo real de la ganancia en compresión axial ($\Delta P_n$) y flexión ($\Delta M_n$).
+- Análisis del incremento en compresión pura $P_0$ (+15.8%) y la invariancia física en tracción pura $P_t$.
+- Puntos notables interactivos: Momento Máximo, Falla Balanceada, Límite por Tracción y Compresión pura.
+
 ---
 
 ## 💻 Características Técnicas

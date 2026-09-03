@@ -214,6 +214,7 @@
     .stripe-emerald { background: linear-gradient(90deg, #059669, #10b981); }
     .stripe-purple { background: linear-gradient(90deg, #7c3aed, #a855f7); }
     .stripe-amber { background: linear-gradient(90deg, #ea580c, #f59e0b); }
+    .stripe-rose { background: linear-gradient(90deg, #e11d48, #f43f5e); }
 
     .card-top {
       display: flex;
@@ -240,6 +241,7 @@
     .pill-emerald { background: rgba(5, 150, 105, 0.1); color: #059669; }
     .pill-purple { background: rgba(124, 58, 237, 0.1); color: #7c3aed; }
     .pill-amber { background: rgba(234, 88, 12, 0.12); color: #ea580c; }
+    .pill-rose { background: rgba(225, 29, 72, 0.12); color: #e11d48; }
 
     .card-title {
       font-family: var(--font-title);
@@ -310,6 +312,9 @@
 
     .btn-amber { background: #ea580c; }
     .module-card:hover .btn-amber { box-shadow: 0 4px 12px rgba(234, 88, 12, 0.35); }
+
+    .btn-rose { background: #e11d48; }
+    .module-card:hover .btn-rose { box-shadow: 0 4px 12px rgba(225, 29, 72, 0.35); }
 
     /* FOOTER */
     footer {
@@ -440,6 +445,29 @@
         </ul>
         <div class="btn-launch btn-amber">
           <span>Abrir Módulo Confinado</span>
+          <span>→</span>
+        </div>
+      </a>
+
+      <!-- CARD 5: DIAGRAMA DE INTERACCIÓN CONFINADO -->
+      <a href="diagrama_interaccion_confinado.html" class="module-card">
+        <div class="card-stripe stripe-rose"></div>
+        <div class="card-top">
+          <div class="card-icon">📈</div>
+          <span class="card-stage-pill pill-rose">Avanzado · Envolvente Confinada</span>
+        </div>
+        <h3 class="card-title">Diagrama de Interacción P - M Confinado</h3>
+        <p class="card-desc">
+          Compara en una sola gráfica la envolvente completa de resistencia para concreto confinado (Mander) frente a concreto simple (Hognestad).
+        </p>
+        <ul class="card-features">
+          <li>Curvas superpuestas P-M (Confinada vs No Confinada)</li>
+          <li>Cuantificación de ganancia de carga ΔPn y momento ΔMn</li>
+          <li>Aumento en compresión pura P0 (+15.8%) e invariancia en Pt</li>
+          <li>Explorador interactivo de puntos notables y falla balanceada</li>
+        </ul>
+        <div class="btn-launch btn-rose">
+          <span>Abrir Módulo P-M Confinado</span>
           <span>→</span>
         </div>
       </a>

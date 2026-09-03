@@ -1,0 +1,1785 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Diseño de Concreto Armado - Diagrama de Interacción con Concreto Confinado</title>
+  <!-- Google Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500;600;700&family=Outfit:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <!-- MathJax -->
+  <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+  <style>
+    :root {
+      --bg-primary: #f8fafc;
+      --bg-secondary: #ffffff;
+      --bg-card: #ffffff;
+      --bg-card-subtle: #f1f5f9;
+      --bg-input: #ffffff;
+      --border-color: #e2e8f0;
+      --text-main: #1e293b;
+      --text-muted: #64748b;
+      --text-bright: #0f172a;
+
+      --accent-blue: #2563eb;
+      --accent-cyan: #0891b2;
+      --accent-purple: #7c3aed;
+      --accent-amber: #d97706;
+      --accent-emerald: #059669;
+      --accent-rose: #e11d48;
+
+      /* Material Theme */
+      --color-unconf: #ea580c;       /* Concreto No Confinado */
+      --color-conf: #7c3aed;         /* Concreto Confinado Mander */
+      --color-conf-bg: rgba(124, 58, 237, 0.1);
+      --color-steel: #0284c7;        /* Acero */
+      --color-design: #059669;       /* Envolvente de diseño phi */
+
+      --shadow-sm: 0 1px 2px rgba(0,0,0,0.05);
+      --shadow-md: 0 4px 6px -1px rgba(0,0,0,0.07), 0 2px 4px -2px rgba(0,0,0,0.05);
+      --shadow-lg: 0 10px 15px -3px rgba(0,0,0,0.08), 0 4px 6px -4px rgba(0,0,0,0.04);
+      --radius-sm: 6px;
+      --radius-md: 10px;
+      --radius-lg: 16px;
+
+      --font-main: 'Inter', system-ui, -apple-system, sans-serif;
+      --font-title: 'Outfit', system-ui, sans-serif;
+      --font-mono: 'JetBrains Mono', monospace;
+    }
+
+    [data-theme="dark"] {
+      --bg-primary: #0b0f19;
+      --bg-secondary: #111827;
+      --bg-card: #151e32;
+      --bg-card-subtle: #1a243d;
+      --bg-input: #101626;
+      --border-color: #24324f;
+      --text-main: #cbd5e1;
+      --text-muted: #94a3b8;
+      --text-bright: #f8fafc;
+      --color-conf-bg: rgba(124, 58, 237, 0.2);
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: var(--font-main);
+      background: var(--bg-primary);
+      color: var(--text-main);
+      line-height: 1.5;
+      padding-bottom: 60px;
+      transition: background-color 0.25s ease, color 0.25s ease;
+    }
+
+    .container {
+      max-width: 1560px;
+      margin: 0 auto;
+      padding: 0 24px;
+    }
+
+    /* HEADER */
+    header.main-header {
+      background: var(--bg-card);
+      border-bottom: 1px solid var(--border-color);
+      padding: 18px 0;
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      box-shadow: var(--shadow-sm);
+    }
+
+    .header-content {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 16px;
+      flex-wrap: wrap;
+    }
+
+    .header-title-area h1 {
+      font-family: var(--font-title);
+      font-size: 1.45rem;
+      font-weight: 800;
+      color: var(--text-bright);
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .header-title-area p {
+      font-size: 0.85rem;
+      color: var(--text-muted);
+      margin-top: 2px;
+    }
+
+    .header-actions {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .badge-stage {
+      background: var(--color-conf-bg);
+      color: var(--color-conf);
+      border: 1px solid rgba(124, 58, 237, 0.3);
+      padding: 5px 12px;
+      border-radius: 999px;
+      font-size: 0.75rem;
+      font-weight: 700;
+      letter-spacing: 0.04em;
+      text-transform: uppercase;
+    }
+
+    .btn-header {
+      background: var(--bg-card-subtle);
+      border: 1px solid var(--border-color);
+      color: var(--text-main);
+      padding: 8px 14px;
+      border-radius: var(--radius-md);
+      font-family: var(--font-main);
+      font-size: 0.85rem;
+      font-weight: 600;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      text-decoration: none;
+      transition: all 0.2s ease;
+    }
+
+    .btn-header:hover {
+      background: var(--border-color);
+    }
+
+    /* CONCEPT BANNER */
+    .concept-banner {
+      background: linear-gradient(135deg, rgba(124, 58, 237, 0.08) 0%, rgba(234, 88, 12, 0.08) 100%);
+      border: 1px solid rgba(124, 58, 237, 0.25);
+      border-radius: var(--radius-lg);
+      padding: 16px 20px;
+      margin-top: 20px;
+      display: flex;
+      align-items: flex-start;
+      gap: 14px;
+    }
+
+    .concept-banner .icon {
+      font-size: 1.8rem;
+      line-height: 1;
+    }
+
+    .concept-banner .text h3 {
+      font-family: var(--font-title);
+      font-size: 1.05rem;
+      font-weight: 800;
+      color: var(--color-conf);
+      margin-bottom: 4px;
+    }
+
+    .concept-banner .text p {
+      font-size: 0.875rem;
+      color: var(--text-main);
+    }
+
+    /* MASTER CONTROLLER CARD */
+    .master-controller-card {
+      background: var(--bg-card);
+      border: 1px solid var(--border-color);
+      border-radius: var(--radius-lg);
+      padding: 20px 24px;
+      margin-top: 18px;
+      box-shadow: var(--shadow-sm);
+    }
+
+    .controller-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 12px;
+      margin-bottom: 14px;
+    }
+
+    .controller-title {
+      font-family: var(--font-title);
+      font-size: 1.15rem;
+      font-weight: 800;
+      color: var(--text-bright);
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .stepper-btn-group {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .btn-step {
+      background: var(--bg-card-subtle);
+      border: 1px solid var(--border-color);
+      color: var(--text-main);
+      font-family: var(--font-mono);
+      font-size: 0.8rem;
+      font-weight: 700;
+      padding: 5px 10px;
+      border-radius: var(--radius-sm);
+      cursor: pointer;
+      transition: all 0.15s ease;
+    }
+
+    .btn-step:hover {
+      background: var(--accent-blue);
+      color: #ffffff;
+      border-color: var(--accent-blue);
+    }
+
+    .presets-container {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      flex-wrap: wrap;
+      margin-bottom: 16px;
+    }
+
+    .preset-label {
+      font-size: 0.8rem;
+      font-weight: 700;
+      color: var(--text-muted);
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+    }
+
+    .preset-pill {
+      background: var(--bg-card-subtle);
+      border: 1px solid var(--border-color);
+      color: var(--text-main);
+      padding: 5px 12px;
+      border-radius: var(--radius-sm);
+      font-size: 0.8rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.15s ease;
+    }
+
+    .preset-pill:hover {
+      border-color: var(--color-conf);
+      color: var(--color-conf);
+    }
+
+    .preset-pill.active {
+      background: var(--color-conf);
+      border-color: var(--color-conf);
+      color: #ffffff;
+      box-shadow: 0 0 10px rgba(124, 58, 237, 0.35);
+    }
+
+    .slider-row {
+      display: flex;
+      align-items: center;
+      gap: 20px;
+    }
+
+    .slider-wrapper {
+      flex: 1;
+      position: relative;
+    }
+
+    .c-slider {
+      -webkit-appearance: none;
+      width: 100%;
+      height: 10px;
+      border-radius: 5px;
+      background: var(--border-color);
+      outline: none;
+    }
+
+    .c-slider::-webkit-slider-thumb {
+      -webkit-appearance: none;
+      width: 24px;
+      height: 24px;
+      border-radius: 50%;
+      background: var(--color-conf);
+      cursor: pointer;
+      border: 3px solid #ffffff;
+      box-shadow: 0 2px 6px rgba(0,0,0,0.3);
+    }
+
+    .slider-ticks {
+      display: flex;
+      justify-content: space-between;
+      margin-top: 8px;
+      font-size: 0.725rem;
+      font-family: var(--font-mono);
+      color: var(--text-muted);
+    }
+
+    .c-value-display {
+      background: var(--bg-card-subtle);
+      border: 2px solid var(--color-conf);
+      border-radius: var(--radius-md);
+      padding: 8px 16px;
+      min-width: 130px;
+      text-align: center;
+      font-family: var(--font-mono);
+      font-size: 1.15rem;
+      font-weight: 800;
+      color: var(--color-conf);
+    }
+
+    /* PARAMETERS GRID */
+    .params-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(130px, 1fr));
+      gap: 12px;
+      margin-top: 16px;
+    }
+
+    .param-box {
+      background: var(--bg-card);
+      border: 1px solid var(--border-color);
+      border-radius: var(--radius-md);
+      padding: 10px 14px;
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+    }
+
+    .param-box label {
+      font-size: 0.725rem;
+      font-weight: 700;
+      color: var(--text-muted);
+      text-transform: uppercase;
+    }
+
+    .param-box input {
+      background: var(--bg-input);
+      border: 1px solid var(--border-color);
+      border-radius: var(--radius-sm);
+      padding: 6px 8px;
+      font-family: var(--font-mono);
+      font-size: 0.925rem;
+      font-weight: 700;
+      color: var(--text-bright);
+      outline: none;
+      width: 100%;
+    }
+
+    .param-box input:focus {
+      border-color: var(--color-conf);
+    }
+
+    .display-toggle-bar {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      flex-wrap: wrap;
+      margin-top: 14px;
+      padding-top: 14px;
+      border-top: 1px solid var(--border-color);
+    }
+
+    .checkbox-label {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      font-size: 0.8rem;
+      font-weight: 700;
+      cursor: pointer;
+      user-select: none;
+    }
+
+    /* COMPARATIVE HERO STATS */
+    .hero-stats-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+      gap: 14px;
+      margin-top: 18px;
+    }
+
+    .hero-stat-card {
+      background: var(--bg-card);
+      border: 1px solid var(--border-color);
+      border-radius: var(--radius-md);
+      padding: 14px 18px;
+      box-shadow: var(--shadow-sm);
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+      position: relative;
+    }
+
+    .hero-stat-card .stat-label {
+      font-size: 0.725rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+      color: var(--text-muted);
+    }
+
+    .hero-stat-card .stat-value {
+      font-family: var(--font-mono);
+      font-size: 1.4rem;
+      font-weight: 800;
+      color: var(--text-bright);
+    }
+
+    .hero-stat-card .stat-diff {
+      font-size: 0.775rem;
+      font-weight: 700;
+      color: var(--accent-emerald);
+      display: flex;
+      align-items: center;
+      gap: 4px;
+    }
+
+    /* MAIN INTERACTIVE DUAL LAYOUT */
+    .layout-main-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 20px;
+      margin-top: 20px;
+    }
+
+    @media (max-width: 1080px) {
+      .layout-main-grid {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    .card-panel {
+      background: var(--bg-card);
+      border: 1px solid var(--border-color);
+      border-radius: var(--radius-lg);
+      padding: 20px;
+      box-shadow: var(--shadow-md);
+      display: flex;
+      flex-direction: column;
+    }
+
+    .card-panel-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 12px;
+    }
+
+    .card-panel-title {
+      font-family: var(--font-title);
+      font-size: 1.15rem;
+      font-weight: 800;
+      color: var(--text-bright);
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .canvas-container-big {
+      width: 100%;
+      height: 520px;
+      background: var(--bg-primary);
+      border: 1px solid var(--border-color);
+      border-radius: var(--radius-md);
+      position: relative;
+      overflow: hidden;
+    }
+
+    .canvas-container-big canvas {
+      width: 100%;
+      height: 100%;
+      display: block;
+    }
+
+    /* 3 SUB-PANELS IN LEFT COLUMN */
+    .subpanels-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 12px;
+      margin-top: 14px;
+    }
+
+    .canvas-sub-box {
+      width: 100%;
+      height: 230px;
+      background: var(--bg-primary);
+      border: 1px solid var(--border-color);
+      border-radius: var(--radius-md);
+      position: relative;
+      overflow: hidden;
+    }
+
+    .canvas-sub-box canvas {
+      width: 100%;
+      height: 100%;
+      display: block;
+    }
+
+    /* LEGEND ON PM DIAGRAM */
+    .pm-legend {
+      display: flex;
+      gap: 16px;
+      font-size: 0.775rem;
+      font-weight: 700;
+      flex-wrap: wrap;
+      margin-top: 10px;
+      padding: 8px 12px;
+      background: var(--bg-card-subtle);
+      border-radius: var(--radius-sm);
+    }
+
+    .legend-item {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .legend-box {
+      width: 14px;
+      height: 4px;
+      border-radius: 2px;
+    }
+
+    /* TABLE */
+    .table-card {
+      background: var(--bg-card);
+      border: 1px solid var(--border-color);
+      border-radius: var(--radius-lg);
+      padding: 20px;
+      margin-top: 20px;
+      box-shadow: var(--shadow-md);
+    }
+
+    .table-responsive {
+      overflow-x: auto;
+      border: 1px solid var(--border-color);
+      border-radius: var(--radius-md);
+      margin-top: 14px;
+    }
+
+    table.data-table {
+      width: 100%;
+      border-collapse: collapse;
+      font-family: var(--font-mono);
+      font-size: 0.825rem;
+      text-align: right;
+    }
+
+    table.data-table th {
+      background: var(--bg-card-subtle);
+      color: var(--text-bright);
+      font-weight: 700;
+      padding: 10px 14px;
+      border-bottom: 1px solid var(--border-color);
+      white-space: nowrap;
+    }
+
+    table.data-table td {
+      padding: 8px 14px;
+      border-bottom: 1px solid var(--border-color);
+      white-space: nowrap;
+    }
+
+    table.data-table tr:hover {
+      background: rgba(124, 58, 237, 0.05);
+      cursor: pointer;
+    }
+
+    /* QUIZ */
+    .quiz-section {
+      background: var(--bg-card);
+      border: 1px solid var(--border-color);
+      border-radius: var(--radius-lg);
+      padding: 22px;
+      margin-top: 20px;
+      box-shadow: var(--shadow-md);
+    }
+
+    .quiz-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+      gap: 16px;
+      margin-top: 16px;
+    }
+
+    .quiz-card {
+      background: var(--bg-card-subtle);
+      border: 1px solid var(--border-color);
+      border-radius: var(--radius-md);
+      padding: 16px;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+
+    .quiz-btn {
+      background: var(--bg-card);
+      border: 1px solid var(--border-color);
+      color: var(--text-main);
+      padding: 8px 12px;
+      border-radius: var(--radius-sm);
+      font-size: 0.8rem;
+      cursor: pointer;
+      text-align: left;
+    }
+
+    .quiz-answer {
+      display: none;
+      padding: 10px;
+      border-radius: var(--radius-sm);
+      font-size: 0.8rem;
+      line-height: 1.4;
+    }
+
+    .quiz-answer.show {
+      display: block;
+      background: rgba(5, 150, 105, 0.1);
+      border: 1px solid rgba(5, 150, 105, 0.3);
+      color: var(--accent-emerald);
+    }
+  </style>
+</head>
+<body>
+
+  <!-- HEADER -->
+  <header class="main-header">
+    <div class="container header-content">
+      <div class="header-title-area">
+        <h1>
+          <span>📈</span>
+          <span>Diagrama de Interacción con Concreto Confinado</span>
+        </h1>
+        <p>Comparación de envolventes P-M: Sección Confinada (Mander) vs Sección No Confinada (Hognestad)</p>
+      </div>
+
+      <div class="header-actions">
+        <a href="index.html" class="btn-header">🏠 Portal Principal</a>
+        <span class="badge-stage">Envolvente P - M Confinada</span>
+        <button id="btn-theme-toggle" class="btn-header" onclick="toggleTheme()">
+          <span id="theme-icon">🌙</span>
+          <span id="theme-text">Modo Oscuro</span>
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <main class="container">
+
+    <!-- CONCEPT BANNER -->
+    <div class="concept-banner">
+      <div class="icon">💡</div>
+      <div class="text">
+        <h3>Efecto del Confinamiento en la Envolvente de Interacción P - M</h3>
+        <p>
+          Al confinar el núcleo con estribos cerrados, la curva de interacción \(P - M\) se expande significativamente en la zona de compresión:
+          <strong>(1) Compresión Pura (\(P_0\)):</strong> El núcleo soporta \(f'_{cc} = K \cdot f'_c = 36.4\text{ MPa}\), aumentando la resistencia axial en un <strong>+15.8%</strong>.
+          <strong>(2) Falla Balanceada (\(P_b, M_b\)):</strong> La capacidad resistente al momento y la carga axial balanceada aumentan simultáneamente.
+          <strong>(3) Tracción Pura (\(P_t\)):</strong> Se mantiene exactamente igual (\(-A_{st} f_y = -1201\text{ kN}\)), pues a tracción el concreto se fisura y únicamente resisten las barras de acero.
+        </p>
+      </div>
+    </div>
+
+    <!-- MASTER CONTROLLER CARD -->
+    <div class="master-controller-card">
+      <div class="controller-header">
+        <div class="controller-title">
+          <span>⚙️</span>
+          <span>Explorador de Puntos en la Curva y Eje Neutro (\(c\))</span>
+        </div>
+
+        <div class="stepper-btn-group">
+          <button class="btn-step" onclick="stepC(-1.0)">-1.0 cm</button>
+          <button class="btn-step" onclick="stepC(-0.1)">-0.1</button>
+          <button class="btn-step" onclick="stepC(0.1)">+0.1</button>
+          <button class="btn-step" onclick="stepC(1.0)">+1.0 cm</button>
+        </div>
+      </div>
+
+      <div class="presets-container">
+        <span class="preset-label">Estados Clave:</span>
+        <button class="preset-pill active" id="pre-script" onclick="setPreset('script')">📌 Caso Base Script (c = 10.1 cm)</button>
+        <button class="preset-pill" id="pre-mmax" onclick="setPreset('mmax')">💥 Momento Máximo (Mn,max)</button>
+        <button class="preset-pill" id="pre-balanced" onclick="setPreset('balanced')">⚡ Falla Balanceada (cb)</button>
+        <button class="preset-pill" id="pre-p0" onclick="setPreset('p0')">🧱 Compresión Pura (P0)</button>
+        <button class="preset-pill" id="pre-pt" onclick="setPreset('pt')">🔗 Tracción Pura (Pt)</button>
+        <button class="preset-pill" id="pre-tens-lim" onclick="setPreset('tens-lim')">🟢 Límite Tracción (εt = 0.005)</button>
+      </div>
+
+      <div class="slider-row">
+        <div class="slider-wrapper">
+          <input type="range" class="c-slider" id="slider-c" min="0.5" max="60.0" step="0.1" value="10.1" oninput="onSliderChange(this.value)">
+          <div class="slider-ticks">
+            <span>0.5 cm (Tracción)</span>
+            <span>10.1 cm (Script)</span>
+            <span id="tick-cb">cb ≈ 20.7 cm</span>
+            <span id="tick-h">h = 40 cm</span>
+            <span>60 cm (Compresión)</span>
+          </div>
+        </div>
+
+        <div class="c-value-display">
+          <span id="val-c-display">10.1</span> <span style="font-size:0.85rem;">cm</span>
+        </div>
+      </div>
+
+      <!-- PARAMETERS GRID -->
+      <div class="params-grid">
+        <div class="param-box">
+          <label>Base Total (b)</label>
+          <input type="number" id="input-b" value="60" min="15" max="200" step="1" oninput="recomputeCurves()">
+        </div>
+        <div class="param-box">
+          <label>Peralte Total (h)</label>
+          <input type="number" id="input-h" value="40" min="15" max="300" step="1" oninput="recomputeCurves()">
+        </div>
+        <div class="param-box">
+          <label>Recubrimiento (r)</label>
+          <input type="number" id="input-r" value="5" min="2" max="15" step="0.5" oninput="recomputeCurves()">
+        </div>
+        <div class="param-box">
+          <label>f'c Concreto</label>
+          <input type="number" id="input-fc" value="28" min="14" max="70" step="1" oninput="recomputeCurves()">
+        </div>
+        <div class="param-box">
+          <label>Factor Confinamiento K</label>
+          <input type="number" id="input-k" value="1.3" min="1.0" max="2.0" step="0.05" oninput="recomputeCurves()">
+        </div>
+        <div class="param-box">
+          <label>fy Acero</label>
+          <input type="number" id="input-fy" value="420" min="280" max="550" step="10" oninput="recomputeCurves()">
+        </div>
+        <div class="param-box">
+          <label>Deformación \(\varepsilon_{cu}\)</label>
+          <input type="number" id="input-ecu" value="0.003" min="0.001" max="0.005" step="0.0005" oninput="recomputeCurves()">
+        </div>
+      </div>
+
+      <div class="display-toggle-bar">
+        <span style="font-size:0.8rem; font-weight:700; color:var(--text-muted); text-transform:uppercase;">Visualización:</span>
+        <label class="checkbox-label">
+          <input type="checkbox" id="chk-show-unconf" checked onchange="updateAll()">
+          <span style="color:var(--color-unconf);">Mostrar Curva No Confinada (Referencia)</span>
+        </label>
+        <label class="checkbox-label">
+          <input type="checkbox" id="chk-show-phi" checked onchange="updateAll()">
+          <span style="color:var(--color-design);">Mostrar Envolvente de Diseño (\(\phi P_n, \phi M_n\))</span>
+        </label>
+        <label class="checkbox-label">
+          <input type="checkbox" id="chk-show-crosshair" checked onchange="updateAll()">
+          <span>Líneas Guía del Punto Actual</span>
+        </label>
+      </div>
+    </div>
+
+    <!-- COMPARATIVE HERO STATS -->
+    <div class="hero-stats-grid">
+      <div class="hero-stat-card" style="border-left: 4px solid var(--color-conf);">
+        <span class="stat-label">Carga Axial Pn (Confinada)</span>
+        <div class="stat-value" id="stat-pn-conf">+1038.5 kN</div>
+        <div class="stat-diff" id="stat-pn-diff">▲ +86.5 kN (+9.1%) vs No Confinada</div>
+      </div>
+
+      <div class="hero-stat-card" style="border-left: 4px solid var(--accent-blue);">
+        <span class="stat-label">Momento Flector Mn (Confinado)</span>
+        <div class="stat-value" id="stat-mn-conf">342.7 kN·m</div>
+        <div class="stat-diff" id="stat-mn-diff">▲ +10.8 kN·m (+3.3%) vs No Confinada</div>
+      </div>
+
+      <div class="hero-stat-card" style="border-left: 4px solid var(--color-unconf);">
+        <span class="stat-label">Compresión Pura P0</span>
+        <div class="stat-value" id="stat-p0-conf">9077.1 kN</div>
+        <div class="stat-diff" id="stat-p0-diff">▲ +1236.0 kN (+15.8% de ganancia)</div>
+      </div>
+
+      <div class="hero-stat-card" style="border-left: 4px solid var(--color-steel);">
+        <span class="stat-label">Tracción Pura Pt</span>
+        <div class="stat-value" id="stat-pt-val">-1201.2 kN</div>
+        <span style="font-size:0.75rem; color:var(--text-muted);">Idéntica (sólo aporta el acero)</span>
+      </div>
+    </div>
+
+    <!-- MAIN DUAL LAYOUT -->
+    <div class="layout-main-grid">
+
+      <!-- LEFT: 3 SUBPANELS (SECCIÓN, ESFUERZOS, FUERZAS) -->
+      <div class="card-panel">
+        <div class="card-panel-header">
+          <div class="card-panel-title">
+            <span>🔬</span>
+            <span>Mecánica Seccional Interna para el Punto Activo</span>
+          </div>
+          <span style="font-family:var(--font-mono); font-size:0.8rem; color:var(--text-muted);" id="badge-c-current">c = 10.1 cm</span>
+        </div>
+
+        <div class="canvas-sub-box" style="height:220px;">
+          <canvas id="canvas-section"></canvas>
+        </div>
+
+        <div class="subpanels-grid">
+          <div>
+            <div style="font-size:0.75rem; font-weight:700; color:var(--text-muted); margin-bottom:6px;">Perfil de Esfuerzos \(\sigma(y)\):</div>
+            <div class="canvas-sub-box" style="height:200px;">
+              <canvas id="canvas-stresses"></canvas>
+            </div>
+          </div>
+          <div>
+            <div style="font-size:0.75rem; font-weight:700; color:var(--text-muted); margin-bottom:6px;">Vectores de Fuerzas Internas:</div>
+            <div class="canvas-sub-box" style="height:200px;">
+              <canvas id="canvas-forces"></canvas>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- RIGHT: THE FULL COMPARATIVE PM INTERACTION DIAGRAM -->
+      <div class="card-panel">
+        <div class="card-panel-header">
+          <div class="card-panel-title">
+            <span>📊</span>
+            <span>Diagrama de Interacción P - M Comparativo</span>
+          </div>
+          <span style="font-size:0.8rem; font-weight:700; color:var(--color-conf);">K = <span id="lbl-k-val">1.30</span> (Mander)</span>
+        </div>
+
+        <div class="canvas-container-big">
+          <canvas id="canvas-pm"></canvas>
+        </div>
+
+        <div class="pm-legend">
+          <div class="legend-item">
+            <div class="legend-box" style="background:var(--color-conf);"></div>
+            <span style="color:var(--color-conf);">Confinado Nominal (Pn, Mn)</span>
+          </div>
+          <div class="legend-item" id="leg-unconf">
+            <div class="legend-box" style="background:var(--color-unconf); border-top: 1px dashed var(--color-unconf);"></div>
+            <span style="color:var(--color-unconf);">No Confinado (Referencia Hognestad)</span>
+          </div>
+          <div class="legend-item" id="leg-design">
+            <div class="legend-box" style="background:var(--color-design);"></div>
+            <span style="color:var(--color-design);">Diseño Confinado (\(\phi P_n, \phi M_n\))</span>
+          </div>
+          <div class="legend-item">
+            <div style="width:10px; height:10px; border-radius:50%; background:#f59e0b; border:2px solid #ffffff;"></div>
+            <span>Punto Activo Seleccionado</span>
+          </div>
+        </div>
+      </div>
+
+    </div>
+
+    <!-- COMPLETE DATA TABLE -->
+    <div class="table-card">
+      <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:12px;">
+        <h3 style="font-family:var(--font-title); font-size:1.15rem; font-weight:800;">
+          📋 Tabla Comparativa de Puntos de Interacción (Confinado vs No Confinado)
+        </h3>
+        <div style="display:flex; gap:8px;">
+          <button class="btn-step" onclick="downloadCSV()">📥 Descargar Envolvente CSV</button>
+          <button class="btn-step" onclick="copyLaTeX()">📋 Copiar Código LaTeX</button>
+        </div>
+      </div>
+
+      <div class="table-responsive">
+        <table class="data-table">
+          <thead>
+            <tr>
+              <th style="text-align:center;">Punto</th>
+              <th>c (cm)</th>
+              <th>\(\varepsilon_t\) (acero inf)</th>
+              <th>Pn Confinado (kN)</th>
+              <th>Mn Confinado (kN·m)</th>
+              <th>Pn No Confinado (kN)</th>
+              <th>Mn No Confinado (kN·m)</th>
+              <th>\(\Delta P_n\) (kN)</th>
+              <th>\(\Delta M_n\) (kN·m)</th>
+              <th>\(\phi\) (NSR-10)</th>
+            </tr>
+          </thead>
+          <tbody id="table-pm-body">
+            <!-- Populated dynamically -->
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- CONCEPT QUIZ -->
+    <div class="quiz-section">
+      <h3 style="font-family:var(--font-title); font-size:1.2rem; font-weight:800; margin-bottom:6px;">
+        🧠 Autoevaluación Conceptual: Diagrama de Interacción Confinado
+      </h3>
+      <p style="font-size:0.85rem; color:var(--text-muted);">
+        Preguntas clave sobre el comportamiento de columnas sismorresistentes:
+      </p>
+
+      <div class="quiz-grid">
+        <div class="quiz-card">
+          <div style="font-weight:700; font-size:0.9rem; color:var(--text-bright);">
+            1. ¿Por qué la curva confinada no mejora la resistencia a tracción pura (\(P_t\))?
+          </div>
+          <button class="quiz-btn" onclick="toggleQuiz(1)">Ver Explicación Física</button>
+          <div class="quiz-answer" id="quiz-ans-1">
+            <strong>Porque el concreto no resiste tracción.</strong> En tracción pura, tanto el recubrimiento como el núcleo confinado se encuentran totalmente fisurados con esfuerzo nulo (\(f_c = 0\)). Toda la carga la absorbe exclusivamente la armadura longitudinal (\(P_t = -A_{st} f_y = -1201\text{ kN}\)).
+          </div>
+        </div>
+
+        <div class="quiz-card">
+          <div style="font-weight:700; font-size:0.9rem; color:var(--text-bright);">
+            2. ¿En qué zona de la curva de interacción se nota más la ventaja del confinamiento?
+          </div>
+          <button class="quiz-btn" onclick="toggleQuiz(2)">Ver Explicación Física</button>
+          <div class="quiz-answer" id="quiz-ans-2">
+            <strong>En la zona de compresión pura y falla por compresión (\(P > P_b\)).</strong> Es allí donde una gran parte de la sección transversal está comprimida con altas deformaciones. El núcleo confinado es capaz de resistir \(36.4\text{ MPa}\) en vez de \(28\text{ MPa}\), generando una gran expansión de la curva en el eje vertical.
+          </div>
+        </div>
+
+        <div class="quiz-card">
+          <div style="font-weight:700; font-size:0.9rem; color:var(--text-bright);">
+            3. ¿Cómo influye el recubrimiento (\(r\)) en la ganancia de resistencia?
+          </div>
+          <button class="quiz-btn" onclick="toggleQuiz(3)">Ver Explicación Física</button>
+          <div class="quiz-answer" id="quiz-ans-3">
+            <strong>A menor recubrimiento (mayor núcleo confinado), mayor es el aumento de capacidad.</strong> Si el recubrimiento es excesivamente grueso, una mayor proporción de la sección se desprenderá a \(f'_c\), reduciendo el área efectiva que aprovecha el factor \(K\) de Mander.
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </main>
+
+  <script>
+  /* ==========================================================================
+     GLOBAL STATE & GEOMETRY
+     ========================================================================== */
+  const state = {
+    theme: 'light',
+    b: 60.0,
+    h: 40.0,
+    r: 5.0,
+    fc: 28.0,
+    K: 1.3,
+    fy: 420.0,
+    Es: 210000.0,
+    ecu: 0.003,
+    c: 10.1,
+    nfib: 8,
+    steel: [
+      { y: 5.0, area: 4 * 2.86 },
+      { y: 20.0, area: 2 * 2.86 },
+      { y: 35.0, area: 4 * 2.86 }
+    ],
+    showUnconf: true,
+    showPhi: true,
+    showCrosshair: true
+  };
+
+  let curvesData = {
+    conf: [],
+    unconf: [],
+    design: [],
+    p0_conf: 0,
+    p0_unconf: 0,
+    pt: 0,
+    maxM_conf: 0,
+    maxM_unconf: 0
+  };
+
+  /* ==========================================================================
+     CONSTITUTIVE LAWS
+     ========================================================================== */
+  function sigmaSteel(es) {
+    const fs = es * state.Es;
+    if (fs > state.fy) return state.fy;
+    if (fs < -state.fy) return -state.fy;
+    return fs;
+  }
+
+  function sigmaUnconf(ec) {
+    if (ec <= 0) return 0.0;
+    const Ec = 4400.0 * Math.sqrt(state.fc);
+    const e0 = 1.8 * state.fc / Ec;
+    const eu = 0.0038;
+    const m = -0.15 * state.fc / (eu - e0);
+    if (ec <= e0) return state.fc * (2.0 * (ec / e0) - Math.pow(ec / e0, 2));
+    if (ec <= eu) return state.fc + m * (ec - e0);
+    return 0.0;
+  }
+
+  function sigmaConf(ecc) {
+    if (ecc <= 0) return 0.0;
+    const fcc = state.fc * state.K;
+    const Ec = 4400.0 * Math.sqrt(fcc);
+    const e0 = 1.8 * fcc / Ec;
+    const eu = 5.0 * e0;
+    const m = -0.8 * fcc / (eu - e0);
+    if (ecc <= e0) return fcc * (2.0 * (ecc / e0) - Math.pow(ecc / e0, 2));
+    if (ecc <= eu) return fcc + m * (ecc - e0);
+    return 0.0;
+  }
+
+  function getPhiFactor(et) {
+    const ey = state.fy / state.Es; // ~0.002
+    if (et <= ey) return 0.65; // Controlado por compresión
+    if (et >= 0.005) return 0.90; // Controlado por tracción
+    return 0.65 + (et - ey) * (0.25 / (0.005 - ey)); // Zona de transición
+  }
+
+  /* ==========================================================================
+     SECTION CALCULATION FOR A SPECIFIC C
+     ========================================================================== */
+  function computeSectionAtC(cVal) {
+    const c = Math.max(0.1, cVal);
+    const yhat = state.h / 2.0;
+    const dh = state.h / state.nfib;
+    const bcc = Math.max(0, state.b - 2.0 * state.r);
+    const fcc = state.fc * state.K;
+
+    let sumFc_conf = 0, sumFcc_conf = 0, sumFs_conf = 0;
+    let sumMc_conf = 0, sumMcc_conf = 0, sumMs_conf = 0;
+
+    let sumFc_unconf = 0, sumFs_unconf = 0;
+    let sumMc_unconf = 0, sumMs_unconf = 0;
+
+    // Concrete fibers
+    for (let i = 0; i < state.nfib; i++) {
+      const y = (i + 0.5) * dh;
+      const eps = state.ecu * (c - y) / c;
+      const arm = (yhat - y) / 100.0; // m
+
+      // Unconfined full section
+      const sig_u = sigmaUnconf(eps);
+      const F_u = sig_u * (state.b * dh) / 10.0; // kN
+      sumFc_unconf += F_u;
+      sumMc_unconf += F_u * arm;
+
+      // Confined section (Cover vs Core)
+      const isExtreme = (i === 0 || i === state.nfib - 1);
+      const areaCover = isExtreme ? state.b * dh : (state.b - bcc) * dh;
+      const areaCore = isExtreme ? 0 : bcc * dh;
+
+      const F_cov = sig_u * areaCover / 10.0;
+      const sig_c = sigmaConf(eps);
+      const F_core = sig_c * areaCore / 10.0;
+
+      sumFc_conf += F_cov;
+      sumFcc_conf += F_core;
+      sumMc_conf += F_cov * arm;
+      sumMcc_conf += F_core * arm;
+    }
+
+    // Steel layers
+    let et = 0;
+    state.steel.forEach((s, idx) => {
+      const eps = state.ecu * (c - s.y) / c;
+      if (idx === state.steel.length - 1) et = -eps; // tensile strain in extreme layer
+      const sig = sigmaSteel(eps);
+      const F = sig * s.area / 10.0; // kN
+      const arm = (yhat - s.y) / 100.0; // m
+
+      sumFs_conf += F;
+      sumMs_conf += F * arm;
+
+      sumFs_unconf += F;
+      sumMs_unconf += F * arm;
+    });
+
+    const Pn_conf = sumFc_conf + sumFcc_conf + sumFs_conf;
+    const Mn_conf = sumMc_conf + sumMcc_conf + sumMs_conf;
+
+    const Pn_unconf = sumFc_unconf + sumFs_unconf;
+    const Mn_unconf = sumMc_unconf + sumMs_unconf;
+
+    const phi = getPhiFactor(et);
+    const Pu_conf = phi * Pn_conf;
+    const Mu_conf = phi * Mn_conf;
+
+    return {
+      c,
+      yhat,
+      dh,
+      bcc,
+      fcc,
+      et,
+      phi,
+      Pn_conf,
+      Mn_conf,
+      Pu_conf,
+      Mu_conf,
+      Pn_unconf,
+      Mn_unconf,
+      sumFc_conf,
+      sumFcc_conf,
+      sumFs_conf,
+      sumMc_conf,
+      sumMcc_conf,
+      sumMs_conf
+    };
+  }
+
+  /* ==========================================================================
+     RECOMPUTE FULL INTERACTION CURVES
+     ========================================================================== */
+  function recomputeCurves() {
+    // Read parameters
+    state.b = parseFloat(document.getElementById('input-b').value) || 60.0;
+    state.h = parseFloat(document.getElementById('input-h').value) || 40.0;
+    state.r = parseFloat(document.getElementById('input-r').value) || 5.0;
+    state.fc = parseFloat(document.getElementById('input-fc').value) || 28.0;
+    state.K = parseFloat(document.getElementById('input-k').value) || 1.3;
+    state.fy = parseFloat(document.getElementById('input-fy').value) || 420.0;
+    state.ecu = parseFloat(document.getElementById('input-ecu').value) || 0.003;
+
+    state.steel = [
+      { y: state.r, area: 4 * 2.86 },
+      { y: state.h / 2.0, area: 2 * 2.86 },
+      { y: state.h - state.r, area: 4 * 2.86 }
+    ];
+
+    document.getElementById('lbl-k-val').textContent = state.K.toFixed(2);
+
+    const bcc = Math.max(0, state.b - 2.0 * state.r);
+    const hcc = Math.max(0, state.h - 2.0 * state.r);
+    const fcc = state.fc * state.K;
+    const astTotal = state.steel.reduce((a, s) => a + s.area, 0);
+
+    // Analytic Pure Tension & Pure Compression limits
+    const Pt = -astTotal * state.fy / 10.0;
+    const P0_unconf = (state.fc * (state.b * state.h - astTotal) + state.fy * astTotal) / 10.0;
+    const P0_conf = (state.fc * (state.b * state.h - bcc * hcc) + fcc * (bcc * hcc - astTotal) + state.fy * astTotal) / 10.0;
+
+    const confPts = [{ c: 0, P: Pt, M: 0, et: 0.05, phi: 0.9 }];
+    const unconfPts = [{ c: 0, P: Pt, M: 0, et: 0.05, phi: 0.9 }];
+    const designPts = [{ c: 0, P: 0.9 * Pt, M: 0 }];
+
+    const cMin = 0.5;
+    const cMax = state.h * 1.5;
+    const steps = 90;
+    const dc = (cMax - cMin) / steps;
+
+    let maxMc = 0, maxMu = 0;
+
+    for (let i = 0; i <= steps; i++) {
+      const cVal = cMin + i * dc;
+      const res = computeSectionAtC(cVal);
+
+      confPts.push({ c: cVal, P: res.Pn_conf, M: Math.max(0, res.Mn_conf), et: res.et, phi: res.phi });
+      unconfPts.push({ c: cVal, P: res.Pn_unconf, M: Math.max(0, res.Mn_unconf), et: res.et });
+      designPts.push({ c: cVal, P: res.Pu_conf, M: Math.max(0, res.Mu_conf) });
+
+      if (res.Mn_conf > maxMc) maxMc = res.Mn_conf;
+      if (res.Mn_unconf > maxMu) maxMu = res.Mn_unconf;
+    }
+
+    // Append Pure Compression limits
+    confPts.push({ c: 1e5, P: P0_conf, M: 0, et: -0.003, phi: 0.65 });
+    unconfPts.push({ c: 1e5, P: P0_unconf, M: 0, et: -0.003, phi: 0.65 });
+    designPts.push({ c: 1e5, P: 0.65 * 0.80 * P0_conf, M: 0 }); // ACI tied column max axial cap
+
+    curvesData = {
+      conf: confPts,
+      unconf: unconfPts,
+      design: designPts,
+      p0_conf: P0_conf,
+      p0_unconf: P0_unconf,
+      pt: Pt,
+      maxM_conf: maxMc,
+      maxM_unconf: maxMu
+    };
+
+    updateAll();
+  }
+
+  /* ==========================================================================
+     CANVAS HELPER
+     ========================================================================== */
+  function setupCanvas(id) {
+    const canvas = document.getElementById(id);
+    const dpr = window.devicePixelRatio || 1;
+    const rect = canvas.getBoundingClientRect();
+    canvas.width = rect.width * dpr;
+    canvas.height = rect.height * dpr;
+    const ctx = canvas.getContext('2d');
+    ctx.scale(dpr, dpr);
+    return { ctx, width: rect.width, height: rect.height };
+  }
+
+  /* ==========================================================================
+     CANVAS: FULL P-M INTERACTION DIAGRAM
+     ========================================================================== */
+  function drawPMDiagram(res) {
+    const { ctx, width, height } = setupCanvas('canvas-pm');
+    ctx.clearRect(0, 0, width, height);
+
+    const padX = 70, padY = 35;
+    const drawW = width - 2 * padX;
+    const drawH = height - 2 * padY;
+
+    // Scales
+    const maxM = Math.max(curvesData.maxM_conf, curvesData.maxM_unconf, res.Mn_conf, 100.0) * 1.15;
+    const maxP = Math.max(curvesData.p0_conf, curvesData.p0_unconf, res.Pn_conf, 2000.0) * 1.08;
+    const minP = Math.min(curvesData.pt, -500.0) * 1.15;
+
+    function mapM(m) { return padX + (m / maxM) * drawW; }
+    function mapP(p) { return padY + drawH - ((p - minP) / (maxP - minP)) * drawH; }
+
+    // Grid lines
+    ctx.strokeStyle = state.theme === 'dark' ? '#1f2937' : '#e2e8f0';
+    ctx.lineWidth = 1;
+
+    // Horiz grid
+    const pStep = 1500;
+    for (let p = Math.ceil(minP / pStep) * pStep; p <= maxP; p += pStep) {
+      const y = mapP(p);
+      ctx.beginPath();
+      ctx.moveTo(padX, y);
+      ctx.lineTo(padX + drawW, y);
+      ctx.stroke();
+
+      ctx.fillStyle = state.theme === 'dark' ? '#64748b' : '#94a3b8';
+      ctx.font = '10px "JetBrains Mono"';
+      ctx.textAlign = 'right';
+      ctx.fillText(`${Math.round(p)}`, padX - 8, y + 3);
+    }
+
+    // Vert grid
+    const mStep = 100;
+    for (let m = 0; m <= maxM; m += mStep) {
+      const x = mapM(m);
+      ctx.beginPath();
+      ctx.moveTo(x, padY);
+      ctx.lineTo(x, padY + drawH);
+      ctx.stroke();
+
+      ctx.fillStyle = state.theme === 'dark' ? '#64748b' : '#94a3b8';
+      ctx.font = '10px "JetBrains Mono"';
+      ctx.textAlign = 'center';
+      ctx.fillText(`${Math.round(m)}`, x, padY + drawH + 16);
+    }
+
+    // Zero axes
+    if (minP <= 0 && maxP >= 0) {
+      const y0 = mapP(0);
+      ctx.beginPath();
+      ctx.moveTo(padX, y0);
+      ctx.lineTo(padX + drawW, y0);
+      ctx.strokeStyle = state.theme === 'dark' ? '#4b5563' : '#94a3b8';
+      ctx.lineWidth = 1.5;
+      ctx.stroke();
+    }
+    const x0 = mapM(0);
+    ctx.beginPath();
+    ctx.moveTo(x0, padY);
+    ctx.lineTo(x0, padY + drawH);
+    ctx.strokeStyle = state.theme === 'dark' ? '#4b5563' : '#94a3b8';
+    ctx.lineWidth = 1.5;
+    ctx.stroke();
+
+    // Axis Labels
+    ctx.fillStyle = state.theme === 'dark' ? '#cbd5e1' : '#334155';
+    ctx.font = 'bold 11px "Outfit"';
+    ctx.textAlign = 'center';
+    ctx.fillText('Momento Flector Mn [kN·m]', padX + drawW / 2, padY + drawH + 32);
+
+    ctx.save();
+    ctx.translate(padX - 48, padY + drawH / 2);
+    ctx.rotate(-Math.PI / 2);
+    ctx.fillText('Carga Axial Pn [kN] (+ Compresión)', 0, 0);
+    ctx.restore();
+
+    // 1. Draw Unconfined Curve (Orange dashed)
+    if (state.showUnconf && curvesData.unconf.length > 0) {
+      ctx.beginPath();
+      curvesData.unconf.forEach((pt, idx) => {
+        const x = mapM(pt.M);
+        const y = mapP(pt.P);
+        if (idx === 0) ctx.moveTo(x, y);
+        else ctx.lineTo(x, y);
+      });
+      ctx.strokeStyle = '#ea580c';
+      ctx.lineWidth = 2.5;
+      ctx.setLineDash([5, 4]);
+      ctx.stroke();
+      ctx.setLineDash([]);
+    }
+
+    // 2. Draw Design Curve (Green dashed)
+    if (state.showPhi && curvesData.design.length > 0) {
+      ctx.beginPath();
+      curvesData.design.forEach((pt, idx) => {
+        const x = mapM(pt.M);
+        const y = mapP(pt.P);
+        if (idx === 0) ctx.moveTo(x, y);
+        else ctx.lineTo(x, y);
+      });
+      ctx.strokeStyle = '#059669';
+      ctx.lineWidth = 2;
+      ctx.setLineDash([3, 3]);
+      ctx.stroke();
+      ctx.setLineDash([]);
+    }
+
+    // 3. Draw Confined Nominal Curve (Purple continuous)
+    if (curvesData.conf.length > 0) {
+      ctx.beginPath();
+      curvesData.conf.forEach((pt, idx) => {
+        const x = mapM(pt.M);
+        const y = mapP(pt.P);
+        if (idx === 0) ctx.moveTo(x, y);
+        else ctx.lineTo(x, y);
+      });
+      ctx.strokeStyle = '#7c3aed';
+      ctx.lineWidth = 3.5;
+      ctx.stroke();
+    }
+
+    // 4. Highlight Active Operating Point
+    const curX = mapM(res.Mn_conf);
+    const curY = mapP(res.Pn_conf);
+
+    if (state.showCrosshair) {
+      ctx.beginPath();
+      ctx.setLineDash([3, 3]);
+      ctx.moveTo(padX, curY);
+      ctx.lineTo(curX, curY);
+      ctx.lineTo(curX, padY + drawH);
+      ctx.strokeStyle = '#f59e0b';
+      ctx.lineWidth = 1.5;
+      ctx.stroke();
+      ctx.setLineDash([]);
+    }
+
+    // Dot on unconfined curve
+    if (state.showUnconf) {
+      const uX = mapM(res.Mn_unconf);
+      const uY = mapP(res.Pn_unconf);
+      ctx.beginPath();
+      ctx.arc(uX, uY, 5, 0, 2 * Math.PI);
+      ctx.fillStyle = '#ea580c';
+      ctx.fill();
+      ctx.strokeStyle = '#ffffff';
+      ctx.lineWidth = 1.5;
+      ctx.stroke();
+    }
+
+    // Dot on confined curve (Big pulsating yellow)
+    ctx.beginPath();
+    ctx.arc(curX, curY, 8, 0, 2 * Math.PI);
+    ctx.fillStyle = '#f59e0b';
+    ctx.fill();
+    ctx.strokeStyle = '#ffffff';
+    ctx.lineWidth = 2.5;
+    ctx.stroke();
+
+    // Callout
+    ctx.fillStyle = '#f59e0b';
+    ctx.font = 'bold 11px "JetBrains Mono"';
+    const textOffX = curX > padX + drawW - 140 ? -12 : 12;
+    ctx.textAlign = curX > padX + drawW - 140 ? 'right' : 'left';
+    ctx.fillText(`(Mn=${res.Mn_conf.toFixed(1)}, Pn=${res.Pn_conf.toFixed(1)})`, curX + textOffX, curY - 6);
+  }
+
+  /* ==========================================================================
+     CANVAS: SECTION SUBPANEL
+     ========================================================================== */
+  function drawSection(res) {
+    const { ctx, width, height } = setupCanvas('canvas-section');
+    ctx.clearRect(0, 0, width, height);
+
+    const pad = 24;
+    const scale = Math.min((width - 2 * pad) / state.b, (height - 2 * pad) / state.h);
+    const drawW = state.b * scale;
+    const drawH = state.h * scale;
+    const startX = (width - drawW) / 2;
+    const startY = (height - drawH) / 2;
+
+    const rPix = state.r * scale;
+    const coreX = startX + rPix;
+    const coreY = startY + rPix;
+    const coreW = drawW - 2 * rPix;
+    const coreH = drawH - 2 * rPix;
+
+    // Cover
+    ctx.fillStyle = 'rgba(234, 88, 12, 0.1)';
+    ctx.fillRect(startX, startY, drawW, drawH);
+
+    // Core
+    ctx.fillStyle = 'rgba(124, 58, 237, 0.2)';
+    ctx.fillRect(coreX, coreY, coreW, coreH);
+
+    // Stirrup
+    ctx.strokeStyle = '#7c3aed';
+    ctx.lineWidth = 2;
+    ctx.setLineDash([4, 3]);
+    ctx.strokeRect(coreX, coreY, coreW, coreH);
+    ctx.setLineDash([]);
+
+    // Outer boundary
+    ctx.strokeStyle = state.theme === 'dark' ? '#475569' : '#334155';
+    ctx.lineWidth = 2;
+    ctx.strokeRect(startX, startY, drawW, drawH);
+
+    // Steel
+    state.steel.forEach((s, idx) => {
+      const sY = startY + s.y * scale;
+      const rebarXs = [coreX + 12, coreX + coreW / 2, coreX + coreW - 12];
+      if (idx === 1) rebarXs.splice(1, 1);
+      rebarXs.forEach(rx => {
+        ctx.beginPath();
+        ctx.arc(rx, sY, 6, 0, 2 * Math.PI);
+        ctx.fillStyle = '#0284c7';
+        ctx.fill();
+        ctx.strokeStyle = '#ffffff';
+        ctx.lineWidth = 1.5;
+        ctx.stroke();
+      });
+    });
+
+    // Neutral Axis
+    const cY = startY + res.c * scale;
+    if (cY <= startY + drawH + 15) {
+      ctx.beginPath();
+      ctx.setLineDash([5, 3]);
+      ctx.moveTo(startX - 10, cY);
+      ctx.lineTo(startX + drawW + 10, cY);
+      ctx.strokeStyle = '#7c3aed';
+      ctx.lineWidth = 2;
+      ctx.stroke();
+      ctx.setLineDash([]);
+      ctx.fillStyle = '#7c3aed';
+      ctx.font = 'bold 10px "Outfit"';
+      ctx.textAlign = 'right';
+      ctx.fillText(`c=${res.c.toFixed(1)}cm`, startX - 12, cY + 3);
+    }
+  }
+
+  /* ==========================================================================
+     CANVAS: STRESSES SUBPANEL
+     ========================================================================== */
+  function drawStresses(res) {
+    const { ctx, width, height } = setupCanvas('canvas-stresses');
+    ctx.clearRect(0, 0, width, height);
+
+    const padX = 25, padY = 20;
+    const drawH = height - 2 * padY;
+    const drawW = width - 2 * padX;
+    const scaleY = drawH / state.h;
+    const midX = padX + drawW * 0.3;
+    const startY = padY;
+    const maxStress = Math.max(res.fcc, state.fc, 35.0);
+    const scaleSig = (drawW * 0.65) / maxStress;
+
+    ctx.beginPath();
+    ctx.moveTo(midX, startY);
+    ctx.lineTo(midX, startY + drawH);
+    ctx.strokeStyle = state.theme === 'dark' ? '#334155' : '#cbd5e1';
+    ctx.lineWidth = 1.5;
+    ctx.stroke();
+
+    const cLimY = Math.min(state.h, Math.max(0, res.c));
+
+    // Unconfined
+    ctx.beginPath();
+    for (let y = 0; y <= cLimY; y += 0.5) {
+      const eps = state.ecu * (res.c - y) / res.c;
+      const sig = sigmaUnconf(eps);
+      const px = midX + sig * scaleSig;
+      const py = startY + y * scaleY;
+      if (y === 0) ctx.moveTo(px, py);
+      else ctx.lineTo(px, py);
+    }
+    ctx.lineTo(midX, startY + cLimY * scaleY);
+    ctx.strokeStyle = '#ea580c';
+    ctx.lineWidth = 1.5;
+    ctx.stroke();
+
+    // Confined
+    ctx.beginPath();
+    for (let y = state.r; y <= Math.min(state.h - state.r, cLimY); y += 0.5) {
+      const eps = state.ecu * (res.c - y) / res.c;
+      const sig = sigmaConf(eps);
+      const px = midX + sig * scaleSig;
+      const py = startY + y * scaleY;
+      if (y === state.r) ctx.moveTo(px, py);
+      else ctx.lineTo(px, py);
+    }
+    ctx.lineTo(midX, startY + Math.min(state.h - state.r, cLimY) * scaleY);
+    ctx.strokeStyle = '#7c3aed';
+    ctx.lineWidth = 2.5;
+    ctx.stroke();
+  }
+
+  /* ==========================================================================
+     CANVAS: FORCES SUBPANEL
+     ========================================================================== */
+  function drawForces(res) {
+    const { ctx, width, height } = setupCanvas('canvas-forces');
+    ctx.clearRect(0, 0, width, height);
+
+    const padX = 25, padY = 20;
+    const drawH = height - 2 * padY;
+    const drawW = width - 2 * padX;
+    const midX = padX + drawW * 0.45;
+    const startY = padY;
+    const scaleY = drawH / state.h;
+
+    const maxF = Math.max(Math.abs(res.sumFc_conf), Math.abs(res.sumFcc_conf), Math.abs(res.sumFs_conf), 200.0);
+    const scaleF = (drawW * 0.45) / maxF;
+
+    // Resultant Cover Force
+    if (res.sumFc_conf > 0.1) {
+      const yFc = startY + Math.min(state.h * 0.35, res.c * 0.35) * scaleY;
+      drawArrow(ctx, midX, yFc, midX + res.sumFc_conf * scaleF, yFc, '#ea580c', `Fc=+${res.sumFc_conf.toFixed(0)}`);
+    }
+
+    // Resultant Core Force
+    if (res.sumFcc_conf > 0.1) {
+      const yFcc = startY + Math.min(state.h * 0.55, res.c * 0.5) * scaleY;
+      drawArrow(ctx, midX, yFcc, midX + res.sumFcc_conf * scaleF, yFcc, '#7c3aed', `Fcc=+${res.sumFcc_conf.toFixed(0)}`);
+    }
+
+    // Steel Force
+    state.steel.forEach((s, idx) => {
+      const eps = state.ecu * (res.c - s.y) / res.c;
+      const sig = sigmaSteel(eps);
+      const F = sig * s.area / 10.0;
+      if (Math.abs(F) > 0.1) {
+        const yFs = startY + s.y * scaleY;
+        const color = F > 0 ? '#ea580c' : '#0891b2';
+        drawArrow(ctx, midX, yFs, midX + F * scaleF, yFs, color, `As${idx+1}`);
+      }
+    });
+  }
+
+  function drawArrow(ctx, fromX, fromY, toX, toY, color, label) {
+    const headLen = 6;
+    const angle = Math.atan2(toY - fromY, toX - fromX);
+
+    ctx.beginPath();
+    ctx.moveTo(fromX, fromY);
+    ctx.lineTo(toX, toY);
+    ctx.strokeStyle = color;
+    ctx.lineWidth = 2;
+    ctx.stroke();
+
+    ctx.beginPath();
+    ctx.moveTo(toX, toY);
+    ctx.lineTo(toX - headLen * Math.cos(angle - Math.PI / 6), toY - headLen * Math.sin(angle - Math.PI / 6));
+    ctx.lineTo(toX - headLen * Math.cos(angle + Math.PI / 6), toY - headLen * Math.sin(angle + Math.PI / 6));
+    ctx.closePath();
+    ctx.fillStyle = color;
+    ctx.fill();
+
+    ctx.fillStyle = color;
+    ctx.font = 'bold 9px "JetBrains Mono"';
+    ctx.textAlign = toX >= fromX ? 'left' : 'right';
+    ctx.fillText(label, toX + (toX >= fromX ? 4 : -4), toY + 3);
+  }
+
+  /* ==========================================================================
+     CONTROLLER EVENTS & PRESETS
+     ========================================================================== */
+  function onSliderChange(val) {
+    state.c = parseFloat(val);
+    document.getElementById('val-c-display').textContent = state.c.toFixed(1);
+    updateAll();
+  }
+
+  function stepC(delta) {
+    let nextC = Math.round((state.c + delta) * 10) / 10;
+    nextC = Math.max(0.5, Math.min(60.0, nextC));
+    state.c = nextC;
+    document.getElementById('slider-c').value = state.c;
+    document.getElementById('val-c-display').textContent = state.c.toFixed(1);
+    updateAll();
+  }
+
+  function setPreset(key) {
+    document.querySelectorAll('.preset-pill').forEach(btn => btn.classList.remove('active'));
+
+    if (key === 'script') {
+      state.c = 10.1;
+      document.getElementById('pre-script').classList.add('active');
+    } else if (key === 'mmax') {
+      let bestC = 10.1, bestM = 0;
+      curvesData.conf.forEach(pt => {
+        if (pt.M > bestM && pt.c > 1.0 && pt.c < state.h * 1.2) {
+          bestM = pt.M;
+          bestC = pt.c;
+        }
+      });
+      state.c = Math.round(bestC * 10) / 10;
+      document.getElementById('pre-mmax').classList.add('active');
+    } else if (key === 'balanced') {
+      const d = state.steel[state.steel.length - 1].y;
+      const ey = state.fy / state.Es;
+      state.c = Math.round((state.ecu / (state.ecu + ey) * d) * 10) / 10;
+      document.getElementById('pre-balanced').classList.add('active');
+    } else if (key === 'p0') {
+      state.c = 60.0;
+      document.getElementById('pre-p0').classList.add('active');
+    } else if (key === 'pt') {
+      state.c = 0.5;
+      document.getElementById('pre-pt').classList.add('active');
+    } else if (key === 'tens-lim') {
+      const d = state.steel[state.steel.length - 1].y;
+      state.c = Math.round((state.ecu / (state.ecu + 0.005) * d) * 10) / 10;
+      document.getElementById('pre-tens-lim').classList.add('active');
+    }
+
+    document.getElementById('slider-c').value = state.c;
+    document.getElementById('val-c-display').textContent = state.c.toFixed(1);
+    updateAll();
+  }
+
+  /* ==========================================================================
+     TABLE & EXPORTS
+     ========================================================================== */
+  function updateTable() {
+    const tbody = document.getElementById('table-pm-body');
+    tbody.innerHTML = '';
+
+    const pts = curvesData.conf.filter((_, i) => i % 6 === 0 || i === curvesData.conf.length - 1);
+
+    pts.forEach((pt, idx) => {
+      const tr = document.createElement('tr');
+      const unconfPt = curvesData.unconf.find(u => Math.abs(u.c - pt.c) < 0.05) || { P: 0, M: 0 };
+      const dP = pt.P - unconfPt.P;
+      const dM = pt.M - unconfPt.M;
+
+      tr.innerHTML = `
+        <td style="text-align:center; font-weight:700;">P${idx + 1}</td>
+        <td>${pt.c > 1000 ? 'P0' : pt.c.toFixed(1)}</td>
+        <td style="color:${pt.et >= 0.005 ? 'var(--color-steel)' : 'var(--color-unconf)'}; font-weight:700;">
+          ${pt.et !== undefined ? pt.et.toFixed(4) : '-'}
+        </td>
+        <td style="font-weight:700; color:var(--color-conf);">${pt.P.toFixed(1)}</td>
+        <td style="font-weight:700; color:var(--color-conf);">${pt.M.toFixed(1)}</td>
+        <td style="color:var(--color-unconf);">${unconfPt.P.toFixed(1)}</td>
+        <td style="color:var(--color-unconf);">${unconfPt.M.toFixed(1)}</td>
+        <td style="color:var(--accent-emerald); font-weight:700;">${dP >= 0 ? '+' : ''}${dP.toFixed(1)}</td>
+        <td style="color:var(--accent-emerald); font-weight:700;">${dM >= 0 ? '+' : ''}${dM.toFixed(1)}</td>
+        <td>${pt.phi ? pt.phi.toFixed(3) : '0.650'}</td>
+      `;
+
+      tr.onclick = () => {
+        if (pt.c <= 60.0 && pt.c >= 0.5) {
+          state.c = Math.round(pt.c * 10) / 10;
+          document.getElementById('slider-c').value = state.c;
+          document.getElementById('val-c-display').textContent = state.c.toFixed(1);
+          updateAll();
+        }
+      };
+
+      tbody.appendChild(tr);
+    });
+  }
+
+  function downloadCSV() {
+    let csv = 'c_cm,Pn_conf_kN,Mn_conf_kNm,Pu_conf_kN,Mu_conf_kNm,Pn_unconf_kN,Mn_unconf_kNm,Delta_P_kN,Delta_M_kNm\n';
+    curvesData.conf.forEach((pt, i) => {
+      const u = curvesData.unconf[i] || { P: 0, M: 0 };
+      const d = curvesData.design[i] || { P: 0, M: 0 };
+      csv += `${pt.c.toFixed(2)},${pt.P.toFixed(2)},${pt.M.toFixed(2)},${d.P.toFixed(2)},${d.M.toFixed(2)},${u.P.toFixed(2)},${u.M.toFixed(2)},${(pt.P - u.P).toFixed(2)},${(pt.M - u.M).toFixed(2)}\n`;
+    });
+
+    const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement('a');
+    link.href = url;
+    link.download = `curva_interaccion_confinada_K_${state.K}.csv`;
+    link.click();
+  }
+
+  function copyLaTeX() {
+    let tex = `\\begin{table}[h!]\n\\centering\n\\caption{Comparación de Curvas de Interacción $P-M$ (Confinada $K = ${state.K}$ vs No Confinada)}\n`;
+    tex += `\\begin{tabular}{ccccccc}\n\\hline\n`;
+    tex += `$c$~(cm) & $P_{n,\\text{conf}}$~(kN) & $M_{n,\\text{conf}}$~(kN$\\cdot$m) & $P_{n,\\text{unconf}}$~(kN) & $M_{n,\\text{unconf}}$~(kN$\\cdot$m) & $\\Delta P$~(kN) & $\\Delta M$~(kN$\\cdot$m) \\\\\n\\hline\n`;
+
+    const sample = curvesData.conf.filter((_, i) => i % 8 === 0);
+    sample.forEach((pt, i) => {
+      const u = curvesData.unconf[i] || { P: 0, M: 0 };
+      tex += `${pt.c.toFixed(1)} & ${pt.P.toFixed(1)} & ${pt.M.toFixed(1)} & ${u.P.toFixed(1)} & ${u.M.toFixed(1)} & ${(pt.P - u.P).toFixed(1)} & ${(pt.M - u.M).toFixed(1)} \\\\\n`;
+    });
+    tex += `\\hline\n\\end{tabular}\n\\end{table}`;
+
+    navigator.clipboard.writeText(tex).then(() => {
+      alert('¡Código LaTeX de la curva copiado al portapapeles!');
+    });
+  }
+
+  function toggleQuiz(id) {
+    document.getElementById(`quiz-ans-${id}`).classList.toggle('show');
+  }
+
+  /* ==========================================================================
+     UPDATE ALL
+     ========================================================================== */
+  function updateAll() {
+    state.showUnconf = document.getElementById('chk-show-unconf').checked;
+    state.showPhi = document.getElementById('chk-show-phi').checked;
+    state.showCrosshair = document.getElementById('chk-show-crosshair').checked;
+
+    document.getElementById('leg-unconf').style.display = state.showUnconf ? 'flex' : 'none';
+    document.getElementById('leg-design').style.display = state.showPhi ? 'flex' : 'none';
+
+    const res = computeSectionAtC(state.c);
+
+    // Hero stats
+    document.getElementById('stat-pn-conf').textContent = `${res.Pn_conf >= 0 ? '+' : ''}${res.Pn_conf.toFixed(1)} kN`;
+    const dP = res.Pn_conf - res.Pn_unconf;
+    const pctP = res.Pn_unconf !== 0 ? (dP / Math.abs(res.Pn_unconf) * 100).toFixed(1) : '0';
+    document.getElementById('stat-pn-diff').textContent = `▲ +${dP.toFixed(1)} kN (+${pctP}%) vs No Confinada`;
+
+    document.getElementById('stat-mn-conf').textContent = `${res.Mn_conf.toFixed(1)} kN·m`;
+    const dM = res.Mn_conf - res.Mn_unconf;
+    const pctM = res.Mn_unconf !== 0 ? (dM / Math.abs(res.Mn_unconf) * 100).toFixed(1) : '0';
+    document.getElementById('stat-mn-diff').textContent = `▲ +${dM.toFixed(1)} kN·m (+${pctM}%) vs No Confinada`;
+
+    document.getElementById('stat-p0-conf').textContent = `${curvesData.p0_conf.toFixed(1)} kN`;
+    const dP0 = curvesData.p0_conf - curvesData.p0_unconf;
+    const pctP0 = ((curvesData.p0_conf / curvesData.p0_unconf - 1) * 100).toFixed(1);
+    document.getElementById('stat-p0-diff').textContent = `▲ +${dP0.toFixed(1)} kN (+${pctP0}% de ganancia)`;
+
+    document.getElementById('stat-pt-val').textContent = `${curvesData.pt.toFixed(1)} kN`;
+    document.getElementById('badge-c-current').textContent = `c = ${state.c.toFixed(1)} cm`;
+
+    // Draw canvases
+    drawPMDiagram(res);
+    drawSection(res);
+    drawStresses(res);
+    drawForces(res);
+
+    updateTable();
+  }
+
+  function toggleTheme() {
+    const html = document.documentElement;
+    const isDark = html.getAttribute('data-theme') === 'dark';
+    const newTheme = isDark ? 'light' : 'dark';
+    html.setAttribute('data-theme', newTheme);
+    state.theme = newTheme;
+
+    document.getElementById('theme-icon').textContent = newTheme === 'dark' ? '☀️' : '🌙';
+    document.getElementById('theme-text').textContent = newTheme === 'dark' ? 'Modo Claro' : 'Modo Oscuro';
+    localStorage.setItem('concreto_theme', newTheme);
+
+    updateAll();
+  }
+
+  window.addEventListener('resize', () => {
+    updateAll();
+  });
+
+  window.addEventListener('DOMContentLoaded', () => {
+    const savedTheme = localStorage.getItem('concreto_theme') || 'light';
+    if (savedTheme === 'dark') {
+      document.documentElement.setAttribute('data-theme', 'dark');
+      state.theme = 'dark';
+      document.getElementById('theme-icon').textContent = '☀️';
+      document.getElementById('theme-text').textContent = 'Modo Claro';
+    }
+    recomputeCurves();
+  });
+  </script>
+</body>
+</html>
