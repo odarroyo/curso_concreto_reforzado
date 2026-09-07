@@ -1,0 +1,3210 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Tutorial Interactivo: Modelo de Concreto Confinado según Mander (1988)</title>
+  
+  <!-- Google Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Outfit:wght@500;600;700;800&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
+  
+  <style>
+    :root {
+      --bg-primary: #0b0f19;
+      --bg-secondary: #111827;
+      --bg-card: #162032;
+      --bg-card-subtle: #1c2942;
+      --bg-card-hover: #223252;
+      --border-color: #243452;
+      --border-focus: #7c3aed;
+      
+      --text-main: #e2e8f0;
+      --text-muted: #94a3b8;
+      --text-faint: #64748b;
+      --text-bright: #ffffff;
+      
+      --mander-purple: #8b5cf6;
+      --mander-purple-glow: rgba(139, 92, 246, 0.25);
+      --unconf-amber: #f59e0b;
+      --unconf-amber-glow: rgba(245, 158, 11, 0.25);
+      --steel-blue: #38bdf8;
+      --accent-emerald: #10b981;
+      --accent-rose: #f43f5e;
+      --accent-indigo: #6366f1;
+      
+      --canvas-bg: #0d1322;
+      --canvas-grid: rgba(255, 255, 255, 0.05);
+      --canvas-axis: #475569;
+      --canvas-text: #94a3b8;
+      
+      --font-main: 'Inter', system-ui, -apple-system, sans-serif;
+      --font-title: 'Outfit', system-ui, sans-serif;
+      --font-mono: 'JetBrains Mono', monospace;
+      
+      --shadow-sm: 0 2px 4px rgba(0,0,0,0.3);
+      --shadow-md: 0 4px 12px rgba(0,0,0,0.4);
+      --shadow-lg: 0 10px 25px rgba(0,0,0,0.5);
+      --radius-sm: 8px;
+      --radius-md: 12px;
+      --radius-lg: 18px;
+    }
+
+    [data-theme="light"] {
+      --bg-primary: #f8fafc;
+      --bg-secondary: #ffffff;
+      --bg-card: #ffffff;
+      --bg-card-subtle: #f1f5f9;
+      --bg-card-hover: #e2e8f0;
+      --border-color: #cbd5e1;
+      --border-focus: #7c3aed;
+      
+      --text-main: #1e293b;
+      --text-muted: #64748b;
+      --text-faint: #94a3b8;
+      --text-bright: #0f172a;
+      
+      --mander-purple: #7c3aed;
+      --mander-purple-glow: rgba(124, 58, 237, 0.15);
+      --unconf-amber: #d97706;
+      --unconf-amber-glow: rgba(217, 119, 6, 0.15);
+      --steel-blue: #0284c7;
+      
+      --canvas-bg: #f8fafc;
+      --canvas-grid: rgba(0, 0, 0, 0.05);
+      --canvas-axis: #94a3b8;
+      --canvas-text: #64748b;
+      
+      --shadow-sm: 0 1px 3px rgba(0,0,0,0.05);
+      --shadow-md: 0 4px 6px -1px rgba(0,0,0,0.07);
+      --shadow-lg: 0 10px 15px -3px rgba(0,0,0,0.08);
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    
+    body {
+      font-family: var(--font-main);
+      background: var(--bg-primary);
+      color: var(--text-main);
+      line-height: 1.5;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      transition: background-color 0.25s ease, color 0.25s ease;
+    }
+
+    /* HEADER */
+    header.top-header {
+      background: var(--bg-card);
+      border-bottom: 1px solid var(--border-color);
+      padding: 14px 24px;
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      box-shadow: var(--shadow-sm);
+    }
+
+    .header-container {
+      max-width: 1440px;
+      margin: 0 auto;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 16px;
+      flex-wrap: wrap;
+    }
+
+    .brand-group {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      text-decoration: none;
+      color: inherit;
+    }
+
+    .brand-badge {
+      background: linear-gradient(135deg, var(--mander-purple), var(--steel-blue));
+      color: #fff;
+      font-family: var(--font-title);
+      font-size: 1.15rem;
+      font-weight: 800;
+      width: 40px;
+      height: 40px;
+      border-radius: var(--radius-sm);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      box-shadow: 0 2px 8px var(--mander-purple-glow);
+    }
+
+    .brand-title h1 {
+      font-family: var(--font-title);
+      font-size: 1.15rem;
+      font-weight: 700;
+      color: var(--text-bright);
+    }
+
+    .brand-title p {
+      font-size: 0.775rem;
+      color: var(--text-muted);
+    }
+
+    .nav-actions {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .btn-nav {
+      background: var(--bg-card-subtle);
+      border: 1px solid var(--border-color);
+      color: var(--text-main);
+      padding: 7px 14px;
+      border-radius: var(--radius-sm);
+      font-size: 0.825rem;
+      font-weight: 600;
+      cursor: pointer;
+      text-decoration: none;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      transition: all 0.2s ease;
+    }
+
+    .btn-nav:hover {
+      background: var(--border-color);
+      color: var(--text-bright);
+    }
+
+    /* MAIN LAYOUT */
+    main.main-content {
+      max-width: 1440px;
+      margin: 0 auto;
+      padding: 24px;
+      width: 100%;
+      flex-grow: 1;
+      display: flex;
+      flex-direction: column;
+      gap: 24px;
+    }
+
+    /* HERO BANNER */
+    .hero-banner {
+      background: linear-gradient(135deg, rgba(139, 92, 246, 0.08) 0%, rgba(56, 189, 248, 0.05) 100%);
+      border: 1px solid var(--border-color);
+      border-left: 4px solid var(--mander-purple);
+      border-radius: var(--radius-md);
+      padding: 20px 24px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 20px;
+      flex-wrap: wrap;
+    }
+
+    .hero-text h2 {
+      font-family: var(--font-title);
+      font-size: 1.45rem;
+      font-weight: 800;
+      color: var(--text-bright);
+      margin-bottom: 6px;
+    }
+
+    .hero-text p {
+      font-size: 0.9rem;
+      color: var(--text-muted);
+      max-width: 900px;
+    }
+
+    .hero-tags {
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
+    }
+
+    .tag-pill {
+      font-size: 0.725rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+      padding: 4px 10px;
+      border-radius: 999px;
+      background: var(--bg-card-subtle);
+      border: 1px solid var(--border-color);
+      color: var(--mander-purple);
+    }
+
+    /* PRESETS BAR */
+    .presets-bar {
+      background: var(--bg-card);
+      border: 1px solid var(--border-color);
+      border-radius: var(--radius-md);
+      padding: 14px 18px;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      flex-wrap: wrap;
+    }
+
+    .presets-label {
+      font-size: 0.825rem;
+      font-weight: 700;
+      color: var(--text-muted);
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .presets-grid {
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
+      flex-grow: 1;
+    }
+
+    .btn-preset {
+      background: var(--bg-card-subtle);
+      border: 1px solid var(--border-color);
+      color: var(--text-main);
+      padding: 6px 12px;
+      border-radius: var(--radius-sm);
+      font-size: 0.8rem;
+      font-weight: 600;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      transition: all 0.2s ease;
+    }
+
+    .btn-preset:hover {
+      background: var(--bg-card-hover);
+      border-color: var(--mander-purple);
+      color: var(--text-bright);
+    }
+
+    .btn-preset.active {
+      background: var(--mander-purple);
+      border-color: var(--mander-purple);
+      color: #ffffff;
+      box-shadow: 0 2px 8px var(--mander-purple-glow);
+    }
+
+    /* WORKSPACE GRID */
+    .workspace-grid {
+      display: grid;
+      grid-template-columns: 340px 1fr;
+      gap: 24px;
+      align-items: start;
+    }
+
+    @media (max-width: 1024px) {
+      .workspace-grid {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    /* CONTROL PANEL */
+    .control-panel {
+      background: var(--bg-card);
+      border: 1px solid var(--border-color);
+      border-radius: var(--radius-lg);
+      padding: 20px;
+      box-shadow: var(--shadow-md);
+      display: flex;
+      flex-direction: column;
+      gap: 20px;
+    }
+
+    .section-group-title {
+      font-family: var(--font-title);
+      font-size: 0.95rem;
+      font-weight: 700;
+      color: var(--text-bright);
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      padding-bottom: 8px;
+      border-bottom: 1px solid var(--border-color);
+    }
+
+    .control-row {
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+      margin-bottom: 12px;
+    }
+
+    .control-label-flex {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-size: 0.8rem;
+      font-weight: 600;
+      color: var(--text-main);
+    }
+
+    .control-val {
+      font-family: var(--font-mono);
+      font-size: 0.825rem;
+      font-weight: 700;
+      color: var(--mander-purple);
+    }
+
+    .slider-input {
+      width: 100%;
+      height: 6px;
+      border-radius: 3px;
+      background: var(--bg-card-subtle);
+      border: 1px solid var(--border-color);
+      outline: none;
+      -webkit-appearance: none;
+      cursor: pointer;
+    }
+
+    .slider-input::-webkit-slider-thumb {
+      -webkit-appearance: none;
+      width: 16px;
+      height: 16px;
+      border-radius: 50%;
+      background: var(--mander-purple);
+      cursor: pointer;
+      border: 2px solid #ffffff;
+      box-shadow: 0 2px 4px rgba(0,0,0,0.4);
+      transition: transform 0.15s ease;
+    }
+
+    .slider-input::-webkit-slider-thumb:hover {
+      transform: scale(1.2);
+    }
+
+    .select-input {
+      background: var(--bg-card-subtle);
+      border: 1px solid var(--border-color);
+      color: var(--text-main);
+      padding: 7px 10px;
+      border-radius: var(--radius-sm);
+      font-size: 0.825rem;
+      font-weight: 500;
+      outline: none;
+      cursor: pointer;
+    }
+
+    .toggle-switch-container {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 10px 12px;
+      background: var(--bg-card-subtle);
+      border: 1px solid var(--border-color);
+      border-radius: var(--radius-sm);
+    }
+
+    .switch {
+      position: relative;
+      display: inline-block;
+      width: 44px;
+      height: 22px;
+    }
+
+    .switch input { opacity: 0; width: 0; height: 0; }
+
+    .slider-switch {
+      position: absolute;
+      cursor: pointer;
+      top: 0; left: 0; right: 0; bottom: 0;
+      background-color: var(--border-color);
+      transition: .3s;
+      border-radius: 22px;
+    }
+
+    .slider-switch:before {
+      position: absolute;
+      content: "";
+      height: 16px; width: 16px;
+      left: 3px; bottom: 3px;
+      background-color: white;
+      transition: .3s;
+      border-radius: 50%;
+    }
+
+    input:checked + .slider-switch {
+      background-color: var(--mander-purple);
+    }
+
+    input:checked + .slider-switch:before {
+      transform: translateX(22px);
+    }
+
+    .btn-ghost-group {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 8px;
+    }
+
+    .btn-ghost {
+      background: var(--bg-card-subtle);
+      border: 1px solid var(--border-color);
+      color: var(--text-main);
+      padding: 8px 12px;
+      border-radius: var(--radius-sm);
+      font-size: 0.775rem;
+      font-weight: 600;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
+      transition: all 0.2s ease;
+    }
+
+    .btn-ghost:hover {
+      background: var(--bg-card-hover);
+      color: var(--text-bright);
+    }
+
+    .btn-ghost.active {
+      background: rgba(139, 92, 246, 0.15);
+      border-color: var(--mander-purple);
+      color: var(--mander-purple);
+    }
+
+    /* RIGHT CONTENT AREA: METRICS & CANVASES */
+    .dashboard-area {
+      display: flex;
+      flex-direction: column;
+      gap: 20px;
+    }
+
+    /* METRIC KPI CARDS */
+    .kpi-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(170px, 1fr));
+      gap: 14px;
+    }
+
+    .kpi-card {
+      background: var(--bg-card);
+      border: 1px solid var(--border-color);
+      border-radius: var(--radius-md);
+      padding: 14px 16px;
+      box-shadow: var(--shadow-sm);
+      position: relative;
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+    }
+
+    .kpi-stripe {
+      position: absolute;
+      top: 0; left: 0; right: 0;
+      height: 3px;
+    }
+
+    .stripe-purple { background: var(--mander-purple); }
+    .stripe-amber { background: var(--unconf-amber); }
+    .stripe-blue { background: var(--steel-blue); }
+    .stripe-emerald { background: var(--accent-emerald); }
+    .stripe-rose { background: var(--accent-rose); }
+
+    .kpi-title {
+      font-size: 0.75rem;
+      font-weight: 700;
+      color: var(--text-muted);
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .kpi-val {
+      font-family: var(--font-mono);
+      font-size: 1.45rem;
+      font-weight: 800;
+      color: var(--text-bright);
+      line-height: 1.2;
+      margin-top: 2px;
+    }
+
+    .kpi-sub {
+      font-size: 0.75rem;
+      color: var(--text-muted);
+      display: flex;
+      align-items: center;
+      gap: 4px;
+    }
+
+    .delta-badge {
+      font-size: 0.7rem;
+      font-weight: 700;
+      padding: 1px 6px;
+      border-radius: 4px;
+    }
+
+    .delta-up { background: rgba(16, 185, 129, 0.15); color: var(--accent-emerald); }
+
+    /* CANVASES TABS & WRAPPER */
+    .view-tabs-bar {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      border-bottom: 1px solid var(--border-color);
+      padding-bottom: 12px;
+      flex-wrap: wrap;
+      gap: 12px;
+    }
+
+    .view-tabs-list {
+      display: flex;
+      gap: 8px;
+    }
+
+    .tab-btn {
+      background: var(--bg-card);
+      border: 1px solid var(--border-color);
+      color: var(--text-muted);
+      padding: 8px 16px;
+      border-radius: var(--radius-sm);
+      font-size: 0.85rem;
+      font-weight: 600;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      transition: all 0.2s ease;
+    }
+
+    .tab-btn:hover {
+      color: var(--text-bright);
+      border-color: var(--mander-purple);
+    }
+
+    .tab-btn.active {
+      background: var(--bg-card-subtle);
+      border-color: var(--mander-purple);
+      color: var(--mander-purple);
+      font-weight: 700;
+      box-shadow: inset 0 0 0 1px var(--mander-purple);
+    }
+
+    .canvases-container {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 20px;
+    }
+
+    @media (max-width: 1100px) {
+      .canvases-container {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    .canvas-card {
+      background: var(--bg-card);
+      border: 1px solid var(--border-color);
+      border-radius: var(--radius-md);
+      padding: 16px;
+      box-shadow: var(--shadow-sm);
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+
+    .canvas-card-full {
+      grid-column: 1 / -1;
+    }
+
+    .canvas-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 8px;
+    }
+
+    .canvas-title {
+      font-family: var(--font-title);
+      font-size: 0.95rem;
+      font-weight: 700;
+      color: var(--text-bright);
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .canvas-legend {
+      display: flex;
+      gap: 12px;
+      font-size: 0.75rem;
+      color: var(--text-muted);
+      flex-wrap: wrap;
+    }
+
+    .legend-item {
+      display: flex;
+      align-items: center;
+      gap: 5px;
+    }
+
+    .legend-box {
+      width: 10px;
+      height: 10px;
+      border-radius: 2px;
+    }
+
+    .canvas-wrapper {
+      position: relative;
+      width: 100%;
+      height: 380px;
+      background: var(--canvas-bg);
+      border: 1px solid var(--border-color);
+      border-radius: var(--radius-sm);
+      overflow: hidden;
+    }
+
+    canvas {
+      width: 100%;
+      height: 100%;
+      display: block;
+    }
+
+    .canvas-overlay-tooltip {
+      position: absolute;
+      top: 10px;
+      right: 10px;
+      background: rgba(15, 23, 42, 0.85);
+      backdrop-filter: blur(4px);
+      border: 1px solid var(--border-color);
+      border-radius: var(--radius-sm);
+      padding: 8px 12px;
+      font-family: var(--font-mono);
+      font-size: 0.75rem;
+      color: #fff;
+      pointer-events: none;
+      display: none;
+      z-index: 10;
+    }
+
+    /* STEP-BY-STEP PEDAGOGICAL BREAKDOWN */
+    .details-card {
+      background: var(--bg-card);
+      border: 1px solid var(--border-color);
+      border-radius: var(--radius-lg);
+      padding: 24px;
+      box-shadow: var(--shadow-sm);
+    }
+
+    .details-title {
+      font-family: var(--font-title);
+      font-size: 1.25rem;
+      font-weight: 800;
+      color: var(--text-bright);
+      margin-bottom: 16px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .steps-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(310px, 1fr));
+      gap: 16px;
+    }
+
+    .step-box {
+      background: var(--bg-card-subtle);
+      border: 1px solid var(--border-color);
+      border-radius: var(--radius-md);
+      padding: 16px;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+
+    .step-header {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .step-num {
+      background: var(--mander-purple);
+      color: #fff;
+      font-family: var(--font-title);
+      font-size: 0.75rem;
+      font-weight: 800;
+      width: 22px;
+      height: 22px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .step-name {
+      font-size: 0.85rem;
+      font-weight: 700;
+      color: var(--text-bright);
+    }
+
+    .step-equation {
+      background: var(--bg-primary);
+      border: 1px solid var(--border-color);
+      border-radius: var(--radius-sm);
+      padding: 8px 10px;
+      font-family: var(--font-mono);
+      font-size: 0.775rem;
+      color: var(--steel-blue);
+      line-height: 1.4;
+    }
+
+    .step-eval {
+      font-size: 0.8rem;
+      color: var(--text-main);
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+    }
+
+    .step-eval-line {
+      display: flex;
+      justify-content: space-between;
+      border-bottom: 1px dashed var(--border-color);
+      padding-bottom: 2px;
+    }
+
+    .step-eval-line:last-child {
+      border-bottom: none;
+    }
+
+    .step-eval-val {
+      font-family: var(--font-mono);
+      font-weight: 700;
+      color: var(--mander-purple);
+    }
+
+    /* SOCRATIC CHALLENGES */
+    .socratic-section {
+      background: var(--bg-card);
+      border: 1px solid var(--border-color);
+      border-radius: var(--radius-lg);
+      padding: 24px;
+      box-shadow: var(--shadow-sm);
+    }
+
+    .socratic-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+      gap: 16px;
+      margin-top: 16px;
+    }
+
+    .socratic-card {
+      background: var(--bg-card-subtle);
+      border: 1px solid var(--border-color);
+      border-radius: var(--radius-md);
+      padding: 16px;
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+
+    .socratic-q {
+      font-size: 0.875rem;
+      font-weight: 600;
+      color: var(--text-bright);
+    }
+
+    .socratic-options {
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+    }
+
+    .btn-option {
+      background: var(--bg-primary);
+      border: 1px solid var(--border-color);
+      color: var(--text-main);
+      padding: 8px 10px;
+      border-radius: var(--radius-sm);
+      font-size: 0.775rem;
+      text-align: left;
+      cursor: pointer;
+      transition: all 0.2s ease;
+    }
+
+    .btn-option:hover {
+      border-color: var(--mander-purple);
+      background: var(--bg-card-hover);
+    }
+
+    .btn-option.correct {
+      background: rgba(16, 185, 129, 0.15);
+      border-color: var(--accent-emerald);
+      color: var(--accent-emerald);
+      font-weight: 700;
+    }
+
+    .btn-option.wrong {
+      background: rgba(244, 63, 94, 0.15);
+      border-color: var(--accent-rose);
+      color: var(--accent-rose);
+    }
+
+    .socratic-explanation {
+      font-size: 0.775rem;
+      color: var(--text-muted);
+      background: var(--bg-primary);
+      border-left: 3px solid var(--mander-purple);
+      padding: 8px;
+      border-radius: 0 var(--radius-sm) var(--radius-sm) 0;
+      display: none;
+    }
+
+    /* CODE EXPORTER */
+    .code-export-section {
+      background: var(--bg-card);
+      border: 1px solid var(--border-color);
+      border-radius: var(--radius-lg);
+      padding: 24px;
+      display: flex;
+      flex-direction: column;
+      gap: 14px;
+    }
+
+    .code-header-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 12px;
+    }
+
+    .code-pre-box {
+      background: #060911;
+      border: 1px solid var(--border-color);
+      border-radius: var(--radius-sm);
+      padding: 16px;
+      overflow-x: auto;
+      max-height: 280px;
+    }
+
+    pre code {
+      font-family: var(--font-mono);
+      font-size: 0.775rem;
+      color: #cbd5e1;
+      line-height: 1.4;
+    }
+
+    /* FOOTER */
+    footer.page-footer {
+      background: var(--bg-card);
+      border-top: 1px solid var(--border-color);
+      padding: 20px;
+      text-align: center;
+      font-size: 0.825rem;
+      color: var(--text-muted);
+      margin-top: 40px;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- TOP HEADER -->
+  <header class="top-header">
+    <div class="header-container">
+      <a href="index.html" class="brand-group">
+        <div class="brand-badge">M88</div>
+        <div class="brand-title">
+          <h1>Modelo de Concreto Confinado de Mander (1988)</h1>
+          <p>Concreto Avanzado · Sección Rectangular & Detallamiento de Armadura</p>
+        </div>
+      </a>
+
+      <div class="nav-actions">
+        <a href="index.html" class="btn-nav">
+          <span>🏛️</span>
+          <span>Portal de Cursos</span>
+        </a>
+        <a href="calculo_punto_fibras_confinado.html" class="btn-nav">
+          <span>🧱</span>
+          <span>Punto Fibras Confinado</span>
+        </a>
+        <button id="btn-theme" class="btn-nav" onclick="toggleTheme()">
+          <span id="theme-icon">🌙</span>
+          <span id="theme-text">Modo Claro</span>
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <!-- MAIN CONTAINER -->
+  <main class="main-content">
+
+    <!-- HERO BANNER -->
+    <section class="hero-banner">
+      <div class="hero-text">
+        <h2>Laboratorio Interactivo de Confinamiento en Secciones Rectangulares</h2>
+        <p>
+          Explora cómo la acción de arco entre barras longitudinales y entre pisos de estribos determina el coeficiente de efectividad \(k_e\), 
+          la ganancia de resistencia (\(K = f'_{cc}/f'_{co}\)) mediante la superficie multiaxial de William-Warnke (Figura 4), y la impresionante 
+          ampliación de la deformación última (\(\varepsilon_{cu}\)) por balance energético.
+        </p>
+      </div>
+      <div class="hero-tags">
+        <span class="tag-pill">Mander et al. 1988</span>
+        <span class="tag-pill">Acción de Arco 2D</span>
+        <span class="tag-pill">William & Warnke</span>
+        <span class="tag-pill">Ley de Popovics</span>
+      </div>
+    </section>
+
+    <!-- PRESETS BAR -->
+    <section class="presets-bar">
+      <div class="presets-label">
+        <span>⚡</span>
+        <span>Presets Didácticos:</span>
+      </div>
+      <div class="presets-grid">
+        <button class="btn-preset active" onclick="applyPreset('pobre')">
+          <span>❌ Pobremente Confinada (4 barras, s=200)</span>
+        </button>
+        <button class="btn-preset" onclick="applyPreset('dmo')">
+          <span>🟡 Detalle Sísmico DMO (8 barras + ganchos, s=100)</span>
+        </button>
+        <button class="btn-preset" onclick="applyPreset('des')">
+          <span>🟢 Detalle Especial DES (12 barras, 4 ramas, s=75)</span>
+        </button>
+        <button class="btn-preset" onclick="applyPreset('asimetrico')">
+          <span>📐 Viga / Borde Asimétrico (25×70 cm, fx ≠ fy)</span>
+        </button>
+        <button class="btn-preset" onclick="applyPreset('paper')">
+          <span>📄 Ejemplo Paper Mander (f'co=30, K=1.65)</span>
+        </button>
+      </div>
+    </section>
+
+    <!-- WORKSPACE: CONTROLS & DASHBOARD -->
+    <div class="workspace-grid">
+
+      <!-- LEFT: CONTROLS -->
+      <aside class="control-panel">
+        <div class="section-group-title">
+          <span>📐</span>
+          <span>Geometría Seccional</span>
+        </div>
+
+        <div class="control-row">
+          <div class="control-label-flex">
+            <span>Ancho total b:</span>
+            <span id="val-b" class="control-val">40 cm</span>
+          </div>
+          <input id="slider-b" class="slider-input" type="range" min="20" max="100" step="5" value="40" oninput="updateState()">
+        </div>
+
+        <div class="control-row">
+          <div class="control-label-flex">
+            <span>Altura total h:</span>
+            <span id="val-h" class="control-val">40 cm</span>
+          </div>
+          <input id="slider-h" class="slider-input" type="range" min="20" max="120" step="5" value="40" oninput="updateState()">
+        </div>
+
+        <div class="control-row">
+          <div class="control-label-flex">
+            <span>Recubrimiento libre r:</span>
+            <span id="val-r" class="control-val">4.0 cm</span>
+          </div>
+          <input id="slider-r" class="slider-input" type="range" min="2.0" max="6.0" step="0.5" value="4.0" oninput="updateState()">
+        </div>
+
+        <div class="section-group-title">
+          <span>🧱</span>
+          <span>Materiales (Resistencias)</span>
+        </div>
+
+        <div class="control-row">
+          <div class="control-label-flex">
+            <span>Concreto f'co:</span>
+            <span id="val-fco" class="control-val">28 MPa</span>
+          </div>
+          <input id="slider-fco" class="slider-input" type="range" min="20" max="60" step="1" value="28" oninput="updateState()">
+        </div>
+
+        <div class="control-row">
+          <div class="control-label-flex">
+            <span>Fluencia estribos fyh:</span>
+            <span id="val-fyh" class="control-val">420 MPa</span>
+          </div>
+          <input id="slider-fyh" class="slider-input" type="range" min="280" max="550" step="10" value="420" oninput="updateState()">
+        </div>
+
+        <div class="section-group-title">
+          <span>🔩</span>
+          <span>Armadura Longitudinal</span>
+        </div>
+
+        <div class="control-row">
+          <div class="control-label-flex">
+            <span>Barras en cara X (nx):</span>
+            <span id="val-nx" class="control-val">2 barras</span>
+          </div>
+          <input id="slider-nx" class="slider-input" type="range" min="2" max="6" step="1" value="2" oninput="updateState()">
+        </div>
+
+        <div class="control-row">
+          <div class="control-label-flex">
+            <span>Barras en cara Y (ny):</span>
+            <span id="val-ny" class="control-val">2 barras</span>
+          </div>
+          <input id="slider-ny" class="slider-input" type="range" min="2" max="6" step="1" value="2" oninput="updateState()">
+        </div>
+
+        <div class="control-row">
+          <div class="control-label-flex">
+            <span>Calibre barras long.:</span>
+            <span id="val-bar-type" class="control-val">#6 (d=19.1 mm)</span>
+          </div>
+          <select id="select-bar" class="select-input" onchange="updateState()">
+            <option value="4">#4 (1/2" - 12.7 mm, Ab=1.29 cm²)</option>
+            <option value="5">#5 (5/8" - 15.9 mm, Ab=1.99 cm²)</option>
+            <option value="6" selected>#6 (3/4" - 19.1 mm, Ab=2.84 cm²)</option>
+            <option value="7">#7 (7/8" - 22.2 mm, Ab=3.87 cm²)</option>
+            <option value="8">#8 (1" - 25.4 mm, Ab=5.10 cm²)</option>
+            <option value="9">#9 (1-1/8" - 28.7 mm, Ab=6.45 cm²)</option>
+            <option value="10">#10 (1-1/4" - 32.3 mm, Ab=8.19 cm²)</option>
+          </select>
+        </div>
+
+        <div class="toggle-switch-container">
+          <span style="font-size:0.8rem; font-weight:600;">¿Barras intermedias amarradas?</span>
+          <label class="switch">
+            <input id="toggle-tied" type="checkbox" onchange="updateState()">
+            <span class="slider-switch"></span>
+          </label>
+        </div>
+
+        <div class="section-group-title">
+          <span>🌀</span>
+          <span>Armadura Transversal (Estribos)</span>
+        </div>
+
+        <div class="control-row">
+          <div class="control-label-flex">
+            <span>Separación vertical s:</span>
+            <span id="val-s" class="control-val">200 mm</span>
+          </div>
+          <input id="slider-s" class="slider-input" type="range" min="40" max="300" step="5" value="200" oninput="updateState()">
+        </div>
+
+        <div class="control-row">
+          <div class="control-label-flex">
+            <span>Calibre de estribo:</span>
+            <span id="val-stirrup-type" class="control-val">#3 (d=9.5 mm)</span>
+          </div>
+          <select id="select-stirrup" class="select-input" onchange="updateState()">
+            <option value="3" selected>#3 (3/8" - 9.5 mm, Asp=0.71 cm²)</option>
+            <option value="4">#4 (1/2" - 12.7 mm, Asp=1.29 cm²)</option>
+            <option value="5">#5 (5/8" - 15.9 mm, Asp=1.99 cm²)</option>
+          </select>
+        </div>
+
+        <div class="control-row">
+          <div class="control-label-flex">
+            <span>Ramas en X (Asx):</span>
+            <span id="val-nlegs-x" class="control-val">2 ramas</span>
+          </div>
+          <input id="slider-nlegs-x" class="slider-input" type="range" min="2" max="6" step="1" value="2" oninput="updateState()">
+        </div>
+
+        <div class="control-row">
+          <div class="control-label-flex">
+            <span>Ramas en Y (Asy):</span>
+            <span id="val-nlegs-y" class="control-val">2 ramas</span>
+          </div>
+          <input id="slider-nlegs-y" class="slider-input" type="range" min="2" max="6" step="1" value="2" oninput="updateState()">
+        </div>
+
+        <!-- GHOST / BENCHMARK COMPARATOR -->
+        <div class="section-group-title">
+          <span>⚖️</span>
+          <span>Modo Comparativa en Vivo</span>
+        </div>
+        <div class="btn-ghost-group">
+          <button id="btn-save-ghost" class="btn-ghost" onclick="saveGhost()">
+            <span>📌</span>
+            <span>Guardar Ref.</span>
+          </button>
+          <button id="btn-clear-ghost" class="btn-ghost" onclick="clearGhost()">
+            <span>🗑️</span>
+            <span>Limpiar Ref.</span>
+          </button>
+        </div>
+        <div id="ghost-status" style="font-size:0.75rem; color:var(--text-muted); text-align:center;">
+          Sin curva de referencia guardada.
+        </div>
+
+      </aside>
+
+      <!-- RIGHT: DASHBOARD & CANVASES -->
+      <div class="dashboard-area">
+
+        <!-- KPI CARDS -->
+        <div class="kpi-grid">
+          <div class="kpi-card">
+            <div class="kpi-stripe stripe-purple"></div>
+            <div class="kpi-title">
+              <span>Efectividad Confinamiento</span>
+              <span>ke</span>
+            </div>
+            <div id="kpi-ke" class="kpi-val">0.452</div>
+            <div class="kpi-sub">
+              <span id="kpi-ke-desc">Arco inefectivo moderado</span>
+            </div>
+          </div>
+
+          <div class="kpi-card">
+            <div class="kpi-stripe stripe-emerald"></div>
+            <div class="kpi-title">
+              <span>Factor Amplificación</span>
+              <span>K = f'cc / f'co</span>
+            </div>
+            <div id="kpi-k" class="kpi-val">1.082</div>
+            <div class="kpi-sub">
+              <span id="kpi-k-gain" class="delta-badge delta-up">+8.2%</span>
+              <span>resistencia</span>
+            </div>
+          </div>
+
+          <div class="kpi-card">
+            <div class="kpi-stripe stripe-blue"></div>
+            <div class="kpi-title">
+              <span>Resistencia Confinada</span>
+              <span>f'cc</span>
+            </div>
+            <div id="kpi-fcc" class="kpi-val">30.3 MPa</div>
+            <div class="kpi-sub">
+              <span id="kpi-fco-orig">vs 28.0 MPa simple</span>
+            </div>
+          </div>
+
+          <div class="kpi-card">
+            <div class="kpi-stripe stripe-amber"></div>
+            <div class="kpi-title">
+              <span>Deformación en Pico</span>
+              <span>εcc</span>
+            </div>
+            <div id="kpi-ecc" class="kpi-val">0.0028</div>
+            <div class="kpi-sub">
+              <span>εco = 0.0020 inicial</span>
+            </div>
+          </div>
+
+          <div class="kpi-card">
+            <div class="kpi-stripe stripe-rose"></div>
+            <div class="kpi-title">
+              <span>Deformación Última</span>
+              <span>εcu (Fractura)</span>
+            </div>
+            <div id="kpi-ecu" class="kpi-val">0.0084</div>
+            <div class="kpi-sub">
+              <span id="kpi-ductility" class="delta-badge delta-up">με = 4.2</span>
+              <span>ductilidad</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- VIEW TABS -->
+        <div class="view-tabs-bar">
+          <div class="view-tabs-list">
+            <button id="tab-btn-all" class="tab-btn active" onclick="switchTab('all')">
+              <span>🖼️</span>
+              <span>Ver los 3 Paneles</span>
+            </button>
+            <button id="tab-btn-side" class="tab-btn" onclick="switchTab('side')">
+              <span>📊</span>
+              <span>Sección & Curva</span>
+            </button>
+            <button id="tab-btn-map" class="tab-btn" onclick="switchTab('map')">
+              <span>🌐</span>
+              <span>Solo Mapa William-Warnke</span>
+            </button>
+          </div>
+          <div style="font-size:0.8rem; color:var(--text-muted); display:flex; align-items:center; gap:8px;">
+            <span>Arco en Elevación:</span>
+            <label class="switch" style="width:36px; height:18px;">
+              <input id="toggle-elev" type="checkbox" onchange="redrawCanvas1()">
+              <span class="slider-switch" style="border-radius:18px;"></span>
+            </label>
+            <span id="elev-label-status" style="font-family:var(--font-mono); font-size:0.75rem;">Planta</span>
+          </div>
+        </div>
+
+        <!-- CANVASES GRID -->
+        <div id="canvases-split" class="canvases-container">
+          
+          <!-- CANVAS 1: SECTION & ARCHING -->
+          <div class="canvas-card">
+            <div class="canvas-header">
+              <div class="canvas-title">
+                <span>📐</span>
+                <span id="canvas1-title-text">Sección Transversal & Arcos Inefectivos</span>
+              </div>
+              <div class="canvas-legend">
+                <div class="legend-item">
+                  <div class="legend-box" style="background:#7c3aed;"></div>
+                  <span>Núcleo Confinado Ae</span>
+                </div>
+                <div class="legend-item">
+                  <div class="legend-box" style="background:rgba(239, 68, 68, 0.45); border:1px dashed #ef4444;"></div>
+                  <span>Arcos Inefectivos</span>
+                </div>
+                <div class="legend-item">
+                  <div class="legend-box" style="background:#0284c7;"></div>
+                  <span>Estribos & Ganchos</span>
+                </div>
+              </div>
+            </div>
+            <div class="canvas-wrapper">
+              <canvas id="canvas-section"></canvas>
+              <div id="tooltip-section" class="canvas-overlay-tooltip"></div>
+            </div>
+          </div>
+
+          <!-- CANVAS 2: CONSTITUTIVE CURVE -->
+          <div class="canvas-card">
+            <div class="canvas-header">
+              <div class="canvas-title">
+                <span>📈</span>
+                <span>Curva Constitutiva \(\sigma_c - \varepsilon_c\) (Popovics)</span>
+              </div>
+              <div class="canvas-legend">
+                <div class="legend-item">
+                  <div class="legend-box" style="background:#7c3aed;"></div>
+                  <span>Confinado (Mander)</span>
+                </div>
+                <div class="legend-item">
+                  <div class="legend-box" style="background:#d97706;"></div>
+                  <span>No Confinado / Recubrim.</span>
+                </div>
+                <div id="legend-ghost-item" class="legend-item" style="display:none;">
+                  <div class="legend-box" style="background:#94a3b8; border:1px dashed #64748b;"></div>
+                  <span>Referencia (Ghost)</span>
+                </div>
+              </div>
+            </div>
+            <div class="canvas-wrapper">
+              <canvas id="canvas-curve"></canvas>
+              <div id="tooltip-curve" class="canvas-overlay-tooltip"></div>
+            </div>
+          </div>
+
+        </div>
+
+        <!-- CANVAS 3: WILLIAM-WARNKE MAP FULL -->
+        <div id="canvas-map-container" class="canvas-card canvas-card-full" style="display:flex;">
+          <div class="canvas-header">
+            <div class="canvas-title">
+              <span>🌐</span>
+              <span>Superficie de Falla Multiaxial de William-Warnke (Digitalización Figura 4)</span>
+            </div>
+            <div class="canvas-legend">
+              <div class="legend-item">
+                <div class="legend-box" style="background:#f43f5e;"></div>
+                <span>Estado Actual (Rmin, Rmax)</span>
+              </div>
+              <div class="legend-item">
+                <div class="legend-box" style="background:#0284c7;"></div>
+                <span>Línea Diagonal Triaxial (fl1 = fl2)</span>
+              </div>
+              <div class="legend-item">
+                <div class="legend-box" style="background:#7c3aed;"></div>
+                <span>Isolíneas de K (1.1 a 2.2)</span>
+              </div>
+            </div>
+          </div>
+          <div class="canvas-wrapper" style="height: 440px;">
+            <canvas id="canvas-map"></canvas>
+            <div id="tooltip-map" class="canvas-overlay-tooltip"></div>
+          </div>
+        </div>
+
+      </div>
+
+    </div>
+
+    <!-- STEP-BY-STEP PEDAGOGICAL BREAKDOWN -->
+    <section class="details-card">
+      <div class="details-title">
+        <span>🔍</span>
+        <span>Lupa Pedagógica: Desglose Matemático Paso a Paso de Mander (1988)</span>
+      </div>
+
+      <div class="steps-grid">
+        <!-- STEP 1 -->
+        <div class="step-box">
+          <div class="step-header">
+            <div class="step-num">1</div>
+            <div class="step-name">Geometría del Núcleo & Cuantía Longitudinal</div>
+          </div>
+          <div class="step-equation">
+            bc = b - 2(r + db,est/2)<br>
+            dc = h - 2(r + db,est/2)<br>
+            ρcc = Ast / (bc · dc)
+          </div>
+          <div class="step-eval">
+            <div class="step-eval-line">
+              <span>Dimensión Núcleo bc:</span>
+              <span id="eval-bc" class="step-eval-val">31.05 cm</span>
+            </div>
+            <div class="step-eval-line">
+              <span>Dimensión Núcleo dc:</span>
+              <span id="eval-dc" class="step-eval-val">31.05 cm</span>
+            </div>
+            <div class="step-eval-line">
+              <span>Área total barras Ast:</span>
+              <span id="eval-ast" class="step-eval-val">11.36 cm²</span>
+            </div>
+            <div class="step-eval-line">
+              <span>Cuantía nuclear ρcc:</span>
+              <span id="eval-rhocc" class="step-eval-val">1.18 %</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- STEP 2 -->
+        <div class="step-box">
+          <div class="step-header">
+            <div class="step-num">2</div>
+            <div class="step-name">Acción de Arco & Coeficiente ke</div>
+          </div>
+          <div class="step-equation">
+            Ai = Σ (w'i)² / 6<br>
+            ke = [1 - Σ(w'i)²/(6 bc dc)] · (1 - s'/2bc) · (1 - s'/2dc) / (1 - ρcc)
+          </div>
+          <div class="step-eval">
+            <div class="step-eval-line">
+              <span>Claro libre prom. w':</span>
+              <span id="eval-wprime" class="step-eval-val">29.14 cm</span>
+            </div>
+            <div class="step-eval-line">
+              <span>Área inefectiva Σ(w')²/6:</span>
+              <span id="eval-ai" class="step-eval-val">566.2 cm²</span>
+            </div>
+            <div class="step-eval-line">
+              <span>Factor horizontal αn:</span>
+              <span id="eval-alphan" class="step-eval-val">0.608</span>
+            </div>
+            <div class="step-eval-line">
+              <span>Factor vertical αvx · αvy:</span>
+              <span id="eval-alphav" class="step-eval-val">0.744</span>
+            </div>
+            <div class="step-eval-line">
+              <span>Coeficiente global ke:</span>
+              <span id="eval-ke" class="step-eval-val">0.452</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- STEP 3 -->
+        <div class="step-box">
+          <div class="step-header">
+            <div class="step-num">3</div>
+            <div class="step-name">Presiones Laterales de Confinamiento</div>
+          </div>
+          <div class="step-equation">
+            flx = (Asx · fyh) / (s · dc) &nbsp;→&nbsp; f'lx = ke · flx<br>
+            fly = (Asy · fyh) / (s · bc) &nbsp;→&nbsp; f'ly = ke · fly
+          </div>
+          <div class="step-eval">
+            <div class="step-eval-line">
+              <span>Presión nominal flx:</span>
+              <span id="eval-flx" class="step-eval-val">0.96 MPa</span>
+            </div>
+            <div class="step-eval-line">
+              <span>Presión efectiva f'lx:</span>
+              <span id="eval-flx-prime" class="step-eval-val">0.43 MPa</span>
+            </div>
+            <div class="step-eval-line">
+              <span>Presión nominal fly:</span>
+              <span id="eval-fly" class="step-eval-val">0.96 MPa</span>
+            </div>
+            <div class="step-eval-line">
+              <span>Presión efectiva f'ly:</span>
+              <span id="eval-fly-prime" class="step-eval-val">0.43 MPa</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- STEP 4 -->
+        <div class="step-box">
+          <div class="step-header">
+            <div class="step-num">4</div>
+            <div class="step-name">Superficie William-Warnke & Factor K</div>
+          </div>
+          <div class="step-equation">
+            Rmin = min(f'lx, f'ly) / f'co<br>
+            Rmax = max(f'lx, f'ly) / f'co<br>
+            K = coefmander(Rmin, Rmax) &nbsp;→&nbsp; f'cc = K · f'co
+          </div>
+          <div class="step-eval">
+            <div class="step-eval-line">
+              <span>Razón Rmin:</span>
+              <span id="eval-rmin" class="step-eval-val">0.015</span>
+            </div>
+            <div class="step-eval-line">
+              <span>Razón Rmax:</span>
+              <span id="eval-rmax" class="step-eval-val">0.015</span>
+            </div>
+            <div class="step-eval-line">
+              <span>Factor K (Bilineal V):</span>
+              <span id="eval-k" class="step-eval-val">1.082</span>
+            </div>
+            <div class="step-eval-line">
+              <span>Resistencia confinada f'cc:</span>
+              <span id="eval-fcc" class="step-eval-val">30.30 MPa</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- STEP 5 -->
+        <div class="step-box">
+          <div class="step-header">
+            <div class="step-num">5</div>
+            <div class="step-name">Ley de Popovics & Parámetros</div>
+          </div>
+          <div class="step-equation">
+            Ec = 5000 √f'co &nbsp;|&nbsp; Esec = f'cc / εcc<br>
+            r = Ec / (Ec - Esec) &nbsp;|&nbsp; x = εc / εcc<br>
+            fc = (f'cc · x · r) / (r - 1 + xʳ)
+          </div>
+          <div class="step-eval">
+            <div class="step-eval-line">
+              <span>Módulo elástico Ec:</span>
+              <span id="eval-ec" class="step-eval-val">26,457 MPa</span>
+            </div>
+            <div class="step-eval-line">
+              <span>Módulo secante Esec:</span>
+              <span id="eval-esec" class="step-eval-val">10,742 MPa</span>
+            </div>
+            <div class="step-eval-line">
+              <span>Parámetro de forma r:</span>
+              <span id="eval-r" class="step-eval-val">1.683</span>
+            </div>
+            <div class="step-eval-line">
+              <span>Deformación pico εcc:</span>
+              <span id="eval-ecc" class="step-eval-val">0.00282</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- STEP 6 -->
+        <div class="step-box">
+          <div class="step-header">
+            <div class="step-num">6</div>
+            <div class="step-name">Balance de Energía & Deformación Última</div>
+          </div>
+          <div class="step-equation">
+            Ush = Ucc + Usc - Uco<br>
+            110 ρs = ∫ fc dε + ρcc fy εcu - 0.017 √f'co<br>
+            Priestley: εcu = 0.004 + 1.4 ρs fyh εsu / f'cc
+          </div>
+          <div class="step-eval">
+            <div class="step-eval-line">
+              <span>Cuantía volumétrica ρs:</span>
+              <span id="eval-rhos" class="step-eval-val">0.457 %</span>
+            </div>
+            <div class="step-eval-line">
+              <span>Energía estribos Ush:</span>
+              <span id="eval-ush" class="step-eval-val">0.503 MJ/m³</span>
+            </div>
+            <div class="step-eval-line">
+              <span>εcu (Balance Energía):</span>
+              <span id="eval-ecu-energy" class="step-eval-val">0.0084</span>
+            </div>
+            <div class="step-eval-line">
+              <span>εcu (Fórmula Priestley):</span>
+              <span id="eval-ecu-priestley" class="step-eval-val">0.0097</span>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </section>
+
+    <!-- SOCRATIC CHALLENGES -->
+    <section class="socratic-section">
+      <div class="details-title">
+        <span>🧠</span>
+        <span>Retos Conceptuales para Estudiantes de Concreto Avanzado</span>
+      </div>
+      <p style="font-size:0.875rem; color:var(--text-muted);">
+        Pon a prueba tu intuición física sobre el confinamiento respondiendo a estos 4 desafíos interactivos:
+      </p>
+
+      <div class="socratic-grid">
+
+        <!-- Q1 -->
+        <div class="socratic-card" id="card-q1">
+          <div class="socratic-q">1. ¿Qué es más efectivo para aumentar ke: aumentar el diámetro del estribo exterior o agregar ganchos suplementarios?</div>
+          <div class="socratic-options">
+            <button class="btn-option" onclick="checkAnswer(1, 0)">Aumentar el diámetro del estribo perimetral.</button>
+            <button class="btn-option" onclick="checkAnswer(1, 1)">Agregar ganchos suplementarios que aten las barras intermedias.</button>
+            <button class="btn-option" onclick="checkAnswer(1, 2)">Ambos tienen exactamente el mismo efecto matemático en ke.</button>
+          </div>
+          <div id="ans-1" class="socratic-explanation">
+            <strong>¡Correcto!</strong> El coeficiente ke depende cuadráticamente de la distancia entre barras soportadas (Σ w'² / 6). Agregar ganchos reduce w' a la mitad, disminuyendo el área inefectiva a la cuarta parte (75% de reducción). Engrosar el estribo solo aumenta la presión nominal fl, pero no remedia el pandeo ni la pérdida de confinamiento entre barras.
+          </div>
+        </div>
+
+        <!-- Q2 -->
+        <div class="socratic-card" id="card-q2">
+          <div class="socratic-q">2. ¿Por qué reducir la separación vertical s a la mitad aumenta drásticamente la ductilidad εcu?</div>
+          <div class="socratic-options">
+            <button class="btn-option" onclick="checkAnswer(2, 0)">Porque al reducir s, la cuantía volumétrica ρs se duplica y el arco vertical se aplana.</button>
+            <button class="btn-option" onclick="checkAnswer(2, 1)">Porque el concreto adquiere resistencia a tracción.</button>
+            <button class="btn-option" onclick="checkAnswer(2, 2)">Porque el módulo elástico Ec aumenta al doble.</button>
+          </div>
+          <div id="ans-2" class="socratic-explanation">
+            <strong>¡Exacto!</strong> Reducir s tiene un doble impacto benéfico: (1) duplica la densidad volumétrica de acero ρs (duplicando la capacidad de disipación de energía de deformación Ush), y (2) aumenta los factores de arco vertical (1 - s'/2bc) acercándolos a 1.0.
+          </div>
+        </div>
+
+        <!-- Q3 -->
+        <div class="socratic-card" id="card-q3">
+          <div class="socratic-q">3. En una columna rectangular alargada (25×80 cm), ¿cuál dirección gobierna el factor K?</div>
+          <div class="socratic-options">
+            <button class="btn-option" onclick="checkAnswer(3, 0)">La dirección fuerte (lado largo), porque tiene mayor área.</button>
+            <button class="btn-option" onclick="checkAnswer(3, 1)">La dirección débil (lado corto), pues Rmin controla la superficie multiaxial.</button>
+            <button class="btn-option" onclick="checkAnswer(3, 2)">El promedio aritmético simple entre f'lx y f'ly.</button>
+          </div>
+          <div id="ans-3" class="socratic-explanation">
+            <strong>¡Muy bien!</strong> Según la superficie multiaxial de William-Warnke (Figura 4), el concreto en compresión triaxial asimétrica está limitado por la menor de las tensiones de confinamiento (Rmin). Si el concreto puede dilatarse lateralmente en una dirección débil, la falla ocurrirá prematuramente por hendimiento en esa dirección.
+          </div>
+        </div>
+
+        <!-- Q4 -->
+        <div class="socratic-card" id="card-q4">
+          <div class="socratic-q">4. ¿Por qué el confinamiento produce un modesto aumento en f'cc (+20% a +40%) pero un incremento colosal en εcu (+300% a +700%)?</div>
+          <div class="socratic-options">
+            <button class="btn-option" onclick="checkAnswer(4, 0)">Porque el acero de los estribos soporta directamente la carga axial del edificio.</button>
+            <button class="btn-option" onclick="checkAnswer(4, 1)">Porque el confinamiento pasivo retarda la propagación inestable de microfisuras internas.</button>
+            <button class="btn-option" onclick="checkAnswer(4, 2)">Porque el volumen de la columna se reduce con la carga.</button>
+          </div>
+          <div id="ans-4" class="socratic-explanation">
+            <strong>¡Excelente!</strong> Bajo compresión alta, el concreto intenta expandirse lateralmente (efecto Poisson / dilatancia por agrietamiento). La restricción que ejercen los estribos provee una presión de confinamiento pasiva creciente que frena el desmoronamiento catastrófico del núcleo, permitiendo deformaciones plásticas inmensas antes de que el acero transversal alcance su deformación de fractura (εsf ≈ 0.25).
+          </div>
+        </div>
+
+      </div>
+    </section>
+
+    <!-- CODE EXPORTER -->
+    <section class="code-export-section">
+      <div class="code-header-row">
+        <div class="details-title" style="margin-bottom:0;">
+          <span>🐍</span>
+          <span>Código Python Autónomo (Mander Model & Matplotlib)</span>
+        </div>
+        <div style="display:flex; gap:8px;">
+          <button class="btn-nav" onclick="copyPythonCode()">
+            <span id="copy-btn-icon">📋</span>
+            <span id="copy-btn-text">Copiar Código</span>
+          </button>
+          <button class="btn-nav" onclick="downloadPythonScript()">
+            <span>💾</span>
+            <span>Descargar .py</span>
+          </button>
+        </div>
+      </div>
+      <p style="font-size:0.85rem; color:var(--text-muted);">
+        Este script en Python utiliza la función exacta <code style="color:var(--mander-purple); font-weight:700;">coefmander</code> 
+        con la matriz multiaxial de William-Warnke y calcula la ley constitutiva para los parámetros seleccionados en este simulador:
+      </p>
+
+      <div class="code-pre-box">
+        <pre><code id="python-code-display"># Generando código Python con los parámetros actuales...</code></pre>
+      </div>
+    </section>
+
+  </main>
+
+  <!-- FOOTER -->
+  <footer class="page-footer">
+    <p>Material Educativo para la Cátedra de <strong>Diseño de Concreto Avanzado</strong></p>
+    <p style="margin-top:4px; opacity:0.75; font-size:0.775rem;">
+      Basado en: Mander, J.B., Priestley, M.J.N., & Park, R. (1988). <em>"Theoretical Stress-Strain Model for Confined Concrete"</em>, ASCE J. Struct. Eng., 114(8): 1804–1826.
+    </p>
+  </footer>
+
+  <!-- SCRIPT LOGIC -->
+  <script>
+  /* ==========================================================================
+     GLOBAL STATE & CONSTANTS
+     ========================================================================== */
+  const MANDER_GRID_V = [
+    [1.000,1.000,1.000,1.000,1.000,1.000,1.000,1.000,1.000,1.000,1.000,1.000,1.000,1.000,1.000,1.000],
+    [1.050,1.171,1.171,1.171,1.171,1.171,1.171,1.171,1.171,1.171,1.171,1.171,1.171,1.171,1.171,1.171],
+    [1.100,1.186,1.264,1.264,1.264,1.264,1.264,1.264,1.264,1.264,1.264,1.264,1.264,1.264,1.264,1.264],
+    [1.129,1.221,1.300,1.371,1.371,1.371,1.371,1.371,1.371,1.371,1.371,1.371,1.371,1.371,1.371,1.371],
+    [1.150,1.250,1.343,1.414,1.486,1.486,1.486,1.486,1.486,1.486,1.486,1.486,1.486,1.486,1.486,1.486],
+    [1.179,1.279,1.379,1.450,1.514,1.579,1.579,1.579,1.579,1.579,1.579,1.579,1.579,1.579,1.579,1.579],
+    [1.200,1.300,1.407,1.486,1.550,1.621,1.671,1.671,1.671,1.671,1.671,1.671,1.671,1.671,1.671,1.671],
+    [1.221,1.329,1.436,1.500,1.586,1.664,1.700,1.757,1.757,1.757,1.757,1.757,1.757,1.757,1.757,1.757],
+    [1.236,1.350,1.450,1.529,1.614,1.686,1.743,1.793,1.829,1.829,1.829,1.829,1.829,1.829,1.829,1.829],
+    [1.250,1.364,1.479,1.550,1.643,1.714,1.771,1.821,1.871,1.914,1.914,1.914,1.914,1.914,1.914,1.914],
+    [1.257,1.386,1.486,1.571,1.664,1.736,1.793,1.850,1.907,1.943,1.971,1.971,1.971,1.971,1.971,1.971],
+    [1.279,1.400,1.500,1.600,1.686,1.757,1.814,1.879,1.929,1.964,2.007,2.050,2.050,2.050,2.050,2.050],
+    [1.286,1.414,1.521,1.614,1.700,1.779,1.836,1.893,1.950,1.986,2.036,2.071,2.100,2.100,2.100,2.100],
+    [1.300,1.421,1.529,1.629,1.714,1.786,1.864,1.914,1.979,2.014,2.063,2.114,2.136,2.186,2.186,2.186],
+    [1.300,1.429,1.543,1.643,1.729,1.800,1.879,1.936,1.986,2.036,2.086,2.121,2.164,2.200,2.243,2.243],
+    [1.307,1.443,1.550,1.650,1.736,1.814,1.893,1.950,2.014,2.057,2.100,2.143,2.186,2.229,2.257,2.300]
+  ];
+
+  const BAR_SIZES = {
+    4:  { num: 4,  diam_mm: 12.7, area_cm2: 1.29 },
+    5:  { num: 5,  diam_mm: 15.9, area_cm2: 1.99 },
+    6:  { num: 6,  diam_mm: 19.1, area_cm2: 2.84 },
+    7:  { num: 7,  diam_mm: 22.2, area_cm2: 3.87 },
+    8:  { num: 8,  diam_mm: 25.4, area_cm2: 5.10 },
+    9:  { num: 9,  diam_mm: 28.7, area_cm2: 6.45 },
+    10: { num: 10, diam_mm: 32.3, area_cm2: 8.19 }
+  };
+
+  const STIRRUP_SIZES = {
+    3: { num: 3, diam_mm: 9.5,  area_cm2: 0.71 },
+    4: { num: 4, diam_mm: 12.7, area_cm2: 1.29 },
+    5: { num: 5, diam_mm: 15.9, area_cm2: 1.99 }
+  };
+
+  // State object
+  const state = {
+    b: 40.0,       // cm
+    h: 40.0,       // cm
+    r: 4.0,        // clear cover in cm
+    fco: 28.0,     // unconfined strength MPa
+    fy: 420.0,     // longitudinal steel yield MPa
+    fyh: 420.0,    // transverse steel yield MPa
+    nx: 2,         // number of longitudinal bars along X
+    ny: 2,         // number of longitudinal bars along Y
+    barNum: 6,     // longitudinal bar size
+    tiedIntermediate: false, // are intermediate bars laterally tied?
+    s: 200,        // stirrup spacing in mm
+    stirrupNum: 3, // stirrup bar size
+    nlegs_x: 2,    // legs in X direction
+    nlegs_y: 2,    // legs in Y direction
+    showElevation: false,
+    activeTab: 'all', // 'all', 'side', or 'map'
+    ghost: null    // reference snapshot for live comparison
+  };
+
+  let calcResults = null;
+
+  /* ==========================================================================
+     MANDER CONFINEMENT CALCULATIONS
+     ========================================================================== */
+  function coefmander_bilinear(Rmin, Rmax) {
+    let r1 = Math.min(Rmin, Rmax);
+    let r2 = Math.max(Rmin, Rmax);
+    r1 = Math.max(0.0, Math.min(0.30, r1));
+    r2 = Math.max(0.0, Math.min(0.30, r2));
+
+    let ix = Math.floor(r1 / 0.02);
+    let iy = Math.floor(r2 / 0.02);
+    if (ix >= 15) ix = 14;
+    if (iy >= 15) iy = 14;
+
+    let tx = (r1 - ix * 0.02) / 0.02;
+    let ty = (r2 - iy * 0.02) / 0.02;
+
+    let v00 = MANDER_GRID_V[iy][ix];
+    let v01 = MANDER_GRID_V[iy][ix + 1];
+    let v10 = MANDER_GRID_V[iy + 1][ix];
+    let v11 = MANDER_GRID_V[iy + 1][ix + 1];
+
+    let k = (1.0 - ty) * ((1.0 - tx) * v00 + tx * v01) + ty * ((1.0 - tx) * v10 + tx * v11);
+    return k;
+  }
+
+  function computeMander(sObj) {
+    const dbt = STIRRUP_SIZES[sObj.stirrupNum].diam_mm / 10.0; // cm
+    const dbl = BAR_SIZES[sObj.barNum].diam_mm / 10.0;         // cm
+    const Ab_long = BAR_SIZES[sObj.barNum].area_cm2;           // cm²
+    const Asp_trans = STIRRUP_SIZES[sObj.stirrupNum].area_cm2; // cm²
+
+    // Total number of longitudinal bars around perimeter:
+    const totalBars = 2 * (sObj.nx + sObj.ny - 2);
+    const Ast = totalBars * Ab_long;
+
+    // Core dimensions to centerlines of perimeter hoop:
+    const bc = sObj.b - 2.0 * sObj.r - dbt; // cm
+    const dc = sObj.h - 2.0 * sObj.r - dbt; // cm
+
+    // Ratio of longitudinal steel to core area:
+    const rho_cc = Ast / (bc * dc);
+    const Acc = (bc * dc) * (1.0 - rho_cc); // cm²
+
+    // Clear distance between longitudinal bars:
+    // Along X:
+    const spaces_x = sObj.nx - 1;
+    const center_dist_x = (bc - dbt - dbl) / spaces_x;
+    const wx_prime = Math.max(1.0, center_dist_x - dbl); // cm
+    
+    // Along Y:
+    const spaces_y = sObj.ny - 1;
+    const center_dist_y = (dc - dbt - dbl) / spaces_y;
+    const wy_prime = Math.max(1.0, center_dist_y - dbl); // cm
+
+    // Sum of (w'i)^2 / 6:
+    // If intermediate bars are tied, each space of wx_prime and wy_prime forms a parabola.
+    // If NOT tied, the arching parabola spans across the entire unsupported face (from corner to corner)!
+    let sum_wprime_sq_over_6 = 0.0;
+    const isTied = sObj.tiedIntermediate;
+
+    if (isTied || sObj.nx === 2) {
+      // Top and bottom faces have spaces_x parabolas of wx_prime
+      sum_wprime_sq_over_6 += 2.0 * spaces_x * (Math.pow(wx_prime, 2) / 6.0);
+    } else {
+      // Spans entire width between corners:
+      const wx_span = (bc - dbt - dbl);
+      sum_wprime_sq_over_6 += 2.0 * (Math.pow(wx_span, 2) / 6.0);
+    }
+
+    if (isTied || sObj.ny === 2) {
+      // Left and right faces have spaces_y parabolas of wy_prime
+      sum_wprime_sq_over_6 += 2.0 * spaces_y * (Math.pow(wy_prime, 2) / 6.0);
+    } else {
+      // Spans entire depth between corners:
+      const wy_span = (dc - dbt - dbl);
+      sum_wprime_sq_over_6 += 2.0 * (Math.pow(wy_span, 2) / 6.0);
+    }
+
+    const alpha_n = Math.max(0.05, 1.0 - (sum_wprime_sq_over_6 / (bc * dc)));
+
+    // Vertical arching between hoop tiers:
+    const s_pitch_cm = sObj.s / 10.0; // cm
+    const s_prime_cm = Math.max(0.0, s_pitch_cm - dbt); // clear vertical spacing
+    const alpha_vx = Math.max(0.0, 1.0 - (s_prime_cm / (2.0 * bc)));
+    const alpha_vy = Math.max(0.0, 1.0 - (s_prime_cm / (2.0 * dc)));
+
+    // Confinement effectiveness coefficient ke (Eq. 22):
+    const ke = Math.max(0.05, (alpha_n * alpha_vx * alpha_vy) / (1.0 - rho_cc));
+
+    // Transverse steel areas and volumetric ratios:
+    const Asx = sObj.nlegs_x * Asp_trans; // cm²
+    const Asy = sObj.nlegs_y * Asp_trans; // cm²
+
+    // Confining ratios in X and Y (Eq. 23 - 24):
+    // Note: dc is depth perpendicular to X bars; bc is width perpendicular to Y bars.
+    const rho_x = Asx / (s_pitch_cm * dc);
+    const rho_y = Asy / (s_pitch_cm * bc);
+    const rho_s = rho_x + rho_y;
+
+    // Nominal lateral confining stresses (MPa):
+    const flx = rho_x * sObj.fyh;
+    const fly = rho_y * sObj.fyh;
+
+    // Effective lateral confining stresses (Eq. 27 - 28):
+    const flx_prime = ke * flx;
+    const fly_prime = ke * fly;
+
+    const fl1_prime = Math.min(flx_prime, fly_prime);
+    const fl2_prime = Math.max(flx_prime, fly_prime);
+
+    const Rmin = fl1_prime / sObj.fco;
+    const Rmax = fl2_prime / sObj.fco;
+
+    // Confinement ratio K = f'cc / f'co:
+    const K = coefmander_bilinear(Rmin, Rmax);
+    const fcc = K * sObj.fco; // MPa
+
+    // Popovics curve parameters:
+    const eco = 0.002;
+    const ecc = eco * (1.0 + 5.0 * (K - 1.0));
+    const Ec = 5000.0 * Math.sqrt(sObj.fco); // MPa
+    const Esec = fcc / ecc;
+    const r_popovics = Ec / Math.max(10.0, Ec - Esec);
+
+    // Ultimate strain ecu by Energy Balance (Eq. 64) and Priestley formula:
+    // Priestley formula: ecu = 0.004 + 1.4 * rho_s * fyh * esu / fcc (with esu ≈ 0.09)
+    const esu = 0.09;
+    const ecu_priestley = 0.004 + (1.4 * rho_s * sObj.fyh * esu) / fcc;
+
+    // Numerical Energy Balance solver:
+    // 110 * rho_s = \int_0^ecu fc d\eps + rho_cc * fy * ecu - 0.017 * sqrt(f'co)
+    const TargetEnergy = 110.0 * rho_s + 0.017 * Math.sqrt(sObj.fco); // MJ/m³
+    let ecu_energy = 0.004;
+    let accumulated_energy = 0.0;
+    const dEps = 0.0001;
+
+    for (let eps = dEps; eps <= 0.08; eps += dEps) {
+      const x = eps / ecc;
+      const fc_val = (fcc * x * r_popovics) / (r_popovics - 1.0 + Math.pow(x, r_popovics));
+      accumulated_energy += (fc_val + rho_cc * sObj.fy) * dEps;
+      if (accumulated_energy >= TargetEnergy) {
+        ecu_energy = eps;
+        break;
+      }
+      ecu_energy = eps;
+    }
+
+    const ecu = Math.min(0.06, Math.max(0.004, (ecu_energy + ecu_priestley) / 2.0));
+    const ductility_ratio = ecu / eco;
+
+    return {
+      bc, dc, dbt, dbl, totalBars, Ast, rho_cc, Acc,
+      wx_prime, wy_prime, sum_wprime_sq_over_6,
+      alpha_n, alpha_vx, alpha_vy, ke,
+      Asx, Asy, rho_x, rho_y, rho_s,
+      flx, fly, flx_prime, fly_prime,
+      Rmin, Rmax, K, fcc,
+      eco, ecc, Ec, Esec, r_popovics,
+      ecu, ecu_energy, ecu_priestley, ductility_ratio
+    };
+  }
+
+  function getPopovicsFc(eps, fcc, ecc, r) {
+    if (eps <= 0) return 0.0;
+    const x = eps / ecc;
+    return (fcc * x * r) / (r - 1.0 + Math.pow(x, r));
+  }
+
+  function getUnconfinedFc(eps, fco) {
+    if (eps <= 0) return 0.0;
+    const eco = 0.002;
+    const Ec = 5000.0 * Math.sqrt(fco);
+    const Esec = fco / eco;
+    const r = Ec / (Ec - Esec);
+    
+    if (eps <= 2.0 * eco) {
+      const x = eps / eco;
+      return (fco * x * r) / (r - 1.0 + Math.pow(x, r));
+    } else {
+      // Linear descending branch reaching zero at esp = 0.005
+      const esp = 0.005;
+      const x2 = 2.0;
+      const f_2eco = (fco * x2 * r) / (r - 1.0 + Math.pow(x2, r));
+      if (eps >= esp) return 0.0;
+      return f_2eco * (1.0 - (eps - 2.0 * eco) / (esp - 2.0 * eco));
+    }
+  }
+
+  /* ==========================================================================
+     DOM UPDATE & SYNC
+     ========================================================================== */
+  function updateState() {
+    state.b = parseFloat(document.getElementById('slider-b').value);
+    state.h = parseFloat(document.getElementById('slider-h').value);
+    state.r = parseFloat(document.getElementById('slider-r').value);
+    state.fco = parseFloat(document.getElementById('slider-fco').value);
+    state.fyh = parseFloat(document.getElementById('slider-fyh').value);
+    state.nx = parseInt(document.getElementById('slider-nx').value, 10);
+    state.ny = parseInt(document.getElementById('slider-ny').value, 10);
+    state.barNum = parseInt(document.getElementById('select-bar').value, 10);
+    state.tiedIntermediate = document.getElementById('toggle-tied').checked;
+    state.s = parseInt(document.getElementById('slider-s').value, 10);
+    state.stirrupNum = parseInt(document.getElementById('select-stirrup').value, 10);
+    state.nlegs_x = parseInt(document.getElementById('slider-nlegs-x').value, 10);
+    state.nlegs_y = parseInt(document.getElementById('slider-nlegs-y').value, 10);
+
+    // Update label text
+    document.getElementById('val-b').textContent = `${state.b.toFixed(0)} cm`;
+    document.getElementById('val-h').textContent = `${state.h.toFixed(0)} cm`;
+    document.getElementById('val-r').textContent = `${state.r.toFixed(1)} cm`;
+    document.getElementById('val-fco').textContent = `${state.fco.toFixed(0)} MPa`;
+    document.getElementById('val-fyh').textContent = `${state.fyh.toFixed(0)} MPa`;
+    document.getElementById('val-nx').textContent = `${state.nx} barras`;
+    document.getElementById('val-ny').textContent = `${state.ny} barras`;
+    document.getElementById('val-s').textContent = `${state.s} mm`;
+    document.getElementById('val-nlegs-x').textContent = `${state.nlegs_x} ramas`;
+    document.getElementById('val-nlegs-y').textContent = `${state.nlegs_y} ramas`;
+
+    const bar = BAR_SIZES[state.barNum];
+    document.getElementById('val-bar-type').textContent = `#${bar.num} (${bar.diam_mm} mm)`;
+
+    const stirrup = STIRRUP_SIZES[state.stirrupNum];
+    document.getElementById('val-stirrup-type').textContent = `#${stirrup.num} (${stirrup.diam_mm} mm)`;
+
+    // Run computation
+    calcResults = computeMander(state);
+
+    // Update KPI cards
+    document.getElementById('kpi-ke').textContent = calcResults.ke.toFixed(3);
+    const keText = calcResults.ke > 0.75 ? 'Excelente efectividad' : (calcResults.ke > 0.55 ? 'Efectividad moderada' : 'Baja efectividad');
+    document.getElementById('kpi-ke-desc').textContent = keText;
+
+    document.getElementById('kpi-k').textContent = calcResults.K.toFixed(3);
+    const gainPct = ((calcResults.K - 1.0) * 100.0).toFixed(1);
+    document.getElementById('kpi-k-gain').textContent = `+${gainPct}%`;
+
+    document.getElementById('kpi-fcc').textContent = `${calcResults.fcc.toFixed(1)} MPa`;
+    document.getElementById('kpi-fco-orig').textContent = `vs ${state.fco.toFixed(0)} MPa simple`;
+
+    document.getElementById('kpi-ecc').textContent = calcResults.ecc.toFixed(4);
+    document.getElementById('kpi-ecu').textContent = calcResults.ecu.toFixed(4);
+    document.getElementById('kpi-ductility').textContent = `με = ${calcResults.ductility_ratio.toFixed(1)}`;
+
+    // Update Step-by-step numbers
+    document.getElementById('eval-bc').textContent = `${calcResults.bc.toFixed(2)} cm`;
+    document.getElementById('eval-dc').textContent = `${calcResults.dc.toFixed(2)} cm`;
+    document.getElementById('eval-ast').textContent = `${calcResults.Ast.toFixed(2)} cm² (${calcResults.totalBars} barras)`;
+    document.getElementById('eval-rhocc').textContent = `${(calcResults.rho_cc * 100).toFixed(2)} %`;
+
+    document.getElementById('eval-wprime').textContent = `${calcResults.wx_prime.toFixed(2)} cm (X) / ${calcResults.wy_prime.toFixed(2)} cm (Y)`;
+    document.getElementById('eval-ai').textContent = `${calcResults.sum_wprime_sq_over_6.toFixed(1)} cm²`;
+    document.getElementById('eval-alphan').textContent = calcResults.alpha_n.toFixed(3);
+    document.getElementById('eval-alphav').textContent = `${(calcResults.alpha_vx * calcResults.alpha_vy).toFixed(3)} (${calcResults.alpha_vx.toFixed(3)} × ${calcResults.alpha_vy.toFixed(3)})`;
+    document.getElementById('eval-ke').textContent = calcResults.ke.toFixed(3);
+
+    document.getElementById('eval-flx').textContent = `${calcResults.flx.toFixed(2)} MPa`;
+    document.getElementById('eval-flx-prime').textContent = `${calcResults.flx_prime.toFixed(2)} MPa`;
+    document.getElementById('eval-fly').textContent = `${calcResults.fly.toFixed(2)} MPa`;
+    document.getElementById('eval-fly-prime').textContent = `${calcResults.fly_prime.toFixed(2)} MPa`;
+
+    document.getElementById('eval-rmin').textContent = calcResults.Rmin.toFixed(3);
+    document.getElementById('eval-rmax').textContent = calcResults.Rmax.toFixed(3);
+    document.getElementById('eval-k').textContent = calcResults.K.toFixed(3);
+    document.getElementById('eval-fcc').textContent = `${calcResults.fcc.toFixed(2)} MPa`;
+
+    document.getElementById('eval-ec').textContent = `${Math.round(calcResults.Ec)} MPa`;
+    document.getElementById('eval-esec').textContent = `${Math.round(calcResults.Esec)} MPa`;
+    document.getElementById('eval-r').textContent = calcResults.r_popovics.toFixed(3);
+    document.getElementById('eval-ecc').textContent = calcResults.ecc.toFixed(5);
+
+    document.getElementById('eval-rhos').textContent = `${(calcResults.rho_s * 100).toFixed(3)} %`;
+    document.getElementById('eval-ush').textContent = `${(110.0 * calcResults.rho_s).toFixed(3)} MJ/m³`;
+    document.getElementById('eval-ecu-energy').textContent = calcResults.ecu_energy.toFixed(4);
+    document.getElementById('eval-ecu-priestley').textContent = calcResults.ecu_priestley.toFixed(4);
+
+    // Redraw all active canvases
+    redrawAllCanvases();
+
+    // Update Python code display
+    updatePythonDisplay();
+  }
+
+  /* ==========================================================================
+     THEME AWARE COLOR PALETTE HELPER
+     ========================================================================== */
+  function getThemeColors() {
+    const isDark = document.documentElement.getAttribute('data-theme') !== 'light';
+    if (isDark) {
+      return {
+        isDark: true,
+        bgCanvas: '#0d1322',
+        grid: 'rgba(255, 255, 255, 0.08)',
+        axis: '#64748b',
+        text: '#94a3b8',
+        textBright: '#f8fafc',
+        textMuted: '#64748b',
+        // Section colors
+        secGross: '#1e293b',
+        secGrossStroke: '#475569',
+        secCoverTint: 'rgba(148, 163, 184, 0.12)',
+        secCore: '#2e1065',
+        secCoreStroke: '#8b5cf6',
+        secArchFill: 'rgba(239, 68, 68, 0.35)',
+        secArchStroke: '#ef4444',
+        stirrupColor: '#38bdf8',
+        crossTieColor: '#c084fc',
+        barRestrained: '#38bdf8',
+        barFree: '#f59e0b',
+        badgeBg: 'rgba(15, 23, 42, 0.90)',
+        badgeBorder: '#334155',
+        badgeText: '#a78bfa',
+        // Curve colors
+        curveConf: '#8b5cf6',
+        curveUnconf: '#f59e0b',
+        curveGhost: '#64748b',
+        // Map colors
+        mapContour: '#a855f7',
+        mapContourLabel: '#c084fc',
+        mapTriaxial: '#38bdf8',
+        mapBiaxial: '#64748b',
+        mapUnfeasibleFill: 'rgba(15, 23, 42, 0.55)',
+        mapUnfeasibleText: '#64748b',
+        mapPoint: '#f43f5e'
+      };
+    } else {
+      return {
+        isDark: false,
+        bgCanvas: '#ffffff',
+        grid: 'rgba(0, 0, 0, 0.08)',
+        axis: '#94a3b8',
+        text: '#475569',
+        textBright: '#0f172a',
+        textMuted: '#64748b',
+        // Section colors
+        secGross: '#e2e8f0',
+        secGrossStroke: '#94a3b8',
+        secCoverTint: 'rgba(203, 213, 225, 0.45)',
+        secCore: 'rgba(124, 58, 237, 0.15)',
+        secCoreStroke: '#7c3aed',
+        secArchFill: 'rgba(239, 68, 68, 0.22)',
+        secArchStroke: '#dc2626',
+        stirrupColor: '#0284c7',
+        crossTieColor: '#7c3aed',
+        barRestrained: '#0284c7',
+        barFree: '#d97706',
+        badgeBg: 'rgba(248, 250, 252, 0.95)',
+        badgeBorder: '#cbd5e1',
+        badgeText: '#6d28d9',
+        // Curve colors
+        curveConf: '#7c3aed',
+        curveUnconf: '#d97706',
+        curveGhost: '#94a3b8',
+        // Map colors
+        mapContour: '#7c3aed',
+        mapContourLabel: '#5b21b6',
+        mapTriaxial: '#0284c7',
+        mapBiaxial: '#94a3b8',
+        mapUnfeasibleFill: 'rgba(241, 245, 249, 0.85)',
+        mapUnfeasibleText: '#94a3b8',
+        mapPoint: '#e11d48'
+      };
+    }
+  }
+
+  /* ==========================================================================
+     CANVAS DRAWING: SECTION & ARCHING (CANVAS 1)
+     ========================================================================== */
+  function redrawCanvas1() {
+    const canvas = document.getElementById('canvas-section');
+    if (!canvas) return;
+    const ctx = canvas.getContext('2d');
+    const dpr = window.devicePixelRatio || 1;
+    const w = canvas.parentElement.clientWidth || 400;
+    const h = canvas.parentElement.clientHeight || 380;
+
+    canvas.width = w * dpr;
+    canvas.height = h * dpr;
+    ctx.resetTransform();
+    ctx.scale(dpr, dpr);
+
+    const isElev = document.getElementById('toggle-elev').checked;
+    document.getElementById('canvas1-title-text').textContent = isElev 
+      ? `Arco en Elevación Vertical (s = ${state.s} mm)` 
+      : `Sección Transversal & Arcos Inefectivos (ke = ${calcResults.ke.toFixed(3)})`;
+    document.getElementById('elev-label-status').textContent = isElev ? 'Elevación' : 'Planta';
+
+    if (isElev) {
+      drawElevationView(ctx, w, h);
+    } else {
+      drawPlanView(ctx, w, h);
+    }
+  }
+
+  function drawPlanView(ctx, w, h) {
+    const colors = getThemeColors();
+    ctx.fillStyle = colors.bgCanvas;
+    ctx.fillRect(0, 0, w, h);
+
+    const margin = 50;
+    const availW = w - 2 * margin;
+    const availH = h - 2 * margin;
+
+    // Scale so section fits nicely
+    const scale = Math.min(availW / state.b, availH / state.h);
+    const secW = state.b * scale;
+    const secH = state.h * scale;
+    const ox = (w - secW) / 2;
+    const oy = (h - secH) / 2;
+
+    const r_px = state.r * scale;
+    const coreX = ox + r_px;
+    const coreY = oy + r_px;
+    const coreW = secW - 2 * r_px;
+    const coreH = secH - 2 * r_px;
+
+    // 1. Draw Gross Section
+    ctx.fillStyle = colors.secGross;
+    ctx.strokeStyle = colors.secGrossStroke;
+    ctx.lineWidth = 2;
+    ctx.fillRect(ox, oy, secW, secH);
+    ctx.strokeRect(ox, oy, secW, secH);
+
+    // 2. Draw Cover hatching / tint
+    ctx.fillStyle = colors.secCoverTint;
+    ctx.fillRect(ox, oy, secW, secH);
+
+    // 3. Draw Confined Core Base
+    ctx.fillStyle = colors.secCore;
+    ctx.fillRect(coreX, coreY, coreW, coreH);
+    ctx.strokeStyle = colors.secCoreStroke;
+    ctx.lineWidth = 1.5;
+    ctx.strokeRect(coreX, coreY, coreW, coreH);
+
+    // 4. Calculate Bar Coordinates
+    const dbl_px = (calcResults.dbl * scale);
+    const dbt_px = Math.max(3, calcResults.dbt * scale);
+
+    const barCoords = [];
+    const stepX = (coreW - 2 * dbt_px - dbl_px) / (state.nx - 1);
+    const stepY = (coreH - 2 * dbt_px - dbl_px) / (state.ny - 1);
+
+    // Top row
+    for (let i = 0; i < state.nx; i++) {
+      barCoords.push({
+        x: coreX + dbt_px + dbl_px / 2 + i * stepX,
+        y: coreY + dbt_px + dbl_px / 2,
+        side: 'top',
+        idx: i,
+        isCorner: (i === 0 || i === state.nx - 1)
+      });
+    }
+    // Bottom row
+    for (let i = 0; i < state.nx; i++) {
+      barCoords.push({
+        x: coreX + dbt_px + dbl_px / 2 + i * stepX,
+        y: coreY + coreH - dbt_px - dbl_px / 2,
+        side: 'bot',
+        idx: i,
+        isCorner: (i === 0 || i === state.nx - 1)
+      });
+    }
+    // Left row (excluding corners)
+    for (let j = 1; j < state.ny - 1; j++) {
+      barCoords.push({
+        x: coreX + dbt_px + dbl_px / 2,
+        y: coreY + dbt_px + dbl_px / 2 + j * stepY,
+        side: 'left',
+        idx: j,
+        isCorner: false
+      });
+    }
+    // Right row (excluding corners)
+    for (let j = 1; j < state.ny - 1; j++) {
+      barCoords.push({
+        x: coreX + coreW - dbt_px - dbl_px / 2,
+        y: coreY + dbt_px + dbl_px / 2 + j * stepY,
+        side: 'right',
+        idx: j,
+        isCorner: false
+      });
+    }
+
+    // 5. DRAW INEFFECTIVE ARCHING PARABOLAS (Mander Fig. 3)
+    ctx.fillStyle = colors.secArchFill;
+    ctx.strokeStyle = colors.secArchStroke;
+    ctx.lineWidth = 1.5;
+
+    function drawArchParabola(x1, y1, x2, y2, normalX, normalY) {
+      const span = Math.hypot(x2 - x1, y2 - y1);
+      const sagitta = span / 4.0;
+      const mx = (x1 + x2) / 2 + normalX * sagitta;
+      const my = (y1 + y2) / 2 + normalY * sagitta;
+
+      ctx.beginPath();
+      ctx.moveTo(x1, y1);
+      ctx.quadraticCurveTo(mx, my, x2, y2);
+      ctx.lineTo(x2, y2);
+      ctx.lineTo(x1, y1);
+      ctx.closePath();
+      ctx.fill();
+      ctx.stroke();
+    }
+
+    const isTied = state.tiedIntermediate;
+
+    // Top arching
+    if (isTied || state.nx === 2) {
+      for (let i = 0; i < state.nx - 1; i++) {
+        const b1 = barCoords.find(b => b.side === 'top' && b.idx === i);
+        const b2 = barCoords.find(b => b.side === 'top' && b.idx === i + 1);
+        drawArchParabola(b1.x, b1.y, b2.x, b2.y, 0, 1);
+      }
+    } else {
+      const b1 = barCoords.find(b => b.side === 'top' && b.idx === 0);
+      const b2 = barCoords.find(b => b.side === 'top' && b.idx === state.nx - 1);
+      drawArchParabola(b1.x, b1.y, b2.x, b2.y, 0, 1);
+    }
+
+    // Bottom arching
+    if (isTied || state.nx === 2) {
+      for (let i = 0; i < state.nx - 1; i++) {
+        const b1 = barCoords.find(b => b.side === 'bot' && b.idx === i);
+        const b2 = barCoords.find(b => b.side === 'bot' && b.idx === i + 1);
+        drawArchParabola(b1.x, b1.y, b2.x, b2.y, 0, -1);
+      }
+    } else {
+      const b1 = barCoords.find(b => b.side === 'bot' && b.idx === 0);
+      const b2 = barCoords.find(b => b.side === 'bot' && b.idx === state.nx - 1);
+      drawArchParabola(b1.x, b1.y, b2.x, b2.y, 0, -1);
+    }
+
+    // Left arching
+    if (isTied || state.ny === 2) {
+      const leftBars = [
+        barCoords.find(b => b.side === 'top' && b.idx === 0),
+        ...barCoords.filter(b => b.side === 'left').sort((a,b) => a.idx - b.idx),
+        barCoords.find(b => b.side === 'bot' && b.idx === 0)
+      ];
+      for (let j = 0; j < leftBars.length - 1; j++) {
+        drawArchParabola(leftBars[j].x, leftBars[j].y, leftBars[j+1].x, leftBars[j+1].y, 1, 0);
+      }
+    } else {
+      const b1 = barCoords.find(b => b.side === 'top' && b.idx === 0);
+      const b2 = barCoords.find(b => b.side === 'bot' && b.idx === 0);
+      drawArchParabola(b1.x, b1.y, b2.x, b2.y, 1, 0);
+    }
+
+    // Right arching
+    if (isTied || state.ny === 2) {
+      const rightBars = [
+        barCoords.find(b => b.side === 'top' && b.idx === state.nx - 1),
+        ...barCoords.filter(b => b.side === 'right').sort((a,b) => a.idx - b.idx),
+        barCoords.find(b => b.side === 'bot' && b.idx === state.nx - 1)
+      ];
+      for (let j = 0; j < rightBars.length - 1; j++) {
+        drawArchParabola(rightBars[j].x, rightBars[j].y, rightBars[j+1].x, rightBars[j+1].y, -1, 0);
+      }
+    } else {
+      const b1 = barCoords.find(b => b.side === 'top' && b.idx === state.nx - 1);
+      const b2 = barCoords.find(b => b.side === 'bot' && b.idx === state.nx - 1);
+      drawArchParabola(b1.x, b1.y, b2.x, b2.y, -1, 0);
+    }
+
+    // 6. Draw Perimeter Stirrup
+    ctx.strokeStyle = colors.stirrupColor;
+    ctx.lineWidth = Math.max(2, dbt_px);
+    ctx.strokeRect(coreX + dbt_px / 2, coreY + dbt_px / 2, coreW - dbt_px, coreH - dbt_px);
+
+    // 7. Draw Cross-Ties (Ganchos suplementarios)
+    if (state.nlegs_x > 2 || state.tiedIntermediate) {
+      const extraTiesY = Math.min(state.ny - 2, state.nlegs_x - 2);
+      ctx.strokeStyle = colors.crossTieColor;
+      ctx.setLineDash([4, 3]);
+      for (let j = 1; j <= extraTiesY; j++) {
+        const yTie = coreY + dbt_px + dbl_px / 2 + j * stepY;
+        ctx.beginPath();
+        ctx.moveTo(coreX, yTie);
+        ctx.lineTo(coreX + coreW, yTie);
+        ctx.stroke();
+      }
+      ctx.setLineDash([]);
+    }
+
+    if (state.nlegs_y > 2 || state.tiedIntermediate) {
+      const extraTiesX = Math.min(state.nx - 2, state.nlegs_y - 2);
+      ctx.strokeStyle = colors.crossTieColor;
+      ctx.setLineDash([4, 3]);
+      for (let i = 1; i <= extraTiesX; i++) {
+        const xTie = coreX + dbt_px + dbl_px / 2 + i * stepX;
+        ctx.beginPath();
+        ctx.moveTo(xTie, coreY);
+        ctx.lineTo(xTie, coreY + coreH);
+        ctx.stroke();
+      }
+      ctx.setLineDash([]);
+    }
+
+    // 8. Draw Longitudinal Bars
+    for (const b of barCoords) {
+      ctx.beginPath();
+      ctx.arc(b.x, b.y, dbl_px / 2, 0, 2 * Math.PI);
+      const isRestrained = b.isCorner || isTied;
+      ctx.fillStyle = isRestrained ? colors.barRestrained : colors.barFree;
+      ctx.fill();
+      ctx.strokeStyle = '#ffffff';
+      ctx.lineWidth = 1.5;
+      ctx.stroke();
+    }
+
+    // 9. Dimension Annotations
+    ctx.fillStyle = colors.textBright;
+    ctx.font = 'bold 11px JetBrains Mono';
+    ctx.textAlign = 'center';
+    ctx.fillText(`b = ${state.b} cm`, ox + secW / 2, oy - 12);
+    ctx.fillText(`bc = ${calcResults.bc.toFixed(1)} cm`, coreX + coreW / 2, coreY - 6);
+
+    ctx.save();
+    ctx.translate(ox - 14, oy + secH / 2);
+    ctx.rotate(-Math.PI / 2);
+    ctx.fillText(`h = ${state.h} cm`, 0, 0);
+    ctx.restore();
+
+    // Callout badge in bottom left of canvas
+    ctx.fillStyle = colors.badgeBg;
+    ctx.fillRect(10, h - 36, 175, 26);
+    ctx.strokeStyle = colors.badgeBorder;
+    ctx.lineWidth = 1;
+    ctx.strokeRect(10, h - 36, 175, 26);
+    ctx.fillStyle = colors.badgeText;
+    ctx.font = 'bold 11px JetBrains Mono';
+    ctx.textAlign = 'left';
+    ctx.fillText(`Ae/Acc = ${(calcResults.alpha_n * 100).toFixed(1)}% en planta`, 16, h - 19);
+  }
+
+  function drawElevationView(ctx, w, h) {
+    const colors = getThemeColors();
+    ctx.fillStyle = colors.bgCanvas;
+    ctx.fillRect(0, 0, w, h);
+
+    const margin = 45;
+    const availW = w - 2 * margin;
+    const availH = h - 2 * margin;
+
+    const numTiers = 4;
+    const totalElevH = numTiers * (state.s / 10.0);
+    const scale = Math.min(availW / state.b, availH / totalElevH);
+
+    const colW = state.b * scale;
+    const tierH = (state.s / 10.0) * scale;
+    const ox = (w - colW) / 2;
+    const oy = (h - numTiers * tierH) / 2;
+
+    const r_px = state.r * scale;
+    const coreX = ox + r_px;
+    const coreW = colW - 2 * r_px;
+
+    // Background Column
+    ctx.fillStyle = colors.secGross;
+    ctx.strokeStyle = colors.secGrossStroke;
+    ctx.lineWidth = 2;
+    ctx.fillRect(ox, oy, colW, numTiers * tierH);
+    ctx.strokeRect(ox, oy, colW, numTiers * tierH);
+
+    // Confined core zone
+    ctx.fillStyle = colors.secCore;
+    ctx.fillRect(coreX, oy, coreW, numTiers * tierH);
+
+    // Ineffective vertical arching parabolas between tiers
+    ctx.fillStyle = colors.secArchFill;
+    ctx.strokeStyle = colors.secArchStroke;
+    ctx.lineWidth = 1.5;
+
+    for (let t = 0; t < numTiers; t++) {
+      const y1 = oy + t * tierH;
+      const y2 = oy + (t + 1) * tierH;
+      const sagitta = tierH / 4.0;
+
+      // Left bulge arching
+      ctx.beginPath();
+      ctx.moveTo(coreX, y1);
+      ctx.quadraticCurveTo(coreX + sagitta, (y1 + y2) / 2, coreX, y2);
+      ctx.closePath();
+      ctx.fill();
+      ctx.stroke();
+
+      // Right bulge arching
+      ctx.beginPath();
+      ctx.moveTo(coreX + coreW, y1);
+      ctx.quadraticCurveTo(coreX + coreW - sagitta, (y1 + y2) / 2, coreX + coreW, y2);
+      ctx.closePath();
+      ctx.fill();
+      ctx.stroke();
+
+      // Stirrup layer line
+      ctx.strokeStyle = colors.stirrupColor;
+      ctx.lineWidth = 3;
+      ctx.beginPath();
+      ctx.moveTo(coreX, y1);
+      ctx.lineTo(coreX + coreW, y1);
+      ctx.stroke();
+    }
+    // Bottom stirrup
+    ctx.beginPath();
+    ctx.moveTo(coreX, oy + numTiers * tierH);
+    ctx.lineTo(coreX + coreW, oy + numTiers * tierH);
+    ctx.stroke();
+
+    // Longitudinal bars vertical lines
+    ctx.strokeStyle = '#ffffff';
+    ctx.lineWidth = 2;
+    ctx.beginPath();
+    ctx.moveTo(coreX + 8, oy);
+    ctx.lineTo(coreX + 8, oy + numTiers * tierH);
+    ctx.moveTo(coreX + coreW - 8, oy);
+    ctx.lineTo(coreX + coreW - 8, oy + numTiers * tierH);
+    ctx.stroke();
+
+    // Spacing annotation
+    ctx.fillStyle = colors.textBright;
+    ctx.font = 'bold 11px JetBrains Mono';
+    ctx.textAlign = 'left';
+    ctx.fillText(`s = ${state.s} mm`, coreX + coreW + 16, oy + tierH / 2 + 4);
+
+    // Sagitta annotation
+    ctx.fillStyle = colors.secArchStroke;
+    ctx.fillText(`Arco vertical s'/2b = ${(calcResults.alpha_vx * 100).toFixed(1)}%`, 16, h - 18);
+  }
+
+  /* ==========================================================================
+     CANVAS DRAWING: CONSTITUTIVE CURVE (CANVAS 2)
+     ========================================================================== */
+  function redrawCanvas2() {
+    const canvas = document.getElementById('canvas-curve');
+    if (!canvas) return;
+    const ctx = canvas.getContext('2d');
+    const dpr = window.devicePixelRatio || 1;
+    const w = canvas.parentElement.clientWidth || 400;
+    const h = canvas.parentElement.clientHeight || 380;
+
+    canvas.width = w * dpr;
+    canvas.height = h * dpr;
+    ctx.resetTransform();
+    ctx.scale(dpr, dpr);
+
+    const colors = getThemeColors();
+    ctx.fillStyle = colors.bgCanvas;
+    ctx.fillRect(0, 0, w, h);
+
+    const padL = 60;
+    const padR = 30;
+    const padT = 30;
+    const padB = 45;
+
+    const plotW = Math.max(100, w - padL - padR);
+    const plotH = Math.max(100, h - padT - padB);
+
+    // Axis limits
+    const maxEps = Math.max(0.025, Math.min(0.06, calcResults.ecu * 1.35));
+    const maxFc = Math.max(40.0, calcResults.fcc * 1.25);
+
+    const toX = (eps) => padL + (eps / maxEps) * plotW;
+    const toY = (fc) => padT + (1.0 - fc / maxFc) * plotH;
+
+    // 1. Grid lines
+    ctx.strokeStyle = colors.grid;
+    ctx.lineWidth = 1;
+    ctx.fillStyle = colors.text;
+    ctx.font = '10px JetBrains Mono';
+
+    // Horizontal grid (Stress)
+    const nGridY = 5;
+    for (let i = 0; i <= nGridY; i++) {
+      const valFc = (maxFc / nGridY) * i;
+      const y = toY(valFc);
+      ctx.beginPath();
+      ctx.moveTo(padL, y);
+      ctx.lineTo(w - padR, y);
+      ctx.stroke();
+
+      ctx.textAlign = 'right';
+      ctx.fillText(`${valFc.toFixed(0)}`, padL - 8, y + 3);
+    }
+
+    // Vertical grid (Strain)
+    const nGridX = 6;
+    for (let j = 0; j <= nGridX; j++) {
+      const valEps = (maxEps / nGridX) * j;
+      const x = toX(valEps);
+      ctx.beginPath();
+      ctx.moveTo(x, padT);
+      ctx.lineTo(x, h - padB);
+      ctx.stroke();
+
+      ctx.textAlign = 'center';
+      ctx.fillText(`${valEps.toFixed(3)}`, x, h - padB + 16);
+    }
+
+    // Axes lines
+    ctx.strokeStyle = colors.axis;
+    ctx.lineWidth = 1.5;
+    ctx.beginPath();
+    ctx.moveTo(padL, padT);
+    ctx.lineTo(padL, h - padB);
+    ctx.lineTo(w - padR, h - padB);
+    ctx.stroke();
+
+    // Axis Titles
+    ctx.fillStyle = colors.textBright;
+    ctx.font = '11px Outfit';
+    ctx.textAlign = 'center';
+    ctx.fillText('Deformación Unitaria εc', padL + plotW / 2, h - 8);
+
+    ctx.save();
+    ctx.translate(16, padT + plotH / 2);
+    ctx.rotate(-Math.PI / 2);
+    ctx.fillText('Esfuerzo fc (MPa)', 0, 0);
+    ctx.restore();
+
+    // 2. Plot Unconfined Concrete (Recubrimiento)
+    ctx.strokeStyle = colors.curveUnconf;
+    ctx.lineWidth = 2;
+    ctx.setLineDash([5, 4]);
+    ctx.beginPath();
+    let started = false;
+    for (let eps = 0; eps <= maxEps; eps += 0.0002) {
+      const fc_un = getUnconfinedFc(eps, state.fco);
+      const x = toX(eps);
+      const y = toY(fc_un);
+      if (!started) { ctx.moveTo(x, y); started = true; }
+      else { ctx.lineTo(x, y); }
+      if (eps > 0.006 && fc_un <= 0) break;
+    }
+    ctx.stroke();
+    ctx.setLineDash([]);
+
+    // 3. Plot Ghost Reference Curve (if exists)
+    if (state.ghost) {
+      ctx.strokeStyle = colors.curveGhost;
+      ctx.lineWidth = 2;
+      ctx.setLineDash([3, 3]);
+      ctx.beginPath();
+      for (let eps = 0; eps <= state.ghost.ecu; eps += 0.0002) {
+        const fc_gh = getPopovicsFc(eps, state.ghost.fcc, state.ghost.ecc, state.ghost.r_popovics);
+        const x = toX(eps);
+        const y = toY(fc_gh);
+        if (eps === 0) ctx.moveTo(x, y);
+        else ctx.lineTo(x, y);
+      }
+      ctx.stroke();
+      ctx.setLineDash([]);
+    }
+
+    // 4. Plot Confined Concrete Core (Mander)
+    ctx.strokeStyle = colors.curveConf;
+    ctx.lineWidth = 3.5;
+    ctx.beginPath();
+    for (let eps = 0; eps <= calcResults.ecu; eps += 0.0002) {
+      const fc_m = getPopovicsFc(eps, calcResults.fcc, calcResults.ecc, calcResults.r_popovics);
+      const x = toX(eps);
+      const y = toY(fc_m);
+      if (eps === 0) ctx.moveTo(x, y);
+      else ctx.lineTo(x, y);
+    }
+    ctx.stroke();
+
+    // 5. Highlight Peak Points
+    // Unconfined Peak
+    const unPeakX = toX(0.002);
+    const unPeakY = toY(state.fco);
+    ctx.fillStyle = colors.curveUnconf;
+    ctx.beginPath();
+    ctx.arc(unPeakX, unPeakY, 4.5, 0, 2 * Math.PI);
+    ctx.fill();
+    ctx.strokeStyle = '#fff';
+    ctx.lineWidth = 1;
+    ctx.stroke();
+
+    // Confined Peak
+    const confPeakX = toX(calcResults.ecc);
+    const confPeakY = toY(calcResults.fcc);
+    ctx.fillStyle = colors.curveConf;
+    ctx.beginPath();
+    ctx.arc(confPeakX, confPeakY, 6, 0, 2 * Math.PI);
+    ctx.fill();
+    ctx.stroke();
+
+    // Fracture Point
+    const fc_ecu = getPopovicsFc(calcResults.ecu, calcResults.fcc, calcResults.ecc, calcResults.r_popovics);
+    const fracX = toX(calcResults.ecu);
+    const fracY = toY(fc_ecu);
+    ctx.fillStyle = '#f43f5e';
+    ctx.beginPath();
+    ctx.arc(fracX, fracY, 5, 0, 2 * Math.PI);
+    ctx.fill();
+    ctx.stroke();
+
+    // Peak text callout
+    ctx.fillStyle = colors.textBright;
+    ctx.font = 'bold 10px JetBrains Mono';
+    ctx.textAlign = 'left';
+    ctx.fillText(`f'cc = ${calcResults.fcc.toFixed(1)} MPa`, confPeakX + 8, confPeakY - 4);
+    ctx.fillText(`εcu = ${calcResults.ecu.toFixed(4)}`, fracX + 8, fracY + 4);
+  }
+
+  /* ==========================================================================
+     CANVAS DRAWING: WILLIAM-WARNKE 2D MAP (CANVAS 3)
+     ========================================================================== */
+  function redrawCanvas3() {
+    const canvas = document.getElementById('canvas-map');
+    if (!canvas) return;
+    const ctx = canvas.getContext('2d');
+    const dpr = window.devicePixelRatio || 1;
+    const w = canvas.parentElement.clientWidth || 600;
+    const h = canvas.parentElement.clientHeight || 440;
+
+    canvas.width = w * dpr;
+    canvas.height = h * dpr;
+    ctx.resetTransform();
+    ctx.scale(dpr, dpr);
+
+    const colors = getThemeColors();
+    ctx.fillStyle = colors.bgCanvas;
+    ctx.fillRect(0, 0, w, h);
+
+    const padL = 75;
+    const padR = 45;
+    const padT = 35;
+    const padB = 65;
+
+    const plotW = Math.max(100, w - padL - padR);
+    const plotH = Math.max(100, h - padT - padB);
+
+    const toX = (rmin) => padL + (rmin / 0.30) * plotW;
+    const toY = (rmax) => padT + (1.0 - (rmax / 0.30)) * plotH;
+
+    // 1. Shaded Non-Applicable Region (Rmin > Rmax) below diagonal
+    ctx.fillStyle = colors.mapUnfeasibleFill;
+    ctx.beginPath();
+    ctx.moveTo(toX(0.0), toY(0.0));
+    ctx.lineTo(toX(0.30), toY(0.30));
+    ctx.lineTo(toX(0.30), toY(0.0));
+    ctx.closePath();
+    ctx.fill();
+
+    ctx.fillStyle = colors.mapUnfeasibleText;
+    ctx.font = '10px JetBrains Mono';
+    ctx.textAlign = 'center';
+    ctx.fillText('Zona no aplicable (Rmin > Rmax)', toX(0.20), toY(0.06));
+
+    // 2. Grid & axes tick marks
+    ctx.strokeStyle = colors.grid;
+    ctx.lineWidth = 1;
+    ctx.fillStyle = colors.text;
+    ctx.font = '10px JetBrains Mono';
+
+    for (let r = 0; r <= 0.301; r += 0.05) {
+      const x = toX(r);
+      const y = toY(r);
+
+      // Vertical
+      ctx.beginPath();
+      ctx.moveTo(x, padT);
+      ctx.lineTo(x, h - padB);
+      ctx.stroke();
+      ctx.textAlign = 'center';
+      ctx.fillText(r.toFixed(2), x, h - padB + 16);
+
+      // Horizontal
+      ctx.beginPath();
+      ctx.moveTo(padL, y);
+      ctx.lineTo(w - padR, y);
+      ctx.stroke();
+      ctx.textAlign = 'right';
+      ctx.fillText(r.toFixed(2), padL - 8, y + 3);
+    }
+
+    // 3. Main Axes
+    ctx.strokeStyle = colors.axis;
+    ctx.lineWidth = 1.5;
+    ctx.beginPath();
+    ctx.moveTo(padL, padT);
+    ctx.lineTo(padL, h - padB);
+    ctx.lineTo(w - padR, h - padB);
+    ctx.stroke();
+
+    // Axis Titles
+    ctx.fillStyle = colors.textBright;
+    ctx.font = 'bold 11px Outfit';
+    ctx.textAlign = 'center';
+    ctx.fillText("Menor Razón de Confinamiento: Rmin = f'l1 / f'co", padL + plotW / 2, h - 18);
+
+    ctx.save();
+    ctx.translate(22, padT + plotH / 2);
+    ctx.rotate(-Math.PI / 2);
+    ctx.fillText("Mayor Razón de Confinamiento: Rmax = f'l2 / f'co", 0, 0);
+    ctx.restore();
+
+    // 4. Biaxial & Triaxial reference lines
+    // Triaxial line
+    ctx.strokeStyle = colors.mapTriaxial;
+    ctx.lineWidth = 1.75;
+    ctx.setLineDash([5, 4]);
+    ctx.beginPath();
+    ctx.moveTo(toX(0.0), toY(0.0));
+    ctx.lineTo(toX(0.30), toY(0.30));
+    ctx.stroke();
+    ctx.setLineDash([]);
+
+    ctx.fillStyle = colors.mapTriaxial;
+    ctx.font = 'bold 10px JetBrains Mono';
+    ctx.textAlign = 'left';
+    ctx.fillText('Triaxial Simétrica (fl1 = fl2)', toX(0.12) + 6, toY(0.12) - 10);
+
+    // Biaxial line
+    ctx.fillStyle = colors.textMuted;
+    ctx.textAlign = 'left';
+    ctx.fillText('Biaxial (fl1 = 0)', padL + 8, padT + 16);
+
+    // 5. Isoclines of K (from 1.1 to 2.2)
+    const kLevels = [1.1, 1.2, 1.3, 1.4, 1.5, 1.6, 1.7, 1.8, 1.9, 2.0, 2.1, 2.2];
+    ctx.strokeStyle = colors.mapContour;
+    ctx.lineWidth = 1.4;
+
+    for (const kTarget of kLevels) {
+      const pts = [];
+      for (let rmax = 0.0; rmax <= 0.30; rmax += 0.003) {
+        let k0 = coefmander_bilinear(0.0, rmax);
+        let kdiag = coefmander_bilinear(rmax, rmax);
+        if (kTarget < k0 || kTarget > kdiag) continue;
+
+        let low = 0.0, high = rmax;
+        for (let iter = 0; iter < 16; iter++) {
+          let mid = (low + high) / 2;
+          if (coefmander_bilinear(mid, rmax) < kTarget) low = mid;
+          else high = mid;
+        }
+        pts.push({ rmin: (low + high) / 2, rmax: rmax });
+      }
+
+      if (pts.length > 1) {
+        ctx.beginPath();
+        ctx.moveTo(toX(pts[0].rmin), toY(pts[0].rmax));
+        for (let i = 1; i < pts.length; i++) {
+          ctx.lineTo(toX(pts[i].rmin), toY(pts[i].rmax));
+        }
+        ctx.stroke();
+
+        // Contour label
+        const labelIdx = Math.floor(pts.length * 0.45);
+        const lpt = pts[labelIdx];
+        const lx = toX(lpt.rmin);
+        const ly = toY(lpt.rmax);
+
+        ctx.fillStyle = colors.badgeBg;
+        ctx.fillRect(lx - 16, ly - 7, 32, 14);
+        ctx.fillStyle = colors.mapContourLabel;
+        ctx.font = 'bold 9px JetBrains Mono';
+        ctx.textAlign = 'center';
+        ctx.fillText(`${kTarget.toFixed(1)}`, lx, ly + 3);
+      }
+    }
+
+    // 6. Current Operating Point
+    const curRmin = Math.min(0.30, Math.max(0.0, calcResults.Rmin));
+    const curRmax = Math.min(0.30, Math.max(0.0, calcResults.Rmax));
+    const curPtX = toX(curRmin);
+    const curPtY = toY(curRmax);
+
+    // Dashed projection lines
+    ctx.strokeStyle = colors.mapPoint;
+    ctx.lineWidth = 1.4;
+    ctx.setLineDash([4, 3]);
+    ctx.beginPath();
+    ctx.moveTo(padL, curPtY);
+    ctx.lineTo(curPtX, curPtY);
+    ctx.lineTo(curPtX, h - padB);
+    ctx.stroke();
+    ctx.setLineDash([]);
+
+    // Axis callout badges
+    ctx.fillStyle = colors.badgeBg;
+    ctx.fillRect(padL - 60, curPtY - 9, 52, 18);
+    ctx.strokeStyle = colors.mapPoint;
+    ctx.lineWidth = 1;
+    ctx.strokeRect(padL - 60, curPtY - 9, 52, 18);
+    ctx.fillStyle = colors.mapPoint;
+    ctx.font = 'bold 9px JetBrains Mono';
+    ctx.textAlign = 'center';
+    ctx.fillText(`${curRmax.toFixed(3)}`, padL - 34, curPtY + 4);
+
+    ctx.fillStyle = colors.badgeBg;
+    ctx.fillRect(curPtX - 26, h - padB + 6, 52, 18);
+    ctx.strokeRect(curPtX - 26, h - padB + 6, 52, 18);
+    ctx.fillText(`${curRmin.toFixed(3)}`, curPtX, h - padB + 19);
+
+    // Target bullseye
+    ctx.fillStyle = 'rgba(244, 63, 94, 0.25)';
+    ctx.beginPath();
+    ctx.arc(curPtX, curPtY, 13, 0, 2 * Math.PI);
+    ctx.fill();
+
+    ctx.fillStyle = colors.mapPoint;
+    ctx.beginPath();
+    ctx.arc(curPtX, curPtY, 6, 0, 2 * Math.PI);
+    ctx.fill();
+    ctx.strokeStyle = '#ffffff';
+    ctx.lineWidth = 2;
+    ctx.stroke();
+
+    // Floating callout badge
+    const badgeW = 165;
+    const badgeH = 30;
+    let bX = curPtX + 14;
+    let bY = curPtY - 36;
+    if (bX + badgeW > w - padR) bX = curPtX - badgeW - 14;
+    if (bY < padT) bY = curPtY + 14;
+
+    ctx.fillStyle = colors.badgeBg;
+    ctx.fillRect(bX, bY, badgeW, badgeH);
+    ctx.strokeStyle = colors.mapPoint;
+    ctx.lineWidth = 1.2;
+    ctx.strokeRect(bX, bY, badgeW, badgeH);
+
+    ctx.fillStyle = colors.textBright;
+    ctx.font = 'bold 10px JetBrains Mono';
+    ctx.textAlign = 'left';
+    ctx.fillText(`K = ${calcResults.K.toFixed(3)} · f'cc = ${calcResults.fcc.toFixed(1)} MPa`, bX + 8, bY + 13);
+    ctx.fillStyle = colors.mapPoint;
+    ctx.font = '9px JetBrains Mono';
+    ctx.fillText(`Ganancia: +${((calcResults.K - 1.0)*100).toFixed(1)}% resistencia`, bX + 8, bY + 24);
+  }
+
+  function redrawAllCanvases() {
+    if (state.activeTab === 'all' || state.activeTab === 'side') {
+      redrawCanvas1();
+      redrawCanvas2();
+    }
+    if (state.activeTab === 'all' || state.activeTab === 'map') {
+      redrawCanvas3();
+    }
+  }
+
+  /* ==========================================================================
+     PRESETS
+     ========================================================================== */
+  function applyPreset(presetKey) {
+    document.querySelectorAll('.btn-preset').forEach(b => b.classList.remove('active'));
+    
+    const btns = Array.from(document.querySelectorAll('.btn-preset'));
+    const mapKeys = ['pobre', 'dmo', 'des', 'asimetrico', 'paper'];
+    const idx = mapKeys.indexOf(presetKey);
+    if (idx !== -1 && btns[idx]) btns[idx].classList.add('active');
+
+    if (presetKey === 'pobre') {
+      document.getElementById('slider-b').value = 40;
+      document.getElementById('slider-h').value = 40;
+      document.getElementById('slider-r').value = 4.0;
+      document.getElementById('slider-fco').value = 28;
+      document.getElementById('slider-fyh').value = 420;
+      document.getElementById('slider-nx').value = 2;
+      document.getElementById('slider-ny').value = 2;
+      document.getElementById('select-bar').value = "6";
+      document.getElementById('toggle-tied').checked = false;
+      document.getElementById('slider-s').value = 200;
+      document.getElementById('select-stirrup').value = "3";
+      document.getElementById('slider-nlegs-x').value = 2;
+      document.getElementById('slider-nlegs-y').value = 2;
+    } else if (presetKey === 'dmo') {
+      document.getElementById('slider-b').value = 45;
+      document.getElementById('slider-h').value = 45;
+      document.getElementById('slider-r').value = 4.0;
+      document.getElementById('slider-fco').value = 28;
+      document.getElementById('slider-fyh').value = 420;
+      document.getElementById('slider-nx').value = 3;
+      document.getElementById('slider-ny').value = 3;
+      document.getElementById('select-bar').value = "6";
+      document.getElementById('toggle-tied').checked = true;
+      document.getElementById('slider-s').value = 100;
+      document.getElementById('select-stirrup').value = "3";
+      document.getElementById('slider-nlegs-x').value = 3;
+      document.getElementById('slider-nlegs-y').value = 3;
+    } else if (presetKey === 'des') {
+      document.getElementById('slider-b').value = 50;
+      document.getElementById('slider-h').value = 50;
+      document.getElementById('slider-r').value = 4.0;
+      document.getElementById('slider-fco').value = 35;
+      document.getElementById('slider-fyh').value = 420;
+      document.getElementById('slider-nx').value = 4;
+      document.getElementById('slider-ny').value = 4;
+      document.getElementById('select-bar').value = "8";
+      document.getElementById('toggle-tied').checked = true;
+      document.getElementById('slider-s').value = 75;
+      document.getElementById('select-stirrup').value = "4";
+      document.getElementById('slider-nlegs-x').value = 4;
+      document.getElementById('slider-nlegs-y').value = 4;
+    } else if (presetKey === 'asimetrico') {
+      document.getElementById('slider-b').value = 25;
+      document.getElementById('slider-h').value = 70;
+      document.getElementById('slider-r').value = 3.5;
+      document.getElementById('slider-fco').value = 30;
+      document.getElementById('slider-fyh').value = 420;
+      document.getElementById('slider-nx').value = 2;
+      document.getElementById('slider-ny').value = 5;
+      document.getElementById('select-bar').value = "7";
+      document.getElementById('toggle-tied').checked = true;
+      document.getElementById('slider-s').value = 100;
+      document.getElementById('select-stirrup').value = "3";
+      document.getElementById('slider-nlegs-x').value = 2;
+      document.getElementById('slider-nlegs-y').value = 4;
+    } else if (presetKey === 'paper') {
+      document.getElementById('slider-b').value = 50;
+      document.getElementById('slider-h').value = 50;
+      document.getElementById('slider-r').value = 4.0;
+      document.getElementById('slider-fco').value = 30;
+      document.getElementById('slider-fyh').value = 420;
+      document.getElementById('slider-nx').value = 4;
+      document.getElementById('slider-ny').value = 4;
+      document.getElementById('select-bar').value = "8";
+      document.getElementById('toggle-tied').checked = true;
+      document.getElementById('slider-s').value = 60;
+      document.getElementById('select-stirrup').value = "4";
+      document.getElementById('slider-nlegs-x').value = 4;
+      document.getElementById('slider-nlegs-y').value = 3;
+    }
+
+    updateState();
+  }
+
+  /* ==========================================================================
+     GHOST / BENCHMARK COMPARISON
+     ========================================================================== */
+  function saveGhost() {
+    state.ghost = {
+      fcc: calcResults.fcc,
+      ecc: calcResults.ecc,
+      r_popovics: calcResults.r_popovics,
+      ecu: calcResults.ecu,
+      ke: calcResults.ke,
+      K: calcResults.K,
+      desc: `${state.b}×${state.h} cm, s=${state.s} mm, K=${calcResults.K.toFixed(3)}`
+    };
+    document.getElementById('btn-save-ghost').classList.add('active');
+    document.getElementById('ghost-status').textContent = `Ref: ${state.ghost.desc}`;
+    document.getElementById('legend-ghost-item').style.display = 'flex';
+    redrawCanvas2();
+  }
+
+  function clearGhost() {
+    state.ghost = null;
+    document.getElementById('btn-save-ghost').classList.remove('active');
+    document.getElementById('ghost-status').textContent = 'Sin curva de referencia guardada.';
+    document.getElementById('legend-ghost-item').style.display = 'none';
+    redrawCanvas2();
+  }
+
+  /* ==========================================================================
+     TAB SWITCHING
+     ========================================================================== */
+  function switchTab(tabKey) {
+    state.activeTab = tabKey;
+    document.getElementById('tab-btn-all').classList.toggle('active', tabKey === 'all');
+    document.getElementById('tab-btn-side').classList.toggle('active', tabKey === 'side');
+    document.getElementById('tab-btn-map').classList.toggle('active', tabKey === 'map');
+
+    const split = document.getElementById('canvases-split');
+    const mapCard = document.getElementById('canvas-map-container');
+
+    if (tabKey === 'all') {
+      split.style.display = 'grid';
+      mapCard.style.display = 'flex';
+    } else if (tabKey === 'side') {
+      split.style.display = 'grid';
+      mapCard.style.display = 'none';
+    } else if (tabKey === 'map') {
+      split.style.display = 'none';
+      mapCard.style.display = 'flex';
+    }
+
+    setTimeout(() => {
+      redrawAllCanvases();
+    }, 40);
+  }
+
+  /* ==========================================================================
+     SOCRATIC CHALLENGES
+     ========================================================================== */
+  const CORRECT_ANSWERS = {
+    1: 1, // Q1: B (cross-ties)
+    2: 0, // Q2: A (rho_s doubles and arching flattens)
+    3: 1, // Q3: B (weak direction controls multiaxial surface)
+    4: 1  // Q4: B (passive confinement arrests microcracking)
+  };
+
+  function checkAnswer(qNum, optIdx) {
+    const card = document.getElementById(`card-q${qNum}`);
+    const btns = card.querySelectorAll('.btn-option');
+    const explanation = document.getElementById(`ans-${qNum}`);
+
+    btns.forEach((b, idx) => {
+      b.classList.remove('correct', 'wrong');
+      if (idx === CORRECT_ANSWERS[qNum]) {
+        b.classList.add('correct');
+      } else if (idx === optIdx && optIdx !== CORRECT_ANSWERS[qNum]) {
+        b.classList.add('wrong');
+      }
+    });
+
+    explanation.style.display = 'block';
+  }
+
+  /* ==========================================================================
+     PYTHON SCRIPT EXPORTER
+     ========================================================================== */
+  function generatePythonScript() {
+    return `# -*- coding: utf-8 -*-
+"""
+Modelo de Concreto Confinado según Mander, Priestley & Park (1988)
+Generado automáticamente desde el Laboratorio Interactivo de Concreto Avanzado.
+"""
+
+import numpy as np
+import matplotlib.pyplot as plt
+
+def coefmander(Rmin, Rmax):
+    '''
+    Calcula el factor de confinamiento K = f'cc / f'co mediante interpolación
+    bilineal sobre la matriz de William-Warnke (Figura 4 del paper de Mander 1988).
+    '''
+    V = np.array([
+        [1.000,1.000,1.000,1.000,1.000,1.000,1.000,1.000,1.000,1.000,1.000,1.000,1.000,1.000,1.000,1.000],
+        [1.050,1.171,1.171,1.171,1.171,1.171,1.171,1.171,1.171,1.171,1.171,1.171,1.171,1.171,1.171,1.171],
+        [1.100,1.186,1.264,1.264,1.264,1.264,1.264,1.264,1.264,1.264,1.264,1.264,1.264,1.264,1.264,1.264],
+        [1.129,1.221,1.300,1.371,1.371,1.371,1.371,1.371,1.371,1.371,1.371,1.371,1.371,1.371,1.371,1.371],
+        [1.150,1.250,1.343,1.414,1.486,1.486,1.486,1.486,1.486,1.486,1.486,1.486,1.486,1.486,1.486,1.486],
+        [1.179,1.279,1.379,1.450,1.514,1.579,1.579,1.579,1.579,1.579,1.579,1.579,1.579,1.579,1.579,1.579],
+        [1.200,1.300,1.407,1.486,1.550,1.621,1.671,1.671,1.671,1.671,1.671,1.671,1.671,1.671,1.671,1.671],
+        [1.221,1.329,1.436,1.500,1.586,1.664,1.700,1.757,1.757,1.757,1.757,1.757,1.757,1.757,1.757,1.757],
+        [1.236,1.350,1.450,1.529,1.614,1.686,1.743,1.793,1.829,1.829,1.829,1.829,1.829,1.829,1.829,1.829],
+        [1.250,1.364,1.479,1.550,1.643,1.714,1.771,1.821,1.871,1.914,1.914,1.914,1.914,1.914,1.914,1.914],
+        [1.257,1.386,1.486,1.571,1.664,1.736,1.793,1.850,1.907,1.943,1.971,1.971,1.971,1.971,1.971,1.971],
+        [1.279,1.400,1.500,1.600,1.686,1.757,1.814,1.879,1.929,1.964,2.007,2.050,2.050,2.050,2.050,2.050],
+        [1.286,1.414,1.521,1.614,1.700,1.779,1.836,1.893,1.950,1.986,2.036,2.071,2.100,2.100,2.100,2.100],
+        [1.300,1.421,1.529,1.629,1.714,1.786,1.864,1.914,1.979,2.014,2.063,2.114,2.136,2.186,2.186,2.186],
+        [1.300,1.429,1.543,1.643,1.729,1.800,1.879,1.936,1.986,2.036,2.086,2.121,2.164,2.200,2.243,2.243],
+        [1.307,1.443,1.550,1.650,1.736,1.814,1.893,1.950,2.014,2.057,2.100,2.143,2.186,2.229,2.257,2.300]
+    ], dtype=float)
+
+    r1 = np.clip(min(Rmin, Rmax), 0.0, 0.30)
+    r2 = np.clip(max(Rmin, Rmax), 0.0, 0.30)
+
+    ix = min(14, int(r1 / 0.02))
+    iy = min(14, int(r2 / 0.02))
+    tx = (r1 - ix * 0.02) / 0.02
+    ty = (r2 - iy * 0.02) / 0.02
+
+    v00, v01 = V[iy, ix], V[iy, ix + 1]
+    v10, v11 = V[iy + 1, ix], V[iy + 1, ix + 1]
+
+    k = (1.0 - ty) * ((1.0 - tx) * v00 + tx * v01) + ty * ((1.0 - tx) * v10 + tx * v11)
+    return k
+
+# 1. Propiedades de la Sección
+b = ${state.b}      # cm (ancho total)
+h = ${state.h}      # cm (altura total)
+r_rec = ${state.r}  # cm (recubrimiento libre)
+fco = ${state.fco}  # MPa (resistencia inconfinada)
+fy = ${state.fy}    # MPa (acero longitudinal)
+fyh = ${state.fyh}  # MPa (acero transversal)
+
+# Armadura Longitudinal
+nx = ${state.nx}    # barras en cara X
+ny = ${state.ny}    # barras en cara Y
+dbl = ${calcResults.dbl.toFixed(2)}  # cm (diámetro barra #${state.barNum})
+Ast = ${calcResults.Ast.toFixed(2)}  # cm² (área total)
+
+# Armadura Transversal (Estribos)
+s = ${state.s}      # mm (separación de estribos)
+dbt = ${calcResults.dbt.toFixed(2)}  # cm (diámetro estribo #${state.stirrupNum})
+nlegs_x = ${state.nlegs_x}  # ramas en X
+nlegs_y = ${state.nlegs_y}  # ramas en Y
+Asx = ${calcResults.Asx.toFixed(2)}  # cm²
+Asy = ${calcResults.Asy.toFixed(2)}  # cm²
+
+# 2. Geometría del Núcleo y Acción de Arco
+bc = b - 2*r_rec - dbt
+dc = h - 2*r_rec - dbt
+rhocc = Ast / (bc * dc)
+
+ke = ${calcResults.ke.toFixed(4)}
+flx_prime = ${calcResults.flx_prime.toFixed(3)}  # MPa
+fly_prime = ${calcResults.fly_prime.toFixed(3)}  # MPa
+
+Rmin = min(flx_prime, fly_prime) / fco
+Rmax = max(flx_prime, fly_prime) / fco
+
+# 3. Factor K y Resistencia Confinada
+K = coefmander(Rmin, Rmax)
+fcc = K * fco
+eco = 0.002
+ecc = eco * (1.0 + 5.0 * (K - 1.0))
+
+Ec = 5000.0 * np.sqrt(fco)
+Esec = fcc / ecc
+r_popovics = Ec / (Ec - Esec)
+ecu = ${calcResults.ecu.toFixed(4)}
+
+print(f"--- RESULTADOS MANDER (1988) ---")
+print(f"ke = {ke:.3f}, K = {K:.3f}")
+print(f"f'co = {fco:.1f} MPa -> f'cc = {fcc:.1f} MPa (+{(K-1)*100:.1f}%)")
+print(f"ecc = {ecc:.4f}, ecu = {ecu:.4f} (με = {ecu/eco:.1f})")
+
+# 4. Gráfica Constitutiva
+eps = np.linspace(0, ecu, 500)
+x = eps / ecc
+fc_confined = (fcc * x * r_popovics) / (r_popovics - 1.0 + x**r_popovics)
+
+# Inconfinado
+eps_un = np.linspace(0, 0.005, 300)
+r_un = Ec / (Ec - (fco / eco))
+x_un = eps_un / eco
+fc_un = np.where(eps_un <= 2*eco, 
+                 (fco * x_un * r_un) / (r_un - 1.0 + x_un**r_un),
+                 fco * (1.0 - (eps_un - 2*eco)/(0.005 - 2*eco)))
+
+plt.figure(figsize=(8, 5))
+plt.plot(eps, fc_confined, 'purple', lw=2.5, label=f'Núcleo Confinado (f\\'cc={fcc:.1f} MPa)')
+plt.plot(eps_un, fc_un, 'orange', lw=2, linestyle='--', label=f'Recubrimiento (f\\'co={fco:.1f} MPa)')
+plt.scatter([ecc, ecu], [fcc, fc_confined[-1]], color=['purple', 'red'], zorder=5)
+plt.title(f'Modelo de Mander - Sección {b:.0f}x{h:.0f} cm (s={s} mm, ke={ke:.2f})', fontsize=12, fontweight='bold')
+plt.xlabel('Deformación Unitaria (εc)', fontsize=11)
+plt.ylabel('Esfuerzo de Compresión fc (MPa)', fontsize=11)
+plt.grid(True, linestyle=':', alpha=0.6)
+plt.legend(frameon=True)
+plt.show()
+`;
+  }
+
+  function updatePythonDisplay() {
+    const codeElem = document.getElementById('python-code-display');
+    if (codeElem) {
+      codeElem.textContent = generatePythonScript();
+    }
+  }
+
+  function copyPythonCode() {
+    const code = generatePythonScript();
+    navigator.clipboard.writeText(code).then(() => {
+      document.getElementById('copy-btn-icon').textContent = '✅';
+      document.getElementById('copy-btn-text').textContent = '¡Copiado!';
+      setTimeout(() => {
+        document.getElementById('copy-btn-icon').textContent = '📋';
+        document.getElementById('copy-btn-text').textContent = 'Copiar Código';
+      }, 2000);
+    });
+  }
+
+  function downloadPythonScript() {
+    const code = generatePythonScript();
+    const blob = new Blob([code], { type: 'text/plain;charset=utf-8' });
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement('a');
+    link.href = url;
+    link.download = `mander_seccion_${state.b}x${state.h}_s${state.s}.py`;
+    link.click();
+    URL.revokeObjectURL(url);
+  }
+
+  /* ==========================================================================
+     THEME TOGGLE
+     ========================================================================== */
+  function toggleTheme() {
+    const html = document.documentElement;
+    const isDark = html.getAttribute('data-theme') !== 'light';
+    const newTheme = isDark ? 'light' : 'dark';
+    html.setAttribute('data-theme', newTheme);
+    document.getElementById('theme-icon').textContent = newTheme === 'light' ? '☀️' : '🌙';
+    document.getElementById('theme-text').textContent = newTheme === 'light' ? 'Modo Oscuro' : 'Modo Claro';
+    localStorage.setItem('concreto_mander_theme', newTheme);
+    redrawAllCanvases();
+  }
+
+  /* ==========================================================================
+     WINDOW INIT & RESIZE
+     ========================================================================== */
+  window.addEventListener('DOMContentLoaded', () => {
+    const savedTheme = localStorage.getItem('concreto_mander_theme') || 'dark';
+    if (savedTheme === 'light') {
+      document.documentElement.setAttribute('data-theme', 'light');
+      document.getElementById('theme-icon').textContent = '☀️';
+      document.getElementById('theme-text').textContent = 'Modo Oscuro';
+    }
+
+    // Initial setup
+    updateState();
+  });
+
+  window.addEventListener('resize', () => {
+    redrawAllCanvases();
+  });
+  </script>
+</body>
+</html>

@@ -46,6 +46,15 @@ Plataforma web didáctica para la visualización y aprendizaje de la mecánica s
 - Presets del script de clase: Sección rectangular, Muro con aletas en T ($B=2.5\text{ m}, h=2.05\text{ m}$), Muro asimétrico y Columna I.
 - Generador y exportador de código Python para ejecutar en Spyder o Jupyter.
 
+### 7. 🔬 [Modelo de Concreto Confinado según Mander et al. (1988)](https://odarroyo.github.io/curso_concreto_reforzado/tutorial_mander_confinamiento.html)
+- Mecánica física de la **acción de arco** en secciones rectangulares y cálculo analítico del coeficiente de efectividad $k_e$.
+- Visualizador interactivo 2D a escala de la sección transversal, barras amarradas vs libres y áreas inefectivas parabólicas ($\sum w_i^{\prime 2}/6$).
+- Vista en elevación con abombamiento vertical inefectivo entre capas de estribos a separación $s$.
+- **Superficie multiaxial de falla de William-Warnke:** Digitalización precisa de la Figura 4 de Mander (1988) para secciones rectangulares con presiones asimétricas ($f'_{lx} \neq f'_{ly}$), isolíneas de $K$ e indicación del punto de operación en tiempo real.
+- **Ley constitutiva $\sigma_c - \varepsilon_c$ de Popovics:** Núcleo confinado vs recubrimiento no confinado con *spalling* y modo comparador (*Ghost Curve*).
+- **Balance de energía de Mander:** Cálculo analítico de la deformación última $\varepsilon_{cu}$ al fracturar el primer estribo transversal.
+- Presets normativos (Pobre, DMO, DES, Viga asimétrica y Validación del Ejemplo Numérico del Paper 1988), lupa didáctica paso a paso y retos socráticos.
+
 ---
 
 ## 💻 Características Técnicas
