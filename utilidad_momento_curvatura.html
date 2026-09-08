@@ -1,0 +1,2797 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Utilidad del Diagrama Momento - Curvatura en el Diseño Estructural</title>
+  
+  <!-- Google Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Outfit:wght@500;600;700;800&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
+  
+  <!-- MathJax 3 for LaTeX formulas -->
+  <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+
+  <style>
+    :root {
+      --bg-primary: #0b0f19;
+      --bg-secondary: #111827;
+      --bg-card: #162032;
+      --bg-card-subtle: #1c2942;
+      --bg-card-hover: #223252;
+      --border-color: #243452;
+      --border-focus: #3b82f6;
+
+      --text-main: #e2e8f0;
+      --text-muted: #94a3b8;
+      --text-faint: #64748b;
+      --text-bright: #ffffff;
+
+      --accent-blue: #3b82f6;
+      --accent-blue-glow: rgba(59, 130, 246, 0.25);
+      --accent-cyan: #06b6d4;
+      --accent-purple: #8b5cf6;
+      --accent-purple-glow: rgba(139, 92, 246, 0.25);
+      --accent-emerald: #10b981;
+      --accent-emerald-glow: rgba(16, 185, 129, 0.25);
+      --accent-amber: #f59e0b;
+      --accent-amber-glow: rgba(245, 158, 11, 0.25);
+      --accent-rose: #f43f5e;
+      --accent-rose-glow: rgba(244, 63, 94, 0.25);
+
+      --canvas-bg: #0d1322;
+      --canvas-grid: rgba(255, 255, 255, 0.06);
+      --canvas-axis: #475569;
+      --canvas-text: #94a3b8;
+
+      --font-main: 'Inter', system-ui, -apple-system, sans-serif;
+      --font-title: 'Outfit', system-ui, sans-serif;
+      --font-mono: 'JetBrains Mono', monospace;
+
+      --shadow-sm: 0 2px 4px rgba(0,0,0,0.3);
+      --shadow-md: 0 4px 12px rgba(0,0,0,0.4);
+      --shadow-lg: 0 10px 25px rgba(0,0,0,0.5);
+      --radius-sm: 8px;
+      --radius-md: 12px;
+      --radius-lg: 18px;
+    }
+
+    [data-theme="light"] {
+      --bg-primary: #f8fafc;
+      --bg-secondary: #ffffff;
+      --bg-card: #ffffff;
+      --bg-card-subtle: #f1f5f9;
+      --bg-card-hover: #e2e8f0;
+      --border-color: #cbd5e1;
+      --border-focus: #2563eb;
+
+      --text-main: #1e293b;
+      --text-muted: #64748b;
+      --text-faint: #94a3b8;
+      --text-bright: #0f172a;
+
+      --accent-blue: #2563eb;
+      --accent-blue-glow: rgba(37, 99, 235, 0.15);
+      --accent-cyan: #0891b2;
+      --accent-purple: #7c3aed;
+      --accent-purple-glow: rgba(124, 58, 237, 0.15);
+      --accent-emerald: #059669;
+      --accent-emerald-glow: rgba(5, 150, 105, 0.15);
+      --accent-amber: #d97706;
+      --accent-amber-glow: rgba(217, 119, 6, 0.15);
+      --accent-rose: #e11d48;
+      --accent-rose-glow: rgba(225, 29, 72, 0.15);
+
+      --canvas-bg: #ffffff;
+      --canvas-grid: rgba(0, 0, 0, 0.05);
+      --canvas-axis: #94a3b8;
+      --canvas-text: #64748b;
+
+      --shadow-sm: 0 1px 3px rgba(0,0,0,0.05);
+      --shadow-md: 0 4px 6px -1px rgba(0,0,0,0.07);
+      --shadow-lg: 0 10px 15px -3px rgba(0,0,0,0.08);
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: var(--font-main);
+      background: var(--bg-primary);
+      color: var(--text-main);
+      line-height: 1.5;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      transition: background-color 0.25s ease, color 0.25s ease;
+    }
+
+    header.top-header {
+      background: var(--bg-card);
+      border-bottom: 1px solid var(--border-color);
+      padding: 14px 24px;
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      box-shadow: var(--shadow-sm);
+    }
+
+    .header-container {
+      max-width: 1440px;
+      margin: 0 auto;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 16px;
+      flex-wrap: wrap;
+    }
+
+    .brand-group {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      text-decoration: none;
+      color: inherit;
+    }
+
+    .brand-badge {
+      background: linear-gradient(135deg, var(--accent-blue), var(--accent-purple));
+      color: #fff;
+      font-family: var(--font-title);
+      font-size: 1.15rem;
+      font-weight: 800;
+      width: 42px;
+      height: 42px;
+      border-radius: var(--radius-sm);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      box-shadow: 0 2px 8px var(--accent-blue-glow);
+    }
+
+    .brand-title h1 {
+      font-family: var(--font-title);
+      font-size: 1.2rem;
+      font-weight: 700;
+      color: var(--text-bright);
+    }
+
+    .brand-title p {
+      font-size: 0.775rem;
+      color: var(--text-muted);
+    }
+
+    .nav-actions {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .btn-nav {
+      background: var(--bg-card-subtle);
+      border: 1px solid var(--border-color);
+      color: var(--text-main);
+      padding: 7px 14px;
+      border-radius: var(--radius-sm);
+      font-size: 0.825rem;
+      font-weight: 600;
+      cursor: pointer;
+      text-decoration: none;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      transition: all 0.2s ease;
+    }
+
+    .btn-nav:hover {
+      background: var(--border-color);
+      color: var(--text-bright);
+    }
+
+    main.main-content {
+      max-width: 1440px;
+      margin: 0 auto;
+      padding: 24px;
+      width: 100%;
+      flex-grow: 1;
+      display: flex;
+      flex-direction: column;
+      gap: 24px;
+    }
+
+    /* HERO BANNER */
+    .hero-banner {
+      background: linear-gradient(135deg, rgba(59, 130, 246, 0.08) 0%, rgba(139, 92, 246, 0.06) 100%);
+      border: 1px solid var(--border-color);
+      border-left: 4px solid var(--accent-blue);
+      border-radius: var(--radius-md);
+      padding: 22px 26px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 20px;
+      flex-wrap: wrap;
+    }
+
+    .hero-text h2 {
+      font-family: var(--font-title);
+      font-size: 1.45rem;
+      font-weight: 800;
+      color: var(--text-bright);
+      margin-bottom: 8px;
+    }
+
+    .hero-text p {
+      font-size: 0.92rem;
+      color: var(--text-muted);
+      max-width: 950px;
+      line-height: 1.6;
+    }
+
+    .hero-tags {
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
+    }
+
+    .tag-pill {
+      font-size: 0.725rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+      padding: 5px 12px;
+      border-radius: 999px;
+      background: var(--bg-card-subtle);
+      border: 1px solid var(--border-color);
+      color: var(--accent-blue);
+    }
+
+    .tag-pill-purple { color: var(--accent-purple); }
+    .tag-pill-emerald { color: var(--accent-emerald); }
+    .tag-pill-amber { color: var(--accent-amber); }
+
+    /* METHODOLOGY / SCOPE ALERT BANNER */
+    .scope-alert-banner {
+      background: linear-gradient(135deg, rgba(245, 158, 11, 0.08) 0%, rgba(239, 68, 68, 0.05) 100%);
+      border: 1px solid rgba(245, 158, 11, 0.35);
+      border-left: 5px solid var(--accent-amber);
+      border-radius: var(--radius-md);
+      padding: 20px 24px;
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      box-shadow: var(--shadow-sm);
+    }
+
+    .scope-alert-header {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      color: var(--accent-amber);
+      font-family: var(--font-title);
+      font-size: 1.05rem;
+      font-weight: 800;
+      letter-spacing: -0.01em;
+    }
+
+    .scope-alert-body {
+      font-size: 0.88rem;
+      color: var(--text-main);
+      line-height: 1.6;
+    }
+
+    .scope-alert-body strong {
+      color: var(--text-bright);
+    }
+
+    .scope-alert-points {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+      gap: 12px;
+      margin-top: 4px;
+    }
+
+    .scope-alert-point {
+      background: var(--bg-card);
+      border: 1px solid var(--border-color);
+      border-radius: var(--radius-sm);
+      padding: 12px 14px;
+      display: flex;
+      gap: 10px;
+      align-items: flex-start;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+    }
+
+    .scope-point-icon {
+      font-size: 1.2rem;
+      line-height: 1;
+      flex-shrink: 0;
+      margin-top: 2px;
+    }
+
+    .scope-point-text {
+      display: flex;
+      flex-direction: column;
+      gap: 3px;
+      font-size: 0.8rem;
+      color: var(--text-muted);
+      line-height: 1.45;
+    }
+
+    .scope-point-text strong {
+      color: var(--text-bright);
+      font-size: 0.825rem;
+    }
+
+    /* PRESETS BAR */
+    .presets-bar {
+      background: var(--bg-card);
+      border: 1px solid var(--border-color);
+      border-radius: var(--radius-md);
+      padding: 14px 18px;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      flex-wrap: wrap;
+    }
+
+    .presets-label {
+      font-size: 0.825rem;
+      font-weight: 700;
+      color: var(--text-muted);
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .presets-grid {
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
+      flex-grow: 1;
+    }
+
+    .btn-preset {
+      background: var(--bg-card-subtle);
+      border: 1px solid var(--border-color);
+      color: var(--text-main);
+      padding: 6px 14px;
+      border-radius: var(--radius-sm);
+      font-size: 0.82rem;
+      font-weight: 600;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      transition: all 0.2s ease;
+    }
+
+    .btn-preset:hover {
+      background: var(--bg-card-hover);
+      border-color: var(--accent-blue);
+      color: var(--text-bright);
+    }
+
+    .btn-preset.active {
+      background: var(--accent-blue);
+      border-color: var(--accent-blue);
+      color: #ffffff;
+      box-shadow: 0 2px 8px var(--accent-blue-glow);
+    }
+
+    /* WORKSPACE GRID */
+    .workspace-grid {
+      display: grid;
+      grid-template-columns: 360px 1fr;
+      gap: 24px;
+      align-items: start;
+    }
+
+    @media (max-width: 1024px) {
+      .workspace-grid {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    /* SIDEBAR CONTROLS */
+    .controls-panel {
+      background: var(--bg-card);
+      border: 1px solid var(--border-color);
+      border-radius: var(--radius-md);
+      padding: 20px;
+      display: flex;
+      flex-direction: column;
+      gap: 18px;
+      box-shadow: var(--shadow-sm);
+    }
+
+    .panel-section-title {
+      font-family: var(--font-title);
+      font-size: 0.95rem;
+      font-weight: 700;
+      color: var(--text-bright);
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      padding-bottom: 8px;
+      border-bottom: 1px solid var(--border-color);
+    }
+
+    .control-group {
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+    }
+
+    .control-label-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-size: 0.825rem;
+      font-weight: 600;
+      color: var(--text-main);
+    }
+
+    .control-val-badge {
+      font-family: var(--font-mono);
+      font-size: 0.775rem;
+      color: var(--accent-blue);
+      background: rgba(59, 130, 246, 0.1);
+      padding: 2px 8px;
+      border-radius: 4px;
+      font-weight: 700;
+    }
+
+    .range-slider {
+      width: 100%;
+      height: 6px;
+      border-radius: 3px;
+      background: var(--border-color);
+      outline: none;
+      cursor: pointer;
+      accent-color: var(--accent-blue);
+    }
+
+    .input-grid-2 {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 10px;
+    }
+
+    .toggle-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      background: var(--bg-card-subtle);
+      padding: 10px 12px;
+      border-radius: var(--radius-sm);
+      border: 1px solid var(--border-color);
+    }
+
+    .toggle-info {
+      display: flex;
+      flex-direction: column;
+      gap: 2px;
+    }
+
+    .toggle-title {
+      font-size: 0.825rem;
+      font-weight: 700;
+      color: var(--text-bright);
+    }
+
+    .toggle-desc {
+      font-size: 0.725rem;
+      color: var(--text-muted);
+    }
+
+    .switch {
+      position: relative;
+      display: inline-block;
+      width: 44px;
+      height: 22px;
+      flex-shrink: 0;
+    }
+
+    .switch input {
+      opacity: 0;
+      width: 0;
+      height: 0;
+    }
+
+    .slider-switch {
+      position: absolute;
+      cursor: pointer;
+      top: 0; left: 0; right: 0; bottom: 0;
+      background-color: var(--border-color);
+      transition: .2s;
+      border-radius: 22px;
+    }
+
+    .slider-switch:before {
+      position: absolute;
+      content: "";
+      height: 16px;
+      width: 16px;
+      left: 3px;
+      bottom: 3px;
+      background-color: #fff;
+      transition: .2s;
+      border-radius: 50%;
+    }
+
+    input:checked + .slider-switch {
+      background-color: var(--accent-blue);
+    }
+
+    input:checked + .slider-switch:before {
+      transform: translateX(22px);
+    }
+
+    /* RIGHT COLUMN: DASHBOARD & CANVASES */
+    .dashboard-panel {
+      display: flex;
+      flex-direction: column;
+      gap: 20px;
+    }
+
+    /* 4 PILLARS KPI CARDS GRID */
+    .pillars-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+      gap: 14px;
+    }
+
+    .pillar-card {
+      background: var(--bg-card);
+      border: 1px solid var(--border-color);
+      border-radius: var(--radius-md);
+      padding: 16px 18px;
+      position: relative;
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      box-shadow: var(--shadow-sm);
+      transition: transform 0.2s ease, border-color 0.2s ease;
+    }
+
+    .pillar-card:hover {
+      transform: translateY(-2px);
+      border-color: var(--accent-blue);
+    }
+
+    .pillar-stripe {
+      position: absolute;
+      top: 0; left: 0; right: 0;
+      height: 4px;
+    }
+
+    .stripe-blue { background: linear-gradient(90deg, var(--accent-blue), var(--accent-cyan)); }
+    .stripe-purple { background: linear-gradient(90deg, var(--accent-purple), #c084fc); }
+    .stripe-rose { background: linear-gradient(90deg, var(--accent-rose), #fb7185); }
+    .stripe-emerald { background: linear-gradient(90deg, var(--accent-emerald), #34d399); }
+
+    .pillar-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      gap: 8px;
+    }
+
+    .pillar-num {
+      font-size: 0.7rem;
+      font-weight: 800;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      padding: 2px 8px;
+      border-radius: 999px;
+    }
+
+    .num-blue { background: rgba(59, 130, 246, 0.12); color: var(--accent-blue); }
+    .num-purple { background: rgba(139, 92, 246, 0.12); color: var(--accent-purple); }
+    .num-rose { background: rgba(244, 63, 94, 0.12); color: var(--accent-rose); }
+    .num-emerald { background: rgba(16, 185, 129, 0.12); color: var(--accent-emerald); }
+
+    .pillar-title {
+      font-family: var(--font-title);
+      font-size: 0.88rem;
+      font-weight: 700;
+      color: var(--text-bright);
+      line-height: 1.3;
+    }
+
+    .pillar-val-row {
+      display: flex;
+      align-items: baseline;
+      gap: 8px;
+      margin-top: 2px;
+    }
+
+    .pillar-big-val {
+      font-family: var(--font-mono);
+      font-size: 1.45rem;
+      font-weight: 800;
+      color: var(--text-bright);
+    }
+
+    .pillar-unit {
+      font-size: 0.775rem;
+      color: var(--text-muted);
+    }
+
+    .pillar-subtext {
+      font-size: 0.775rem;
+      color: var(--text-muted);
+      line-height: 1.4;
+      display: flex;
+      flex-direction: column;
+      gap: 3px;
+    }
+
+    .badge-diff {
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      font-family: var(--font-mono);
+      font-weight: 700;
+      font-size: 0.725rem;
+      padding: 2px 6px;
+      border-radius: 4px;
+    }
+
+    .badge-diff-good { background: rgba(16, 185, 129, 0.15); color: var(--accent-emerald); }
+    .badge-diff-warn { background: rgba(245, 158, 11, 0.15); color: var(--accent-amber); }
+    .badge-diff-danger { background: rgba(244, 63, 94, 0.15); color: var(--accent-rose); }
+
+    /* CANVASES DUAL SECTION */
+    .canvases-split-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 18px;
+    }
+
+    @media (max-width: 900px) {
+      .canvases-split-grid {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    .canvas-card {
+      background: var(--bg-card);
+      border: 1px solid var(--border-color);
+      border-radius: var(--radius-md);
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+      box-shadow: var(--shadow-sm);
+    }
+
+    .canvas-header {
+      padding: 12px 18px;
+      background: var(--bg-card-subtle);
+      border-bottom: 1px solid var(--border-color);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 12px;
+      flex-wrap: wrap;
+    }
+
+    .canvas-header-title {
+      font-family: var(--font-title);
+      font-size: 0.925rem;
+      font-weight: 700;
+      color: var(--text-bright);
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .canvas-legend-row {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      flex-wrap: wrap;
+    }
+
+    .legend-item {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      font-size: 0.725rem;
+      color: var(--text-muted);
+    }
+
+    .legend-box {
+      width: 10px;
+      height: 10px;
+      border-radius: 2px;
+    }
+
+    .canvas-wrapper {
+      position: relative;
+      width: 100%;
+      height: 380px;
+      background: var(--canvas-bg);
+    }
+
+    canvas {
+      width: 100%;
+      height: 100%;
+      display: block;
+    }
+
+    /* INTERACTIVE DEEP DIVES TABS */
+    .deep-dives-container {
+      background: var(--bg-card);
+      border: 1px solid var(--border-color);
+      border-radius: var(--radius-md);
+      padding: 20px 24px;
+      display: flex;
+      flex-direction: column;
+      gap: 18px;
+      box-shadow: var(--shadow-sm);
+    }
+
+    .tabs-nav {
+      display: flex;
+      gap: 8px;
+      border-bottom: 1px solid var(--border-color);
+      padding-bottom: 10px;
+      overflow-x: auto;
+    }
+
+    .tab-btn {
+      background: transparent;
+      border: none;
+      color: var(--text-muted);
+      padding: 8px 16px;
+      border-radius: var(--radius-sm);
+      font-family: var(--font-title);
+      font-size: 0.88rem;
+      font-weight: 700;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      white-space: nowrap;
+      transition: all 0.2s ease;
+    }
+
+    .tab-btn:hover {
+      color: var(--text-bright);
+      background: var(--bg-card-subtle);
+    }
+
+    .tab-btn.active {
+      color: var(--accent-blue);
+      background: rgba(59, 130, 246, 0.1);
+    }
+
+    .tab-content {
+      display: none;
+      flex-direction: column;
+      gap: 16px;
+    }
+
+    .tab-content.active {
+      display: flex;
+    }
+
+    .dive-lead {
+      font-size: 0.92rem;
+      color: var(--text-muted);
+      line-height: 1.6;
+    }
+
+    .calc-callout-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+      gap: 14px;
+    }
+
+    .calc-callout {
+      background: var(--bg-card-subtle);
+      border: 1px solid var(--border-color);
+      border-radius: var(--radius-sm);
+      padding: 14px 16px;
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+    }
+
+    .calc-callout-title {
+      font-size: 0.8rem;
+      font-weight: 700;
+      color: var(--text-muted);
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+    }
+
+    .calc-callout-formula {
+      font-family: var(--font-mono);
+      font-size: 0.88rem;
+      color: var(--accent-blue);
+      padding: 4px 0;
+    }
+
+    .calc-callout-result {
+      font-size: 0.825rem;
+      color: var(--text-main);
+      display: flex;
+      justify-content: space-between;
+      border-top: 1px dashed var(--border-color);
+      padding-top: 6px;
+      margin-top: 2px;
+    }
+
+    /* ASCE 41 PERFORMANCE BAR */
+    .perf-bar-wrapper {
+      margin-top: 10px;
+      background: var(--bg-card-subtle);
+      border: 1px solid var(--border-color);
+      border-radius: var(--radius-sm);
+      padding: 14px 18px;
+    }
+
+    .perf-bar-title {
+      font-size: 0.825rem;
+      font-weight: 700;
+      margin-bottom: 10px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .perf-bar-track {
+      height: 14px;
+      background: #1e293b;
+      border-radius: 999px;
+      position: relative;
+      overflow: hidden;
+      display: flex;
+    }
+
+    .perf-seg-io { width: 15%; background: #10b981; }
+    .perf-seg-ls { width: 35%; background: #3b82f6; }
+    .perf-seg-cp { width: 30%; background: #f59e0b; }
+    .perf-seg-col { width: 20%; background: #ef4444; }
+
+    .perf-marker {
+      position: absolute;
+      top: -3px;
+      bottom: -3px;
+      width: 4px;
+      background: #ffffff;
+      box-shadow: 0 0 8px rgba(255,255,255,0.8);
+      border-radius: 2px;
+      transform: translateX(-50%);
+      transition: left 0.3s ease;
+    }
+
+    .perf-labels-row {
+      display: flex;
+      justify-content: space-between;
+      font-size: 0.725rem;
+      color: var(--text-muted);
+      margin-top: 6px;
+    }
+
+    /* SOCRATIC CHALLENGES */
+    .socratic-section {
+      background: var(--bg-card);
+      border: 1px solid var(--border-color);
+      border-radius: var(--radius-md);
+      padding: 22px 26px;
+      display: flex;
+      flex-direction: column;
+      gap: 18px;
+      box-shadow: var(--shadow-sm);
+    }
+
+    .section-headline {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      font-family: var(--font-title);
+      font-size: 1.15rem;
+      font-weight: 800;
+      color: var(--text-bright);
+    }
+
+    .socratic-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(290px, 1fr));
+      gap: 16px;
+    }
+
+    .socratic-card {
+      background: var(--bg-card-subtle);
+      border: 1px solid var(--border-color);
+      border-radius: var(--radius-sm);
+      padding: 16px;
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+
+    .socratic-q {
+      font-size: 0.875rem;
+      font-weight: 700;
+      color: var(--text-bright);
+      line-height: 1.4;
+    }
+
+    .socratic-options {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+
+    .btn-option {
+      background: var(--bg-card);
+      border: 1px solid var(--border-color);
+      color: var(--text-main);
+      padding: 8px 12px;
+      border-radius: var(--radius-sm);
+      font-size: 0.8rem;
+      text-align: left;
+      cursor: pointer;
+      line-height: 1.35;
+      transition: all 0.2s ease;
+    }
+
+    .btn-option:hover {
+      background: var(--bg-card-hover);
+      border-color: var(--accent-blue);
+      color: var(--text-bright);
+    }
+
+    .btn-option.correct {
+      background: rgba(16, 185, 129, 0.15) !important;
+      border-color: var(--accent-emerald) !important;
+      color: var(--accent-emerald) !important;
+      font-weight: 700;
+    }
+
+    .btn-option.incorrect {
+      background: rgba(244, 63, 94, 0.12) !important;
+      border-color: var(--accent-rose) !important;
+      color: var(--accent-rose) !important;
+    }
+
+    .socratic-feedback {
+      display: none;
+      font-size: 0.775rem;
+      color: var(--text-muted);
+      line-height: 1.45;
+      padding: 8px 12px;
+      background: var(--bg-card);
+      border-radius: var(--radius-sm);
+      border-left: 3px solid var(--accent-emerald);
+    }
+
+    /* PYTHON EXPORTER */
+    .code-export-section {
+      background: var(--bg-card);
+      border: 1px solid var(--border-color);
+      border-radius: var(--radius-md);
+      padding: 22px 26px;
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+      box-shadow: var(--shadow-sm);
+    }
+
+    .code-pre-box {
+      background: #070a12;
+      border: 1px solid var(--border-color);
+      border-radius: var(--radius-sm);
+      padding: 16px;
+      overflow-x: auto;
+      max-height: 380px;
+    }
+
+    .code-pre-box pre code {
+      font-family: var(--font-mono);
+      font-size: 0.8rem;
+      color: #38bdf8;
+      line-height: 1.5;
+    }
+
+    footer.page-footer {
+      background: var(--bg-card);
+      border-top: 1px solid var(--border-color);
+      padding: 24px;
+      text-align: center;
+      font-size: 0.85rem;
+      color: var(--text-muted);
+      margin-top: auto;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- HEADER -->
+  <header class="top-header">
+    <div class="header-container">
+      <a href="index.html" class="brand-group">
+        <div class="brand-badge">M-φ</div>
+        <div class="brand-title">
+          <h1>Diseño de Concreto Armado Avanzado</h1>
+          <p>Lección 4 · Utilidad Seccional del Diagrama Momento - Curvatura</p>
+        </div>
+      </a>
+
+      <div class="nav-actions">
+        <a href="momento_curvatura_educativo.html" class="btn-nav">
+          <span>🌀</span>
+          <span>Módulo Básico M-φ</span>
+        </a>
+        <a href="tutorial_mander_confinamiento.html" class="btn-nav">
+          <span>🧱</span>
+          <span>Tutorial Mander (1988)</span>
+        </a>
+        <button id="btn-theme" class="btn-nav" onclick="toggleTheme()">
+          <span id="theme-icon">☀️</span>
+          <span id="theme-text">Modo Claro</span>
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <main class="main-content">
+
+    <!-- HERO BANNER -->
+    <section class="hero-banner">
+      <div class="hero-text">
+        <h2>¿Para Qué Sirve el Diagrama Momento - Curvatura en el Diseño Práctico?</h2>
+        <p>
+          El diagrama <strong>Momento - Curvatura (\(M - \phi\))</strong> es la herramienta de referencia para extraer 
+          <strong>estimaciones preliminares del comportamiento inelástico a nivel seccional</strong>. 
+          Aunque <em>no reemplaza un análisis estructural no lineal completo</em> (como un Pushover global o un análisis dinámico paso a paso en el tiempo), 
+          aporta criterios físicos cuantitativos que <strong>perfeccionan el diseño elástico lineal</strong>, calibran modelos de pórticos, verifican el detallado de confinamiento transversal y garantizan la protección ante modos frágiles mediante diseño por capacidad.
+        </p>
+      </div>
+      <div class="hero-tags">
+        <span class="tag-pill">Estimaciones Seccionales</span>
+        <span class="tag-pill tag-pill-amber">Complemento, No Reemplazo</span>
+        <span class="tag-pill">Rigidez Efectiva \(EI_{eff}\)</span>
+        <span class="tag-pill tag-pill-purple">Ductilidad \(\mu_\phi\)</span>
+        <span class="tag-pill tag-pill-emerald">Rotación Plástica \(\theta_p\)</span>
+      </div>
+    </section>
+
+    <!-- METHODOLOGY & SCOPE DISCLAIMER -->
+    <section class="scope-alert-banner">
+      <div class="scope-alert-header">
+        <span>⚠️</span>
+        <span>Aviso Metodológico Fundamental: Alcance y Limitaciones del Análisis Seccional</span>
+      </div>
+      <div class="scope-alert-body">
+        <strong>Los valores calculados en este módulo son ESTIMACIONES SECCIONALES PRELIMINARES para orientar el criterio ingenieril y NO REEMPLAZAN un análisis no lineal riguroso.</strong>
+        El diagrama \(M - \phi\) es un modelo constitutivo <em>estático y estrictamente local</em> (evalúa una rebanada o sección aislada bajo una carga axial \(P\) constante). Es una herramienta pedagógica y de diseño insustituible para calibrar parámetros iniciales y entender el mecanismo de falla, pero el proyectista debe tener siempre presentes sus fronteras metodológicas:
+      </div>
+      <div class="scope-alert-points">
+        <div class="scope-alert-point">
+          <span class="scope-point-icon">🎯</span>
+          <div class="scope-point-text">
+            <strong>¿Para qué SÍ sirve? (Criterio y Calibración Rápida)</strong>
+            <span>Para obtener una rigidez secante realista a fluencia (\(EI_{eff}\)), verificar numéricamente la efectividad de los estribos en la ductilidad (\(\mu_\phi\)), dimensionar el cortante de diseño por capacidad (\(V_e = 2M_{pr}/L_c\)) y definir propiedades de rótulas concentradas.</span>
+          </div>
+        </div>
+        <div class="scope-alert-point">
+          <span class="scope-point-icon">🚫</span>
+          <div class="scope-point-text">
+            <strong>¿Qué NO reemplaza? (Análisis Global del Edificio)</strong>
+            <span><strong>Bajo ninguna circunstancia sustituye un Análisis Estático No Lineal (Pushover global) ni un Análisis Dinámico No Lineal en el Tiempo (NL-THA).</strong> No determina la capacidad resistente global del edificio ni su mecanismo de colapso conjunto.</span>
+          </div>
+        </div>
+        <div class="scope-alert-point">
+          <span class="scope-point-icon">📉</span>
+          <div class="scope-point-text">
+            <strong>Fenómenos Estructurales No Capturados</strong>
+            <span>No captura la redistribución inelástica de momentos en pórticos hiperestáticos, la variación dinámica de carga axial \(P(t)\) por volcamiento sísmico, la interacción suelo-estructura, ni la degradación histerética por ciclos repetidos (efecto de pellizcamiento o <em>pinching</em>).</span>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- PRESETS BAR (CANONICAL COURSE SECTIONS) -->
+    <div class="presets-bar">
+      <div class="presets-label">
+        <span>⚡</span>
+        <span>Secciones del Curso:</span>
+      </div>
+      <div class="presets-grid">
+        <button id="btn-pre-rect" class="btn-preset active" onclick="loadPreset('rect')">
+          <span>🏛️</span> Columna Cuadrada (40×40 cm, P = 500 kN)
+        </button>
+        <button id="btn-pre-beam" class="btn-preset" onclick="loadPreset('beam')">
+          <span>📐</span> Viga a Flexión Pura (40×40 cm, P = 0 kN)
+        </button>
+        <button id="btn-pre-25" class="btn-preset" onclick="loadPreset('25')">
+          <span>🏗️</span> Columna Menor (25×25 cm, P = 250 kN)
+        </button>
+        <button id="btn-pre-wall" class="btn-preset" onclick="loadPreset('wall')">
+          <span>🧱</span> Muro del Notebook (20×220 cm, P = 3690 kN)
+        </button>
+      </div>
+    </div>
+
+    <!-- WORKSPACE GRID -->
+    <div class="workspace-grid">
+      
+      <!-- CONTROLS SIDEBAR -->
+      <aside class="controls-panel">
+        <div class="panel-section-title">
+          <span>⚙️</span>
+          <span>Geometría & Materiales de la Sección</span>
+        </div>
+
+        <!-- DIMENSIONS -->
+        <div class="input-grid-2">
+          <div class="control-group">
+            <div class="control-label-row">
+              <span>Base b:</span>
+              <span id="badge-b" class="control-val-badge">--</span>
+            </div>
+            <input id="slider-b" type="range" class="range-slider" min="20" max="60" step="5" value="40" oninput="onParamChange()">
+          </div>
+
+          <div class="control-group">
+            <div class="control-label-row">
+              <span>Altura h:</span>
+              <span id="badge-h" class="control-val-badge">--</span>
+            </div>
+            <input id="slider-h" type="range" class="range-slider" min="20" max="220" step="5" value="40" oninput="onParamChange()">
+          </div>
+        </div>
+
+        <!-- REINFORCEMENT & COVER -->
+        <div class="input-grid-2">
+          <div class="control-group">
+            <div class="control-label-row">
+              <span>Recubrimiento r:</span>
+              <span id="badge-rec" class="control-val-badge">--</span>
+            </div>
+            <input id="slider-rec" type="range" class="range-slider" min="2.5" max="6.0" step="0.5" value="5.0" oninput="onParamChange()">
+          </div>
+
+          <div class="control-group">
+            <div class="control-label-row">
+              <span>As por capa (3 capas):</span>
+              <span id="badge-as" class="control-val-badge">--</span>
+            </div>
+            <input id="slider-as" type="range" class="range-slider" min="2.0" max="12.0" step="0.5" value="4.0" oninput="onParamChange()">
+          </div>
+        </div>
+
+        <!-- MATERIAL PROPERTIES -->
+        <div class="input-grid-2">
+          <div class="control-group">
+            <div class="control-label-row">
+              <span>f'c Concreto:</span>
+              <span id="badge-fc" class="control-val-badge">--</span>
+            </div>
+            <input id="slider-fc" type="range" class="range-slider" min="21" max="42" step="3.5" value="28" oninput="onParamChange()">
+          </div>
+
+          <div class="control-group">
+            <div class="control-label-row">
+              <span>fy Acero:</span>
+              <span id="badge-fy" class="control-val-badge">--</span>
+            </div>
+            <input id="slider-fy" type="range" class="range-slider" min="280" max="500" step="20" value="420" oninput="onParamChange()">
+          </div>
+        </div>
+
+        <!-- AXIAL LOAD -->
+        <div class="control-group">
+          <div class="control-label-row">
+            <span>Carga Axial P:</span>
+            <span id="badge-p" class="control-val-badge">--</span>
+          </div>
+          <input id="slider-p" type="range" class="range-slider" min="0" max="3000" step="50" value="500" oninput="onAxialChange()">
+        </div>
+
+        <!-- SEISMIC DESIGN PARAMETERS -->
+        <div class="panel-section-title" style="margin-top:4px;">
+          <span>📏</span>
+          <span>Parámetros de Elemento para Diseño Sísmico</span>
+        </div>
+
+        <div class="input-grid-2">
+          <div class="control-group">
+            <div class="control-label-row">
+              <span>Luz libre L_clear:</span>
+              <span id="badge-lclear" class="control-val-badge">--</span>
+            </div>
+            <input id="slider-lclear" type="range" class="range-slider" min="1.5" max="6.0" step="0.25" value="3.0" oninput="onSeismicParamChange()">
+          </div>
+
+          <div class="control-group">
+            <div class="control-label-row">
+              <span>Diámetro db barra:</span>
+              <span id="badge-db" class="control-val-badge">--</span>
+            </div>
+            <input id="slider-db" type="range" class="range-slider" min="12" max="32" step="2" value="20" oninput="onSeismicParamChange()">
+          </div>
+        </div>
+
+        <!-- CONSTITUTIVE TOGGLES -->
+        <div class="panel-section-title" style="margin-top:4px;">
+          <span>🔬</span>
+          <span>Modelos Constitutivos Avanzados</span>
+        </div>
+
+        <div class="toggle-row">
+          <div class="toggle-info">
+            <span class="toggle-title">Confinamiento Mander (1988)</span>
+            <span id="status-conf" class="toggle-desc">--</span>
+          </div>
+          <label class="switch">
+            <input id="toggle-conf" type="checkbox" checked onchange="onToggleChange()">
+            <span class="slider-switch"></span>
+          </label>
+        </div>
+
+        <div class="toggle-row">
+          <div class="toggle-info">
+            <span class="toggle-title">Endurecimiento del Acero</span>
+            <span id="status-hardening" class="toggle-desc">--</span>
+          </div>
+          <label class="switch">
+            <input id="toggle-hardening" type="checkbox" checked onchange="onToggleChange()">
+            <span class="slider-switch"></span>
+          </label>
+        </div>
+
+        <!-- SECTION CAPACITY BOX -->
+        <div style="background:var(--bg-card-subtle); border-radius:var(--radius-sm); padding:12px; font-size:0.775rem; color:var(--text-muted); display:flex; flex-direction:column; gap:4px; border:1px solid var(--border-color);">
+          <div style="display:flex; justify-content:space-between;">
+            <span>Capacidad Axial P₀:</span>
+            <strong id="sidebar-p0" style="color:var(--text-bright);">--</strong>
+          </div>
+          <div style="display:flex; justify-content:space-between;">
+            <span>Inercia Bruta Ig:</span>
+            <strong id="sidebar-ig" style="color:var(--text-bright);">--</strong>
+          </div>
+          <div style="display:flex; justify-content:space-between;">
+            <span>Módulo Ec (4400√f'c):</span>
+            <strong id="sidebar-ec" style="color:var(--text-bright);">--</strong>
+          </div>
+        </div>
+
+      </aside>
+
+      <!-- DASHBOARD: 4 PILLARS & CANVASES -->
+      <section class="dashboard-panel">
+
+        <!-- 4 PILLARS KPI METRICS -->
+        <div class="pillars-grid">
+          
+          <!-- PILLAR 1 -->
+          <div class="pillar-card">
+            <div class="pillar-stripe stripe-blue"></div>
+            <div class="pillar-header">
+              <span class="pillar-num num-blue">Pilar 1</span>
+              <span class="pillar-title">Rigidez Efectiva Refinada</span>
+            </div>
+            <div class="pillar-val-row">
+              <span id="kpi-eieff-ratio" class="pillar-big-val">--</span>
+              <span class="pillar-unit">· Ec Ig (My / φy)</span>
+            </div>
+            <div class="pillar-subtext">
+              <div>Código Columna: <span id="kpi-code-mod" style="font-weight:700;">0.70 Ig</span></div>
+              <div>
+                Impacto Derivas: 
+                <span id="kpi-drift-badge" class="badge-diff">--</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- PILLAR 2 -->
+          <div class="pillar-card">
+            <div class="pillar-stripe stripe-purple"></div>
+            <div class="pillar-header">
+              <span class="pillar-num num-purple">Pilar 2</span>
+              <span class="pillar-title">Ductilidad Seccional</span>
+            </div>
+            <div class="pillar-val-row">
+              <span id="kpi-mu-phi" class="pillar-big-val">--</span>
+              <span class="pillar-unit">μφ = φu / φy</span>
+            </div>
+            <div class="pillar-subtext">
+              <div>Capacidad Local: <span id="kpi-ductility-status" class="badge-diff">--</span></div>
+              <div>Curvatura de Fluencia: <span id="kpi-phiy-sub" style="font-family:var(--font-mono); font-size:0.72rem;">--</span></div>
+            </div>
+          </div>
+
+          <!-- PILLAR 3 -->
+          <div class="pillar-card">
+            <div class="pillar-stripe stripe-rose"></div>
+            <div class="pillar-header">
+              <span class="pillar-num num-rose">Pilar 3</span>
+              <span class="pillar-title">Sobrerresistencia & Cortante</span>
+            </div>
+            <div class="pillar-val-row">
+              <span id="kpi-omega-s" class="pillar-big-val">--</span>
+              <span class="pillar-unit">Ωs = Mpr / Mn</span>
+            </div>
+            <div class="pillar-subtext">
+              <div>Demanda \(V_e = 2M_{pr}/L_c\): <span id="kpi-ve" style="font-family:var(--font-mono); font-weight:700; color:var(--accent-rose);">--</span></div>
+              <div>Margen Frágil Evitado: <span id="kpi-delta-v" class="badge-diff badge-diff-danger">--</span></div>
+            </div>
+          </div>
+
+          <!-- PILLAR 4 -->
+          <div class="pillar-card">
+            <div class="pillar-stripe stripe-emerald"></div>
+            <div class="pillar-header">
+              <span class="pillar-num num-emerald">Pilar 4</span>
+              <span class="pillar-title">Rotación Plástica Local</span>
+            </div>
+            <div class="pillar-val-row">
+              <span id="kpi-theta-p" class="pillar-big-val">--</span>
+              <span class="pillar-unit">rad (θp = φp · Lp)</span>
+            </div>
+            <div class="pillar-subtext">
+              <div>Rótula \(L_p\): <span id="kpi-lp" style="font-family:var(--font-mono); font-weight:700;">--</span></div>
+              <div>ASCE 41: <span id="kpi-asce-status" class="badge-diff">--</span></div>
+            </div>
+          </div>
+
+        </div>
+
+        <!-- DUAL CANVASES -->
+        <div class="canvases-split-grid">
+          
+          <!-- CANVAS 1: M-PHI & BILINEAR -->
+          <div class="canvas-card">
+            <div class="canvas-header">
+              <div class="canvas-header-title">
+                <span>📈</span>
+                <span>Diagrama \(M - \phi\) & Curva Bilineal</span>
+              </div>
+              <div class="canvas-legend-row">
+                <div class="legend-item">
+                  <div class="legend-box" style="background:var(--accent-blue);"></div>
+                  <span>Curva Fibras \(M-\phi\)</span>
+                </div>
+                <div class="legend-item">
+                  <div class="legend-box" style="background:var(--accent-purple); border:1px dashed var(--accent-purple);"></div>
+                  <span>Secante \(EI_{eff}\)</span>
+                </div>
+                <div class="legend-item">
+                  <div class="legend-box" style="background:var(--accent-amber);"></div>
+                  <span>\(M_y, M_n, M_{pr}\)</span>
+                </div>
+              </div>
+            </div>
+            <div class="canvas-wrapper">
+              <canvas id="canvas-mphi"></canvas>
+            </div>
+          </div>
+
+          <!-- CANVAS 2: COLUMN ELEVATION & PLASTIC HINGE -->
+          <div class="canvas-card">
+            <div class="canvas-header">
+              <div class="canvas-header-title">
+                <span>🏛️</span>
+                <span>Elevación de Columna & Rótula Plástica \(L_p\)</span>
+              </div>
+              <div class="canvas-legend-row">
+                <div class="legend-item">
+                  <div class="legend-box" style="background:rgba(244, 63, 94, 0.4); border:1px dashed var(--accent-rose);"></div>
+                  <span>Zona Plástica \(L_p\)</span>
+                </div>
+                <div class="legend-item">
+                  <div class="legend-box" style="background:var(--accent-emerald);"></div>
+                  <span>Curvatura \(\phi(z)\)</span>
+                </div>
+              </div>
+            </div>
+            <div class="canvas-wrapper">
+              <canvas id="canvas-column"></canvas>
+            </div>
+          </div>
+
+        </div>
+
+        <!-- DEEP DIVES TABS (THE 4 PILLARS) -->
+        <div class="deep-dives-container">
+          <div class="tabs-nav">
+            <button id="tab-btn-1" class="tab-btn active" onclick="switchDiveTab(1)">
+              <span>1️⃣</span> Rigidez Efectiva Refinada
+            </button>
+            <button id="tab-btn-2" class="tab-btn" onclick="switchDiveTab(2)">
+              <span>2️⃣</span> Ductilidad Seccional
+            </button>
+            <button id="tab-btn-3" class="tab-btn" onclick="switchDiveTab(3)">
+              <span>3️⃣</span> Diseño por Capacidad a Cortante
+            </button>
+            <button id="tab-btn-4" class="tab-btn" onclick="switchDiveTab(4)">
+              <span>4️⃣</span> Rotación Plástica & ASCE 41
+            </button>
+          </div>
+
+          <!-- TAB 1 CONTENT -->
+          <div id="tab-content-1" class="tab-content active">
+            <p class="dive-lead">
+              En modelos elásticos lineales de software comercial (ETABS, SAP2000), las normas prescriben modificadores de inercia genéricos (\(0.70 I_g\) en columnas, \(0.35 I_g\) en vigas). El diagrama \(M-\phi\) permite obtener la <strong>rigidez secante exacta a la fluencia</strong> (\(EI_{eff} = M_y / \phi_y\)), revelando si el edificio es en realidad mucho más flexible de lo supuesto.
+            </p>
+
+            <div class="calc-callout-grid">
+              <div class="calc-callout">
+                <div class="calc-callout-title">Rigidez Secante a Primera Fluencia</div>
+                <div class="calc-callout-formula">EI_eff = My / φy</div>
+                <div class="calc-callout-result">
+                  <span>Valor Calculado:</span>
+                  <strong id="dive1-val-eieff" style="color:var(--accent-blue);">--</strong>
+                </div>
+                <div class="calc-callout-result">
+                  <span>Relación frente a Ec·Ig:</span>
+                  <strong id="dive1-ratio-eieff">--</strong>
+                </div>
+              </div>
+
+              <div class="calc-callout">
+                <div class="calc-callout-title">Impacto en el Período Estructural</div>
+                <div class="calc-callout-formula">T_real / T_code = √( (EI)_code / (EI)_eff )</div>
+                <div class="calc-callout-result">
+                  <span>Factor de Alargamiento:</span>
+                  <strong id="dive1-t-ratio" style="color:var(--accent-purple);">--</strong>
+                </div>
+                <div class="calc-callout-result">
+                  <span>Efecto Dinámico:</span>
+                  <span>Mayor flexibilidad lateral</span>
+                </div>
+              </div>
+
+              <div class="calc-callout">
+                <div class="calc-callout-title">Subestimación de Derivas Laterales</div>
+                <div class="calc-callout-formula">Δ_real / Δ_code = (EI)_code / (EI)_eff</div>
+                <div class="calc-callout-result">
+                  <span>Amplificación de Derivas:</span>
+                  <strong id="dive1-drift-amp" style="color:var(--accent-rose);">--</strong>
+                </div>
+                <div class="calc-callout-result">
+                  <span>Efectos P-Delta:</span>
+                  <span>Riesgo de subestimar deformaciones</span>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- TAB 2 CONTENT -->
+          <div id="tab-content-2" class="tab-content">
+            <p class="dive-lead">
+              El factor de ductilidad de curvatura \(\mu_\phi = \phi_u / \phi_y\) es la verificación seccional independiente más contundente de la idoneidad del detallado sismorresistente. Permite comprobar numéricamente si el refuerzo transversal de estribos suministra suficiente confinamiento al núcleo para resistir grandes deformaciones inelásticas antes del pandeo de barras.
+            </p>
+
+            <div class="calc-callout-grid">
+              <div class="calc-callout">
+                <div class="calc-callout-title">Curvatura de Fluencia (\(\phi_y\))</div>
+                <div class="calc-callout-formula">ε_s = fy / Es → φy = εy / (d - c)</div>
+                <div class="calc-callout-result">
+                  <span>Curvatura \(\phi_y\):</span>
+                  <strong id="dive2-phiy" style="color:var(--accent-blue);">--</strong>
+                </div>
+                <div class="calc-callout-result">
+                  <span>Momento de Fluencia \(M_y\):</span>
+                  <strong id="dive2-my">--</strong>
+                </div>
+              </div>
+
+              <div class="calc-callout">
+                <div class="calc-callout-title">Curvatura Última (\(\phi_u\))</div>
+                <div class="calc-callout-formula">φu = εcu / c_u</div>
+                <div class="calc-callout-result">
+                  <span>Curvatura \(\phi_u\):</span>
+                  <strong id="dive2-phiu" style="color:var(--accent-purple);">--</strong>
+                </div>
+                <div class="calc-callout-result">
+                  <span>Deformación Última \(\varepsilon_{cu}\):</span>
+                  <strong id="dive2-ecu">--</strong>
+                </div>
+              </div>
+
+              <div class="calc-callout">
+                <div class="calc-callout-title">Ductilidad Seccional Disponible (\(\mu_\phi\))</div>
+                <div class="calc-callout-formula">μφ = φu / φy</div>
+                <div class="calc-callout-result">
+                  <span>Factor Obtenido:</span>
+                  <strong id="dive2-mu" style="color:var(--accent-emerald);">--</strong>
+                </div>
+                <div class="calc-callout-result">
+                  <span>Clasificación Sísmica:</span>
+                  <strong id="dive2-class">--</strong>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- TAB 3 CONTENT -->
+          <div id="tab-content-3" class="tab-content">
+            <p class="dive-lead">
+              En el <strong>Diseño por Capacidad</strong>, las columnas no deben fallar por cortante frágil bajo ninguna circunstancia sísmica. Si se calcula la fuerza cortante sísmica usando el momento nominal \(M_n\) (suponiendo \(\varepsilon_c = 0.003\) y acero plástico sin endurecimiento), <strong>se subestima la demanda real a cortante</strong>. El diagrama \(M-\phi\) entrega el momento probable real \(M_{pr}\) considerando el confinamiento y el endurecimiento por deformación.
+            </p>
+
+            <div class="calc-callout-grid">
+              <div class="calc-callout">
+                <div class="calc-callout-title">Momento Probable Máximo (\(M_{pr}\))</div>
+                <div class="calc-callout-formula">Mpr = M_max (Endurecimiento + Confinamiento)</div>
+                <div class="calc-callout-result">
+                  <span>Momento Probable \(M_{pr}\):</span>
+                  <strong id="dive3-mpr" style="color:var(--accent-rose);">--</strong>
+                </div>
+                <div class="calc-callout-result">
+                  <span>Momento Nominal \(M_n\) (\(\varepsilon_c = 0.003\)):</span>
+                  <strong id="dive3-mn">--</strong>
+                </div>
+              </div>
+
+              <div class="calc-callout">
+                <div class="calc-callout-title">Sobrerresistencia Seccional (\(\Omega_s\))</div>
+                <div class="calc-callout-formula">Ωs = Mpr / Mn</div>
+                <div class="calc-callout-result">
+                  <span>Factor de Sobrerresistencia:</span>
+                  <strong id="dive3-omega" style="color:var(--accent-amber);">--</strong>
+                </div>
+                <div class="calc-callout-result">
+                  <span>Origen:</span>
+                  <span>Endurecimiento \(f_u/f_y\) y confinamiento</span>
+                </div>
+              </div>
+
+              <div class="calc-callout">
+                <div class="calc-callout-title">Cortante de Diseño por Capacidad (\(V_e\))</div>
+                <div class="calc-callout-formula">Ve = (Mpr,top + Mpr,bot) / L_clear = 2 Mpr / L_c</div>
+                <div class="calc-callout-result">
+                  <span>Demanda \(V_e\):</span>
+                  <strong id="dive3-ve" style="color:var(--accent-rose);">--</strong>
+                </div>
+                <div class="calc-callout-result">
+                  <span>Cortante Nominal \(V_{nom} = 2 M_n / L_c\):</span>
+                  <strong id="dive3-vnom">--</strong>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- TAB 4 CONTENT -->
+          <div id="tab-content-4" class="tab-content">
+            <p class="dive-lead">
+              Multiplicando la curvatura plástica \(\phi_p = \phi_u - \phi_y\) por la longitud supuesta de rótula plástica (\(L_p\)), se estima la <strong>capacidad de rotación plástica local (\(\theta_p\))</strong>. Este límite permite evaluar de inmediato si el elemento cumple con los criterios de aceptación de normas basadas en desempeño como <strong>ASCE 41-17</strong> (Ocupación Inmediata IO, Seguridad de Vida LS o Prevención de Colapso CP).
+            </p>
+
+            <div class="calc-callout-grid">
+              <div class="calc-callout">
+                <div class="calc-callout-title">Longitud de Rótula Plástica (\(L_p\))</div>
+                <div class="calc-callout-formula">Lp = 0.08 L_clear + 0.022 db fy (Paulay & Priestley)</div>
+                <div class="calc-callout-result">
+                  <span>Longitud \(L_p\):</span>
+                  <strong id="dive4-lp" style="color:var(--accent-purple);">--</strong>
+                </div>
+                <div class="calc-callout-result">
+                  <span>Proporción sobre \(h\):</span>
+                  <strong id="dive4-lph">--</strong>
+                </div>
+              </div>
+
+              <div class="calc-callout">
+                <div class="calc-callout-title">Capacidad de Rotación Plástica (\(\theta_p\))</div>
+                <div class="calc-callout-formula">θp = (φu - φy) · Lp</div>
+                <div class="calc-callout-result">
+                  <span>Rotación Plástica \(\theta_p\):</span>
+                  <strong id="dive4-thetap" style="color:var(--accent-emerald);">--</strong>
+                </div>
+                <div class="calc-callout-result">
+                  <span>Curvatura Plástica \(\phi_p\):</span>
+                  <strong id="dive4-phip">--</strong>
+                </div>
+              </div>
+
+              <div class="calc-callout">
+                <div class="calc-callout-title">Rotación Total de Cuerda (\(\theta_u\))</div>
+                <div class="calc-callout-formula">θu = θy + θp = (φy · Lc / 6) + θp</div>
+                <div class="calc-callout-result">
+                  <span>Rotación de Cuerda Total:</span>
+                  <strong id="dive4-thetau" style="color:var(--accent-blue);">--</strong>
+                </div>
+                <div class="calc-callout-result">
+                  <span>Rotación Elástica \(\theta_y\):</span>
+                  <strong id="dive4-thetay">--</strong>
+                </div>
+              </div>
+            </div>
+
+            <!-- ASCE 41 PERFORMANCE GAUGE -->
+            <div class="perf-bar-wrapper">
+              <div class="perf-bar-title">
+                <span>Nivel de Desempeño Sísmico según ASCE 41-17:</span>
+                <span id="perf-badge-asce" class="badge-diff badge-diff-good">--</span>
+              </div>
+              <div class="perf-bar-track">
+                <div class="perf-seg-io" title="Immediate Occupancy: θ ≤ 0.005"></div>
+                <div class="perf-seg-ls" title="Life Safety: θ ≤ 0.020"></div>
+                <div class="perf-seg-cp" title="Collapse Prevention: θ ≤ 0.035"></div>
+                <div class="perf-seg-col" title="Degradación severa / Colapso"></div>
+                <div id="perf-marker" class="perf-marker" style="left: 50%;"></div>
+              </div>
+              <div class="perf-labels-row">
+                <span>0 rad</span>
+                <span>IO: 0.005</span>
+                <span>LS: 0.020</span>
+                <span>CP: 0.035</span>
+                <span>&gt; 0.045 rad</span>
+              </div>
+            </div>
+
+          </div>
+
+        </div>
+
+      </section>
+
+    </div>
+
+    <!-- SOCRATIC CHALLENGES -->
+    <section class="socratic-section">
+      <div class="section-headline">
+        <span>🧠</span>
+        <span>Retos Conceptuales de Diseño Sismorresistente</span>
+      </div>
+      <p style="font-size:0.875rem; color:var(--text-muted); margin-top:-6px;">
+        Afianza tu entendimiento de la relación entre el análisis seccional no lineal y la práctica profesional resolviendo estos 5 desafíos conceptuales:
+      </p>
+
+      <div class="socratic-grid">
+        
+        <!-- Q1 -->
+        <div class="socratic-card" id="card-q1">
+          <div class="socratic-q">1. ¿Por qué aumentar la carga axial \(P\) en una columna AUMENTA su rigidez \(EI_{eff}\) pero DISMINUYE su ductilidad \(\mu_\phi\)?</div>
+          <div class="socratic-options">
+            <button class="btn-option" onclick="checkAnswer(1, 0)">Porque la carga axial densifica las moléculas del concreto haciéndolo infinitamente dúctil.</button>
+            <button class="btn-option" onclick="checkAnswer(1, 1)">Porque mayor carga axial retarda el agrietamiento por tracción (mayor área en compresión), pero profundiza el eje neutro \(c\), agotando antes la deformación última del concreto.</button>
+            <button class="btn-option" onclick="checkAnswer(1, 2)">Porque el acero de refuerzo fluye a menores tensiones cuando hay carga de compresión.</button>
+          </div>
+          <div id="ans-1" class="socratic-feedback">
+            <strong>¡Exacto!</strong> La carga axial mantiene una mayor porción de la sección trabajando a compresión elástica no agrietada, elevando la pendiente secante inicial (\(EI_{eff} = M_y / \phi_y\)). Sin embargo, al exigir un eje neutro \(c\) más profundo para equilibrar el empuje axial, la fibra exterior de concreto alcanza su límite \(\varepsilon_{cu}\) a una curvatura mucho menor (\(\phi_u = \varepsilon_{cu}/c\)), reduciendo drásticamente la ductilidad disponible.
+          </div>
+        </div>
+
+        <!-- Q2 -->
+        <div class="socratic-card" id="card-q2">
+          <div class="socratic-q">2. ¿Cuál es el peligro fatal de diseñar los estribos de cortante de una columna usando el momento nominal \(M_n\) en lugar del probable \(M_{pr}\)?</div>
+          <div class="socratic-options">
+            <button class="btn-option" onclick="checkAnswer(2, 0)">La columna tendrá un exceso innecesario de estribos que encarece la obra.</button>
+            <button class="btn-option" onclick="checkAnswer(2, 1)">El momento nominal \(M_n\) es mayor que \(M_{pr}\), por lo que la columna quedará sobre-reforzada.</button>
+            <button class="btn-option" onclick="checkAnswer(2, 2)">La columna alcanzará \(M_{pr}\) durante un sismo severo debido al endurecimiento del acero y confinamiento; si el cortante se diseñó para \(M_n\), ocurrirá una falla frágil por cortante antes de plastificarse.</button>
+          </div>
+          <div id="ans-2" class="socratic-feedback">
+            <strong>¡Completamente correcto!</strong> El principio del Diseño por Capacidad exige que el modo de falla frágil (cortante) sea más resistente que la capacidad máxima posible del modo dúctil (flexión). Dado que el acero real se endurece (\(f_u \approx 1.25 f_y\)) y el confinamiento eleva \(f'_{cc}\), la columna desarrollará \(M_{pr}\). Si los estribos se calcularon con \(M_n\), la columna fallará a cortante de manera explosiva sin disipar energía.
+          </div>
+        </div>
+
+        <!-- Q3 -->
+        <div class="socratic-card" id="card-q3">
+          <div class="socratic-q">3. Si el modelo elástico lineal usó \(0.70 I_g\) pero el diagrama \(M-\phi\) indica \(EI_{eff} \approx 0.25 - 0.30 E_c I_g\), ¿qué ocurre con las derivas y efectos P-Delta?</div>
+          <div class="socratic-options">
+            <button class="btn-option" onclick="checkAnswer(3, 0)">Las derivas de piso reales serán más del doble de lo calculado en ETABS, pudiendo superar los límites de norma y amplificar peligrosamente el P-Delta.</button>
+            <button class="btn-option" onclick="checkAnswer(3, 1)">Las derivas serán menores porque la sección se hace más plástica.</button>
+            <button class="btn-option" onclick="checkAnswer(3, 2)">No afecta en absoluto porque los períodos de vibración son independientes de la rigidez.</button>
+          </div>
+          <div id="ans-3" class="socratic-feedback">
+            <strong>¡Excelente deducción!</strong> La rigidez lateral de los pórticos es directamente proporcional a \(EI\). Al modelar con \(0.70 I_g\) una columna que a la fluencia real tiene \(\approx 0.28 I_g\), el calculista está asumiendo una estructura ficticiamente rígida. Las derivas reales (\(\Delta \propto 1/EI\)) serán mucho mayores, lo que puede causar daño no estructural severo o inestabilidad global por segundo orden (\(P-\Delta\)).
+          </div>
+        </div>
+
+        <!-- Q4 -->
+        <div class="socratic-card" id="card-q4">
+          <div class="socratic-q">4. ¿Cómo se relaciona la rotación plástica local \(\theta_p = (\phi_u - \phi_y) L_p\) con el desempeño sísmico ASCE 41?</div>
+          <div class="socratic-options">
+            <button class="btn-option" onclick="checkAnswer(4, 0)">\(\theta_p\) representa la deformación por corte de la cimentación.</button>
+            <button class="btn-option" onclick="checkAnswer(4, 1)">Al concentrar la curvatura plástica en la longitud de rótula \(L_p\), se obtiene la rotación inelástica que se coteja contra los límites permisibles de Ocupación Inmediata, Seguridad de Vida o Prevención de Colapso.</button>
+            <button class="btn-option" onclick="checkAnswer(4, 2)">Es simplemente una fórmula geométrica que no tiene relación con el daño del edificio.</button>
+          </div>
+          <div id="ans-4" class="socratic-feedback">
+            <strong>¡Correcto!</strong> El análisis basado en desempeño (ASCE 41) evalúa los elementos por deformación inelástica (rotación plástica de rótula \(\theta_p\)), no por esfuerzos elásticos. Establecer \(\theta_p\) mediante el diagrama \(M-\phi\) permite certificar si la columna preservará la integridad estructural para el nivel de desempeño objetivo.
+          </div>
+        </div>
+
+        <!-- Q5 -->
+        <div class="socratic-card" id="card-q5" style="grid-column: 1 / -1; border-left: 3px solid var(--accent-amber);">
+          <div class="socratic-q">5. ¿Por qué estas estimaciones seccionales NO reemplazan un análisis estructural no lineal global (Pushover o Dinámico Tiempo-Historia)?</div>
+          <div class="socratic-options">
+            <button class="btn-option" onclick="checkAnswer(5, 0)">Porque el diagrama \(M-\phi\) solo es válido para secciones de madera o acero estructural, no de concreto.</button>
+            <button class="btn-option" onclick="checkAnswer(5, 1)">Porque son modelos locales de una sección aislada bajo carga axial constante; no capturan la redistribución progresiva de momentos en el pórtico, la fluctuación dinámica del axil \(P(t)\) por sismo ni la degradación histerética (pinching) de la estructura global.</button>
+            <button class="btn-option" onclick="checkAnswer(5, 2)">Porque los programas comerciales de análisis estructural ignoran las propiedades de los materiales.</button>
+          </div>
+          <div id="ans-5" class="socratic-feedback">
+            <strong>¡Respuesta fundamental!</strong> El diagrama \(M-\phi\) es una fotografía estática y local. Da una visión rápida del orden de magnitud de la rigidez, ductilidad y rotación plástica de un elemento, pero en un sismo severo real intervienen efectos globales: redistribución plástica al fallar miembros adyacentes, fluctuación violenta de carga axial por volcamiento (\(P(t)\)), interacción losa-viga-columna y degradación cíclica de rigidez (*pinching*). Para certificar el colapso global del edificio se requiere un análisis Pushover o dinámico no lineal completo.
+          </div>
+        </div>
+
+      </div>
+    </section>
+
+    <!-- CODE EXPORTER -->
+    <section class="code-export-section">
+      <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:12px;">
+        <div class="section-headline">
+          <span>🐍</span>
+          <span>Código Python Autónomo (Basado en los Scripts del Curso)</span>
+        </div>
+        <div style="display:flex; gap:8px;">
+          <button class="btn-nav" onclick="copyPythonCode()">
+            <span id="copy-btn-text">📋 Copiar Código</span>
+          </button>
+          <button class="btn-nav" onclick="downloadPythonScript()">
+            <span>💾 Descargar .py</span>
+          </button>
+        </div>
+      </div>
+      <p style="font-size:0.85rem; color:var(--text-muted); margin-top:-6px;">
+        Este script en Python utiliza exactamente las funciones seccionales del curso (<code style="color:var(--accent-blue);">noconf</code>, <code style="color:var(--accent-blue);">elastoplastico</code>) y calcula las 4 utilidades para la sección actual:
+      </p>
+
+      <div class="code-pre-box">
+        <pre><code id="python-code-display"># Generando script Python...</code></pre>
+      </div>
+    </section>
+
+  </main>
+
+  <!-- FOOTER -->
+  <footer class="page-footer">
+    <p>Material Educativo para la Cátedra de <strong>Diseño de Concreto Armado</strong></p>
+    <p style="margin-top:4px; opacity:0.75; font-size:0.775rem;">Desarrollado en HTML5, CSS y JavaScript Vanilla. Compatible con Jupyter, navegadores modernos y dispositivos táctiles.</p>
+  </footer>
+
+  <script>
+  /* ==========================================================================
+     CANONICAL COURSE MODELS & STATE
+     Basado exactamente en 'momento_curvatura_educativo.html' y 'Momento_curvatura.ipynb'
+     ========================================================================== */
+  const state = {
+    theme: 'dark',
+    preset: 'rect', // 'rect' (40x40), 'beam', '25', 'wall'
+    b: 40.0,        // cm
+    h: 40.0,        // cm
+    rec: 5.0,       // cm
+    fc: 28.0,       // MPa
+    fy: 420.0,      // MPa
+    Es: 210000.0,   // MPa
+    P: 500.0,       // kN
+    Lclear: 3.0,    // m
+    db: 20.0,       // mm
+    isConf: true,
+    isHardening: true,
+    K_mander: 1.25,
+    ecu_mander: 0.0150,
+    ecu_unconf: 0.0038,
+    fu_ratio: 1.25,
+    fibers: [],
+    steel: [],
+    mphiCurve: [],
+    yieldPt: null,
+    nomPt: null,
+    maxPt: null,
+    ultPt: null,
+    metrics: {}
+  };
+
+  /* ==========================================================================
+     CONSTITUTIVE MODELS FROM COURSE
+     ========================================================================== */
+  // Concrete: Unconfined Hognestad (from Momento_curvatura.ipynb) vs Mander (1988)
+  function sigmaConcrete(ec, fc, isConf, K, ecu) {
+    if (ec <= 0) return 0.0;
+    const Ec = 4400.0 * Math.sqrt(fc); // MPa (exact formula from course notebook)
+    const e0 = 1.8 * fc / Ec;
+    const eu = 0.0038;
+
+    if (!isConf) {
+      // Hognestad (course standard)
+      if (ec <= e0) {
+        return fc * (2.0 * (ec / e0) - Math.pow(ec / e0, 2));
+      } else if (ec <= eu) {
+        return fc + (-0.15 * fc / (eu - e0)) * (ec - e0);
+      } else {
+        return 0.0;
+      }
+    } else {
+      // Mander (1988) Popovics model
+      if (ec > ecu) return 0.0;
+      const fcc = fc * K;
+      const ecc = 0.002 * (1.0 + 5.0 * (K - 1.0));
+      const Esec = fcc / ecc;
+      const r = Ec / (Ec - Esec);
+      const x = ec / ecc;
+      return (fcc * x * r) / (r - 1.0 + Math.pow(x, r));
+    }
+  }
+
+  // Steel: Elastoplastic (from Momento_curvatura.ipynb) with optional strain hardening
+  function sigmaSteel(es, fy, Es, isHardening, fuRatio) {
+    const ey = fy / Es;
+    const absEs = Math.abs(es);
+    const sign = es >= 0 ? 1 : -1;
+
+    if (absEs <= ey) {
+      return es * Es;
+    }
+
+    if (!isHardening) {
+      return sign * fy;
+    }
+
+    // Strain hardening up to fu = fuRatio * fy
+    const esh = 0.008;
+    const esu = 0.090;
+    const fu = fy * fuRatio;
+    if (absEs <= esh) {
+      return sign * fy;
+    } else {
+      const p = Math.min(1.0, (absEs - esh) / (esu - esh));
+      const fs = fy + (fu - fy) * (2.0 * p - Math.pow(p, 2));
+      return sign * Math.min(fu, fs);
+    }
+  }
+
+  /* ==========================================================================
+     SECTION DISCRETIZATION (Euler-Bernoulli Fibers)
+     ========================================================================== */
+  function rebuildSection() {
+    const ndiv = 40;
+    const dy = state.h / ndiv;
+    state.fibers = [];
+    for (let i = 0; i < ndiv; i++) {
+      state.fibers.push({ y: (i + 0.5) * dy, area: dy * state.b });
+    }
+
+    // Steel layers: 3 layers if default
+    if (state.steel.length === 0) {
+      const rec = state.rec;
+      state.steel = [
+        { y: rec, area: 4.0 },
+        { y: state.h / 2.0, area: 4.0 },
+        { y: state.h - rec, area: 4.0 }
+      ];
+    }
+  }
+
+  /* ==========================================================================
+     EQUILIBRIUM EVALUATION & BISECTION SOLVER
+     Uses robust strain-control: solveCForP(ec, P_target)
+     ========================================================================== */
+  function evalSection(c, ec) {
+    const yhat = state.h / 2.0; // cm
+    let sumFc = 0.0;
+    let sumMc = 0.0;
+    let sumFs = 0.0;
+    let sumMs = 0.0;
+
+    const ecu = state.isConf ? state.ecu_mander : state.ecu_unconf;
+
+    // Concrete fibers
+    state.fibers.forEach(fib => {
+      const eps = ec * (c - fib.y) / c;
+      const sig = sigmaConcrete(eps, state.fc, state.isConf, state.K_mander, ecu);
+      const F = sig * fib.area / 10.0; // kN
+      const arm = (yhat - fib.y) / 100.0; // m
+      sumFc += F;
+      sumMc += F * arm;
+    });
+
+    // Steel layers
+    let maxTensEs = 0.0;
+    let botFs = 0.0;
+
+    state.steel.forEach((s, idx) => {
+      const eps = ec * (c - s.y) / c;
+      const sig = sigmaSteel(eps, state.fy, state.Es, state.isHardening, state.fu_ratio);
+      const F = sig * s.area / 10.0; // kN
+      const arm = (yhat - s.y) / 100.0; // m
+      sumFs += F;
+      sumMs += F * arm;
+
+      if (eps < maxTensEs) maxTensEs = eps;
+      if (idx === state.steel.length - 1) botFs = sig;
+    });
+
+    return { P: sumFc + sumFs, M: sumMc + sumMs, c, ec, maxTensEs, botFs };
+  }
+
+  function solveCForP(ec, Ptarget) {
+    let cLow = 0.01;
+    let cHigh = state.h * 15.0; // large search bound for pure axial
+
+    for (let iter = 0; iter < 45; iter++) {
+      const cMid = 0.5 * (cLow + cHigh);
+      const res = evalSection(cMid, ec);
+      if (res.P < Ptarget) {
+        cLow = cMid;
+      } else {
+        cHigh = cMid;
+      }
+    }
+    return evalSection(0.5 * (cLow + cHigh), ec);
+  }
+
+  /* ==========================================================================
+     GENERATE M - PHI CURVE & EXTRACT KEY MILESTONES
+     ========================================================================== */
+  function recalculateMPhi() {
+    rebuildSection();
+
+    const ecu = state.isConf ? state.ecu_mander : state.ecu_unconf;
+    const nSteps = 40;
+    const curve = [];
+
+    let yieldPt = null;
+    let nomPt = null;
+    let maxPt = null;
+
+    for (let i = 1; i <= nSteps; i++) {
+      const ec = (i / nSteps) * ecu;
+      const res = solveCForP(ec, state.P);
+      const phi = ec / (res.c / 100.0); // 1/m (c in cm -> m)
+      const pt = { ec, c: res.c, phi, M: res.M, botFs: res.botFs };
+      curve.push(pt);
+
+      // 1. First Yield (when bottom rebar reaches fy)
+      if (Math.abs(res.botFs) >= state.fy - 0.5 && !yieldPt) {
+        yieldPt = pt;
+      }
+
+      // 2. Nominal point (at standard concrete compression limit ec = 0.0030)
+      if (ec >= 0.0030 && !nomPt) {
+        nomPt = pt;
+      }
+
+      // 3. Maximum Probable Moment (Mpr / Mmax)
+      if (!maxPt || pt.M > maxPt.M) {
+        maxPt = pt;
+      }
+    }
+
+    const ultPt = curve[curve.length - 1];
+
+    // Fallbacks if not caught on exact steps
+    if (!yieldPt) yieldPt = curve[Math.min(4, curve.length - 1)];
+    if (!nomPt) nomPt = curve.find(p => p.ec >= 0.0028) || curve[Math.min(10, curve.length - 1)];
+    if (!maxPt) maxPt = curve[curve.length - 1];
+
+    state.mphiCurve = curve;
+    state.yieldPt = yieldPt;
+    state.nomPt = nomPt;
+    state.maxPt = maxPt;
+    state.ultPt = ultPt;
+
+    computeMetrics();
+  }
+
+  /* ==========================================================================
+     COMPUTE THE 4 PILLARS
+     ========================================================================== */
+  function computeMetrics() {
+    const b_m = state.b / 100.0;
+    const h_m = state.h / 100.0;
+
+    // Gross section properties
+    const Ec_MPa = 4400.0 * Math.sqrt(state.fc);
+    const Ec_kPa = Ec_MPa * 1000.0;
+    const Ig_m4 = (b_m * Math.pow(h_m, 3)) / 12.0;
+    const EcIg = Ec_kPa * Ig_m4; // kN·m²
+
+    // PILAR 1: Refined Effective Stiffness EI_eff = My / phiy
+    const EI_eff = state.yieldPt.M / state.yieldPt.phi; // kN·m²
+    const ratio_EI = EI_eff / EcIg;
+
+    // Code modifier comparison (0.70 for columns, 0.35 for beams)
+    const isColumn = state.P > 50.0;
+    const codeModifier = isColumn ? 0.70 : 0.35;
+    const EI_code = codeModifier * EcIg;
+    const t_ratio = Math.sqrt(EI_code / EI_eff);
+    const drift_amp = (EI_code / EI_eff) - 1.0;
+
+    // PILAR 2: Curvature Ductility Assessment mu_phi = phiu / phiy
+    const mu_phi = state.ultPt.phi / state.yieldPt.phi;
+
+    // PILAR 3: Overstrength for Capacity Design
+    const M_pr = state.maxPt.M;
+    const M_n = state.nomPt.M;
+    const omega_s = M_pr / M_n;
+    const Ve = (2.0 * M_pr) / state.Lclear;      // kN
+    const V_nom = (2.0 * M_n) / state.Lclear;    // kN
+    const delta_V = Ve - V_nom;                  // kN
+
+    // PILAR 4: Plastic Rotation Capacity (Paulay & Priestley 1992)
+    // Lp = 0.08 * L + 0.022 * db * fy (m, mm, MPa -> m)
+    const Lp = 0.08 * state.Lclear + 0.022 * (state.db / 1000.0) * state.fy; // m
+    const phi_p = Math.max(0.0, state.ultPt.phi - state.yieldPt.phi); // 1/m
+    const theta_p = phi_p * Lp; // rad
+    const theta_y = (state.yieldPt.phi * state.Lclear) / 6.0; // rad (double curvature)
+    const theta_u = theta_y + theta_p;
+
+    // Axial capacity P0
+    const Ag = state.b * state.h;
+    const Ast = state.steel.reduce((acc, s) => acc + s.area, 0);
+    const Ac = Ag - Ast;
+    const P0 = (0.85 * state.fc * Ac + state.fy * Ast) / 10.0; // kN
+
+    state.metrics = {
+      Ec_MPa,
+      Ig_m4,
+      EcIg,
+      EI_eff,
+      ratio_EI,
+      codeModifier,
+      EI_code,
+      t_ratio,
+      drift_amp,
+      mu_phi,
+      M_pr,
+      M_n,
+      omega_s,
+      Ve,
+      V_nom,
+      delta_V,
+      Lp,
+      phi_p,
+      theta_p,
+      theta_y,
+      theta_u,
+      P0
+    };
+
+    updateUI();
+  }
+
+  /* ==========================================================================
+     UPDATE DOM & CANVASES
+     ========================================================================== */
+  function updateUI() {
+    const m = state.metrics;
+    const yPt = state.yieldPt;
+    const nPt = state.nomPt;
+    const mPt = state.maxPt;
+    const uPt = state.ultPt;
+
+    // Sidebar indicators
+    document.getElementById('badge-b').textContent = `${state.b} cm`;
+    document.getElementById('badge-h').textContent = `${state.h} cm`;
+    document.getElementById('badge-rec').textContent = `${state.rec.toFixed(1)} cm`;
+    const asLayer = state.steel.length > 0 ? state.steel[0].area : 4.0;
+    document.getElementById('badge-as').textContent = `${asLayer.toFixed(1)} cm²`;
+    document.getElementById('badge-fc').textContent = `${state.fc} MPa`;
+    document.getElementById('badge-fy').textContent = `${state.fy} MPa`;
+    document.getElementById('badge-lclear').textContent = `${state.Lclear.toFixed(2)} m`;
+    document.getElementById('badge-db').textContent = `${state.db} mm`;
+
+    const pRatio = Math.round((state.P / m.P0) * 100);
+    document.getElementById('badge-p').textContent = `${state.P.toFixed(0)} kN (${pRatio}% P₀)`;
+    document.getElementById('sidebar-p0').textContent = `${m.P0.toFixed(0)} kN`;
+    document.getElementById('sidebar-ig').textContent = `${Math.round(m.Ig_m4 * 1e8).toLocaleString()} cm⁴`;
+    document.getElementById('sidebar-ec').textContent = `${Math.round(m.Ec_MPa).toLocaleString()} MPa`;
+
+    document.getElementById('status-conf').textContent = state.isConf 
+      ? `Activo (K = ${state.K_mander}, εcu = ${state.ecu_mander})`
+      : `Inactivo (Hognestad no confinado, εcu = ${state.ecu_unconf})`;
+
+    document.getElementById('status-hardening').textContent = state.isHardening
+      ? `Activo (fu = ${state.fu_ratio} fy = ${Math.round(state.fy * state.fu_ratio)} MPa)`
+      : 'Inactivo (Elastoplástico perfecto)';
+
+    // KPI Cards
+    document.getElementById('kpi-eieff-ratio').textContent = m.ratio_EI.toFixed(2);
+    document.getElementById('kpi-code-mod').textContent = `${m.codeModifier.toFixed(2)} Ig`;
+
+    const driftBadge = document.getElementById('kpi-drift-badge');
+    if (m.drift_amp > 0.05) {
+      driftBadge.className = 'badge-diff badge-diff-warn';
+      driftBadge.textContent = `Δ real +${Math.round(m.drift_amp * 100)}%`;
+    } else if (m.drift_amp < -0.05) {
+      driftBadge.className = 'badge-diff badge-diff-good';
+      driftBadge.textContent = `Más rígido (${Math.round(m.drift_amp * 100)}%)`;
+    } else {
+      driftBadge.className = 'badge-diff badge-diff-good';
+      driftBadge.textContent = 'Cercano a norma';
+    }
+
+    document.getElementById('kpi-mu-phi').textContent = m.mu_phi.toFixed(1);
+    document.getElementById('kpi-phiy-sub').textContent = `φy = ${yPt.phi.toFixed(4)} rad/m`;
+    const ductBadge = document.getElementById('kpi-ductility-status');
+    if (m.mu_phi >= 8.0) {
+      ductBadge.className = 'badge-diff badge-diff-good';
+      ductBadge.textContent = 'Dúctil (DES)';
+    } else if (m.mu_phi >= 4.0) {
+      ductBadge.className = 'badge-diff badge-diff-warn';
+      ductBadge.textContent = 'Moderada (DMO)';
+    } else {
+      ductBadge.className = 'badge-diff badge-diff-danger';
+      ductBadge.textContent = 'Poco Dúctil (DMI)';
+    }
+
+    document.getElementById('kpi-omega-s').textContent = m.omega_s.toFixed(2);
+    document.getElementById('kpi-ve').textContent = `${m.Ve.toFixed(1)} kN`;
+    document.getElementById('kpi-delta-v').textContent = `+${m.delta_V.toFixed(1)} kN sobre Mn`;
+
+    document.getElementById('kpi-theta-p').textContent = m.theta_p.toFixed(3);
+    document.getElementById('kpi-lp').textContent = `${(m.Lp * 100).toFixed(1)} cm`;
+
+    const asceBadge = document.getElementById('kpi-asce-status');
+    if (m.theta_p >= 0.035) {
+      asceBadge.className = 'badge-diff badge-diff-good';
+      asceBadge.textContent = 'Supera Prevención Colapso (CP)';
+    } else if (m.theta_p >= 0.018) {
+      asceBadge.className = 'badge-diff badge-diff-good';
+      asceBadge.textContent = 'Cumple Seguridad de Vida (LS)';
+    } else if (m.theta_p >= 0.005) {
+      asceBadge.className = 'badge-diff badge-diff-warn';
+      asceBadge.textContent = 'Cumple Ocupación Inmediata (IO)';
+    } else {
+      asceBadge.className = 'badge-diff badge-diff-danger';
+      asceBadge.textContent = 'Falla Rígida Prematura';
+    }
+
+    // Tab 1 Callouts
+    document.getElementById('dive1-val-eieff').textContent = `${Math.round(m.EI_eff).toLocaleString()} kN·m²`;
+    document.getElementById('dive1-ratio-eieff').textContent = `${m.ratio_EI.toFixed(3)} · (Ec Ig)`;
+    document.getElementById('dive1-t-ratio').textContent = `${m.t_ratio.toFixed(2)} × (Período +${Math.round((m.t_ratio - 1.0) * 100)}%)`;
+    document.getElementById('dive1-drift-amp').textContent = `${m.drift_amp >= 0 ? '+' : ''}${Math.round(m.drift_amp * 100)}% de desplazamiento lateral`;
+
+    // Tab 2 Callouts
+    document.getElementById('dive2-phiy').textContent = `${yPt.phi.toFixed(4)} rad/m (c = ${yPt.c.toFixed(1)} cm)`;
+    document.getElementById('dive2-my').textContent = `${yPt.M.toFixed(1)} kN·m`;
+    document.getElementById('dive2-phiu').textContent = `${uPt.phi.toFixed(4)} rad/m`;
+    document.getElementById('dive2-ecu').textContent = (state.isConf ? state.ecu_mander : state.ecu_unconf).toFixed(4);
+    document.getElementById('dive2-mu').textContent = m.mu_phi.toFixed(2);
+    document.getElementById('dive2-class').textContent = m.mu_phi >= 8.0 ? 'Especial Sismo (DES) ≥ 8.0' : (m.mu_phi >= 4.0 ? 'Ductilidad Moderada (DMO)' : 'Escasa Ductilidad (DMI)');
+
+    // Tab 3 Callouts
+    document.getElementById('dive3-mpr').textContent = `${mPt.M.toFixed(1)} kN·m`;
+    document.getElementById('dive3-mn').textContent = `${nPt.M.toFixed(1)} kN·m`;
+    document.getElementById('dive3-omega').textContent = m.omega_s.toFixed(2);
+    document.getElementById('dive3-ve').textContent = `${m.Ve.toFixed(1)} kN`;
+    document.getElementById('dive3-vnom').textContent = `${m.V_nom.toFixed(1)} kN`;
+
+    // Tab 4 Callouts
+    document.getElementById('dive4-lp').textContent = `${(m.Lp * 100).toFixed(1)} cm (${m.Lp.toFixed(3)} m)`;
+    document.getElementById('dive4-lph').textContent = `${(m.Lp / (state.h / 100.0)).toFixed(2)} · h`;
+    document.getElementById('dive4-thetap').textContent = `${m.theta_p.toFixed(4)} rad (${(m.theta_p * 100).toFixed(2)}% deriva)`;
+    document.getElementById('dive4-phip').textContent = `${m.phi_p.toFixed(4)} rad/m`;
+    document.getElementById('dive4-thetau').textContent = `${m.theta_u.toFixed(4)} rad (${(m.theta_u * 100).toFixed(2)}% deriva)`;
+    document.getElementById('dive4-thetay').textContent = `${m.theta_y.toFixed(4)} rad`;
+
+    // ASCE 41 Gauge Marker
+    const markerPct = Math.max(2, Math.min(98, (m.theta_p / 0.045) * 100));
+    document.getElementById('perf-marker').style.left = `${markerPct}%`;
+    document.getElementById('perf-badge-asce').textContent = asceBadge.textContent;
+    document.getElementById('perf-badge-asce').className = asceBadge.className;
+
+    // Canvases
+    drawMPhiCanvas();
+    drawColumnCanvas();
+
+    // Python Exporter
+    generatePythonScript();
+  }
+
+  /* ==========================================================================
+     CANVAS DRAWING
+     ========================================================================== */
+  function setupCanvas(id) {
+    const canvas = document.getElementById(id);
+    const dpr = window.devicePixelRatio || 1;
+    const rect = canvas.getBoundingClientRect();
+    canvas.width = rect.width * dpr;
+    canvas.height = rect.height * dpr;
+    const ctx = canvas.getContext('2d');
+    ctx.scale(dpr, dpr);
+    return { ctx, width: rect.width, height: rect.height };
+  }
+
+  function drawMPhiCanvas() {
+    const { ctx, width, height } = setupCanvas('canvas-mphi');
+    ctx.clearRect(0, 0, width, height);
+
+    const padL = 60, padR = 25, padT = 30, padB = 45;
+    const plotW = width - padL - padR;
+    const plotH = height - padT - padB;
+
+    const curve = state.mphiCurve;
+    const yPt = state.yieldPt;
+    const nPt = state.nomPt;
+    const mPt = state.maxPt;
+    const uPt = state.ultPt;
+    if (!curve || curve.length < 2) return;
+
+    const maxPhi = uPt.phi * 1.08;
+    const maxM = mPt.M * 1.15;
+
+    const toX = phi => padL + (phi / maxPhi) * plotW;
+    const toY = M => padT + plotH - (M / maxM) * plotH;
+
+    // Grid lines
+    ctx.strokeStyle = getComputedStyle(document.documentElement).getPropertyValue('--canvas-grid');
+    ctx.lineWidth = 1;
+    for (let i = 1; i <= 5; i++) {
+      const yVal = (i / 5) * maxM;
+      const yPix = toY(yVal);
+      ctx.beginPath();
+      ctx.moveTo(padL, yPix);
+      ctx.lineTo(padL + plotW, yPix);
+      ctx.stroke();
+
+      const xVal = (i / 5) * maxPhi;
+      const xPix = toX(xVal);
+      ctx.beginPath();
+      ctx.moveTo(xPix, padT);
+      ctx.lineTo(xPix, padT + plotH);
+      ctx.stroke();
+    }
+
+    // Axes
+    const axisColor = getComputedStyle(document.documentElement).getPropertyValue('--canvas-axis');
+    const textColor = getComputedStyle(document.documentElement).getPropertyValue('--canvas-text');
+    ctx.strokeStyle = axisColor;
+    ctx.lineWidth = 1.5;
+    ctx.beginPath();
+    ctx.moveTo(padL, padT);
+    ctx.lineTo(padL, padT + plotH);
+    ctx.lineTo(padL + plotW, padT + plotH);
+    ctx.stroke();
+
+    // Numbers on Axes
+    ctx.fillStyle = textColor;
+    ctx.font = '10px JetBrains Mono';
+    ctx.textAlign = 'right';
+    for (let i = 0; i <= 5; i++) {
+      const yVal = (i / 5) * maxM;
+      ctx.fillText(`${yVal.toFixed(0)}`, padL - 8, toY(yVal) + 4);
+    }
+    ctx.textAlign = 'center';
+    for (let i = 1; i <= 5; i++) {
+      const xVal = (i / 5) * maxPhi;
+      ctx.fillText(`${xVal.toFixed(3)}`, toX(xVal), padT + plotH + 18);
+    }
+
+    // Axis Labels
+    ctx.font = '11px Outfit, Inter';
+    ctx.fillStyle = getComputedStyle(document.documentElement).getPropertyValue('--text-bright');
+    ctx.fillText('Curvatura φ [rad/m]', padL + plotW / 2, padT + plotH + 36);
+
+    ctx.save();
+    ctx.translate(16, padT + plotH / 2);
+    ctx.rotate(-Math.PI / 2);
+    ctx.textAlign = 'center';
+    ctx.fillText('Momento Flector M [kN·m]', 0, 0);
+    ctx.restore();
+
+    // Shaded Plastic Curvature Zone (φy to φu)
+    ctx.fillStyle = 'rgba(139, 92, 246, 0.08)';
+    ctx.fillRect(toX(yPt.phi), padT, toX(uPt.phi) - toX(yPt.phi), plotH);
+
+    // Dotted vertical bounds
+    ctx.strokeStyle = 'rgba(139, 92, 246, 0.4)';
+    ctx.setLineDash([4, 4]);
+    ctx.beginPath();
+    ctx.moveTo(toX(yPt.phi), padT);
+    ctx.lineTo(toX(yPt.phi), padT + plotH);
+    ctx.moveTo(toX(uPt.phi), padT);
+    ctx.lineTo(toX(uPt.phi), padT + plotH);
+    ctx.stroke();
+    ctx.setLineDash([]);
+
+    // 1. Bilinear Secant (slope = EI_eff = My / phiy)
+    const phi_y_eq = mPt.M / state.metrics.EI_eff;
+    ctx.strokeStyle = '#8b5cf6';
+    ctx.lineWidth = 2.5;
+    ctx.setLineDash([6, 4]);
+    ctx.beginPath();
+    ctx.moveTo(toX(0), toY(0));
+    ctx.lineTo(toX(phi_y_eq), toY(mPt.M));
+    ctx.lineTo(toX(uPt.phi), toY(mPt.M));
+    ctx.stroke();
+    ctx.setLineDash([]);
+
+    // 2. Real M-Phi Curve
+    ctx.strokeStyle = '#3b82f6';
+    ctx.lineWidth = 3;
+    ctx.beginPath();
+    curve.forEach((pt, idx) => {
+      const px = toX(pt.phi);
+      const py = toY(pt.M);
+      if (idx === 0) ctx.moveTo(px, py);
+      else ctx.lineTo(px, py);
+    });
+    ctx.stroke();
+
+    // 3. Highlight Key Milestones
+    drawKeyPoint(ctx, toX(yPt.phi), toY(yPt.M), '#10b981', `My = ${yPt.M.toFixed(1)} kN·m`);
+    drawKeyPoint(ctx, toX(nPt.phi), toY(nPt.M), '#f59e0b', `Mn = ${nPt.M.toFixed(1)} kN·m`);
+    drawKeyPoint(ctx, toX(mPt.phi), toY(mPt.M), '#f43f5e', `Mpr = ${mPt.M.toFixed(1)} kN·m`);
+    drawKeyPoint(ctx, toX(uPt.phi), toY(uPt.M), '#8b5cf6', `φu = ${uPt.phi.toFixed(3)} rad/m`);
+
+    // Slope annotation
+    ctx.fillStyle = '#8b5cf6';
+    ctx.font = '10px JetBrains Mono';
+    ctx.textAlign = 'left';
+    ctx.fillText(`EI_eff = My/φy = ${Math.round(state.metrics.EI_eff).toLocaleString()} kN·m²`, toX(yPt.phi) + 8, toY(yPt.M) - 12);
+  }
+
+  function drawKeyPoint(ctx, x, y, color, label) {
+    ctx.fillStyle = color;
+    ctx.beginPath();
+    ctx.arc(x, y, 5, 0, Math.PI * 2);
+    ctx.fill();
+    ctx.strokeStyle = '#ffffff';
+    ctx.lineWidth = 1.5;
+    ctx.stroke();
+
+    ctx.fillStyle = color;
+    ctx.font = '10px Outfit, Inter';
+    ctx.textAlign = 'left';
+    ctx.fillText(label, x + 8, y - 2);
+  }
+
+  function drawColumnCanvas() {
+    const { ctx, width, height } = setupCanvas('canvas-column');
+    ctx.clearRect(0, 0, width, height);
+
+    const padL = 60, padR = 40, padT = 30, padB = 40;
+    const colCenterX = padL + 65;
+    const colW = 50;
+    const colTopY = padT + 20;
+    const colBotY = height - padB - 20;
+    const colH = colBotY - colTopY;
+
+    const m = state.metrics;
+    const yPt = state.yieldPt;
+    const uPt = state.ultPt;
+
+    const curvXStart = padL + 155;
+    const curvXWidth = width - curvXStart - padR;
+
+    // Supports
+    ctx.fillStyle = '#334155';
+    ctx.fillRect(colCenterX - colW / 2 - 15, colTopY - 10, colW + 30, 10);
+    ctx.fillRect(colCenterX - colW / 2 - 15, colBotY, colW + 30, 10);
+
+    // Column Concrete Body
+    ctx.fillStyle = getComputedStyle(document.documentElement).getPropertyValue('--bg-card-subtle');
+    ctx.strokeStyle = getComputedStyle(document.documentElement).getPropertyValue('--border-color');
+    ctx.lineWidth = 2;
+    ctx.fillRect(colCenterX - colW / 2, colTopY, colW, colH);
+    ctx.strokeRect(colCenterX - colW / 2, colTopY, colW, colH);
+
+    // Plastic Hinge Zones (Lp)
+    const lpFraction = Math.min(0.4, m.Lp / state.Lclear);
+    const lpH_px = lpFraction * colH;
+
+    ctx.fillStyle = 'rgba(244, 63, 94, 0.25)';
+    ctx.fillRect(colCenterX - colW / 2, colBotY - lpH_px, colW, lpH_px);
+    ctx.strokeStyle = '#f43f5e';
+    ctx.setLineDash([3, 3]);
+    ctx.strokeRect(colCenterX - colW / 2, colBotY - lpH_px, colW, lpH_px);
+
+    ctx.fillRect(colCenterX - colW / 2, colTopY, colW, lpH_px);
+    ctx.strokeRect(colCenterX - colW / 2, colTopY, colW, lpH_px);
+    ctx.setLineDash([]);
+
+    // Longitudinal bars
+    ctx.strokeStyle = '#38bdf8';
+    ctx.lineWidth = 2;
+    const rebarOff = 6;
+    ctx.beginPath();
+    ctx.moveTo(colCenterX - colW / 2 + rebarOff, colTopY);
+    ctx.lineTo(colCenterX - colW / 2 + rebarOff, colBotY);
+    ctx.moveTo(colCenterX + colW / 2 - rebarOff, colTopY);
+    ctx.lineTo(colCenterX + colW / 2 - rebarOff, colBotY);
+    ctx.stroke();
+
+    // Ties
+    ctx.strokeStyle = '#64748b';
+    ctx.lineWidth = 1;
+    const numTies = 14;
+    for (let i = 1; i < numTies; i++) {
+      const tieY = colTopY + (i / numTies) * colH;
+      ctx.beginPath();
+      ctx.moveTo(colCenterX - colW / 2 + rebarOff, tieY);
+      ctx.lineTo(colCenterX + colW / 2 - rebarOff, tieY);
+      ctx.stroke();
+    }
+
+    // Dimensions
+    ctx.fillStyle = getComputedStyle(document.documentElement).getPropertyValue('--text-muted');
+    ctx.font = '10px JetBrains Mono';
+    ctx.textAlign = 'right';
+    ctx.fillText(`L_c = ${state.Lclear.toFixed(2)} m`, colCenterX - colW / 2 - 15, colTopY + colH / 2);
+
+    ctx.textAlign = 'left';
+    ctx.fillStyle = '#f43f5e';
+    ctx.fillText(`L_p = ${(m.Lp * 100).toFixed(1)} cm`, colCenterX + colW / 2 + 8, colBotY - lpH_px / 2 + 4);
+    ctx.fillText(`L_p = ${(m.Lp * 100).toFixed(1)} cm`, colCenterX + colW / 2 + 8, colTopY + lpH_px / 2 + 4);
+
+    // Curvature Diagram φ(z)
+    ctx.strokeStyle = getComputedStyle(document.documentElement).getPropertyValue('--canvas-axis');
+    ctx.lineWidth = 1.5;
+    ctx.beginPath();
+    ctx.moveTo(curvXStart, colTopY);
+    ctx.lineTo(curvXStart, colBotY);
+    ctx.stroke();
+
+    const phiScale = curvXWidth / (uPt.phi * 1.15);
+    const zeroX = curvXStart;
+
+    ctx.fillStyle = 'rgba(16, 185, 129, 0.2)';
+    ctx.strokeStyle = '#10b981';
+    ctx.lineWidth = 2.5;
+
+    // Bottom half profile
+    const phiYieldX = zeroX + yPt.phi * phiScale;
+    const phiUltX = zeroX + uPt.phi * phiScale;
+
+    ctx.beginPath();
+    ctx.moveTo(zeroX, colTopY + colH / 2);
+    ctx.lineTo(phiYieldX, colBotY - lpH_px);
+    ctx.lineTo(phiUltX, colBotY);
+    ctx.lineTo(zeroX, colBotY);
+    ctx.closePath();
+    ctx.fill();
+    ctx.stroke();
+
+    // Top half profile
+    ctx.beginPath();
+    ctx.moveTo(zeroX, colTopY + colH / 2);
+    ctx.lineTo(phiYieldX, colTopY + lpH_px);
+    ctx.lineTo(phiUltX, colTopY);
+    ctx.lineTo(zeroX, colTopY);
+    ctx.closePath();
+    ctx.fill();
+    ctx.stroke();
+
+    // Labels
+    ctx.fillStyle = '#10b981';
+    ctx.font = '10px JetBrains Mono';
+    ctx.textAlign = 'left';
+    ctx.fillText(`φ_u = ${uPt.phi.toFixed(3)}`, phiUltX + 4, colBotY - 4);
+    ctx.fillText(`φ_y = ${yPt.phi.toFixed(3)}`, phiYieldX + 4, colBotY - lpH_px + 4);
+
+    ctx.fillStyle = getComputedStyle(document.documentElement).getPropertyValue('--text-bright');
+    ctx.font = '11px Outfit, Inter';
+    ctx.textAlign = 'center';
+    ctx.fillText('Perfil de Curvatura φ(z)', curvXStart + curvXWidth / 2, colTopY - 8);
+
+    // θp arc indicator
+    ctx.strokeStyle = '#8b5cf6';
+    ctx.lineWidth = 2;
+    ctx.beginPath();
+    ctx.arc(colCenterX, colBotY, 30, -Math.PI / 2, -Math.PI / 2 + Math.min(Math.PI / 3, m.theta_p * 3), false);
+    ctx.stroke();
+    ctx.fillStyle = '#8b5cf6';
+    ctx.font = '11px JetBrains Mono';
+    ctx.textAlign = 'left';
+    ctx.fillText(`θ_p = ${m.theta_p.toFixed(3)} rad`, colCenterX + 35, colBotY - 10);
+  }
+
+  /* ==========================================================================
+     PRESETS (MATCHING BASIC COURSE MODULE)
+     ========================================================================== */
+  function loadPreset(key) {
+    state.preset = key;
+    document.querySelectorAll('.btn-preset').forEach(btn => btn.classList.remove('active'));
+
+    if (key === 'rect') {
+      // Canonical column from 'momento_curvatura_educativo.html'
+      document.getElementById('btn-pre-rect').classList.add('active');
+      state.b = 40.0;
+      state.h = 40.0;
+      state.rec = 5.0;
+      state.fc = 28.0;
+      state.fy = 420.0;
+      state.Es = 210000.0;
+      state.P = 500.0;
+      state.Lclear = 3.0;
+      state.db = 20.0;
+      state.isConf = true;
+      state.isHardening = true;
+      state.K_mander = 1.25;
+      state.ecu_mander = 0.0150;
+      state.steel = [
+        { y: 5.0, area: 4.0 },
+        { y: 20.0, area: 4.0 },
+        { y: 35.0, area: 4.0 }
+      ];
+    } else if (key === 'beam') {
+      // Beam in pure flexure (P = 0)
+      document.getElementById('btn-pre-beam').classList.add('active');
+      state.b = 40.0;
+      state.h = 40.0;
+      state.rec = 5.0;
+      state.fc = 28.0;
+      state.fy = 420.0;
+      state.Es = 210000.0;
+      state.P = 0.0;
+      state.Lclear = 5.0;
+      state.db = 20.0;
+      state.isConf = false;
+      state.isHardening = true;
+      state.steel = [
+        { y: 5.0, area: 4.0 },
+        { y: 20.0, area: 4.0 },
+        { y: 35.0, area: 4.0 }
+      ];
+    } else if (key === '25') {
+      // Column 25x25 from basic module
+      document.getElementById('btn-pre-25').classList.add('active');
+      state.b = 25.0;
+      state.h = 25.0;
+      state.rec = 4.0;
+      state.fc = 21.0;
+      state.fy = 420.0;
+      state.Es = 210000.0;
+      state.P = 250.0;
+      state.Lclear = 2.8;
+      state.db = 16.0;
+      state.isConf = true;
+      state.isHardening = true;
+      state.K_mander = 1.20;
+      state.ecu_mander = 0.0120;
+      state.steel = [
+        { y: 4.0, area: 4.0 },
+        { y: 12.5, area: 2.5 },
+        { y: 21.0, area: 4.0 }
+      ];
+    } else if (key === 'wall') {
+      // Wall from Jupyter Notebook (20x220 cm)
+      document.getElementById('btn-pre-wall').classList.add('active');
+      state.b = 20.0;
+      state.h = 220.0;
+      state.rec = 5.0;
+      state.fc = 21.0;
+      state.fy = 420.0;
+      state.Es = 210000.0;
+      state.P = 3690.0; // 30% P0 from notebook
+      state.Lclear = 3.0;
+      state.db = 16.0;
+      state.isConf = true;
+      state.isHardening = true;
+      state.K_mander = 1.15;
+      state.ecu_mander = 0.0080;
+      state.steel = [
+        { y: 5.0, area: 12.0 },
+        { y: 110.0, area: 8.0 },
+        { y: 215.0, area: 12.0 }
+      ];
+    }
+
+    // Sync sliders
+    document.getElementById('slider-b').value = state.b;
+    document.getElementById('slider-h').value = state.h;
+    document.getElementById('slider-rec').value = state.rec;
+    document.getElementById('slider-as').value = state.steel[0].area;
+    document.getElementById('slider-fc').value = state.fc;
+    document.getElementById('slider-fy').value = state.fy;
+    document.getElementById('slider-p').value = state.P;
+    document.getElementById('slider-lclear').value = state.Lclear;
+    document.getElementById('slider-db').value = state.db;
+    document.getElementById('toggle-conf').checked = state.isConf;
+    document.getElementById('toggle-hardening').checked = state.isHardening;
+
+    recalculateMPhi();
+  }
+
+  /* ==========================================================================
+     EVENT HANDLERS
+     ========================================================================== */
+  function onParamChange() {
+    state.b = parseFloat(document.getElementById('slider-b').value);
+    state.h = parseFloat(document.getElementById('slider-h').value);
+    state.rec = parseFloat(document.getElementById('slider-rec').value);
+    const as = parseFloat(document.getElementById('slider-as').value);
+    state.fc = parseFloat(document.getElementById('slider-fc').value);
+    state.fy = parseFloat(document.getElementById('slider-fy').value);
+
+    // Rebuild 3 layers with updated rec and as
+    state.steel = [
+      { y: state.rec, area: as },
+      { y: state.h / 2.0, area: as },
+      { y: state.h - state.rec, area: as }
+    ];
+
+    recalculateMPhi();
+  }
+
+  function onAxialChange() {
+    state.P = parseFloat(document.getElementById('slider-p').value);
+    recalculateMPhi();
+  }
+
+  function onSeismicParamChange() {
+    state.Lclear = parseFloat(document.getElementById('slider-lclear').value);
+    state.db = parseFloat(document.getElementById('slider-db').value);
+    computeMetrics();
+  }
+
+  function onToggleChange() {
+    state.isConf = document.getElementById('toggle-conf').checked;
+    state.isHardening = document.getElementById('toggle-hardening').checked;
+    recalculateMPhi();
+  }
+
+  function switchDiveTab(num) {
+    for (let i = 1; i <= 4; i++) {
+      document.getElementById(`tab-btn-${i}`).classList.toggle('active', i === num);
+      document.getElementById(`tab-content-${i}`).classList.toggle('active', i === num);
+    }
+  }
+
+  /* ==========================================================================
+     SOCRATIC CHALLENGES
+     ========================================================================== */
+  const correctAnswers = { 1: 1, 2: 2, 3: 0, 4: 1, 5: 1 };
+
+  function checkAnswer(qNum, selectedOption) {
+    const card = document.getElementById(`card-q${qNum}`);
+    const buttons = card.querySelectorAll('.btn-option');
+    const feedback = document.getElementById(`ans-${qNum}`);
+
+    buttons.forEach((btn, idx) => {
+      btn.classList.remove('correct', 'incorrect');
+      if (idx === correctAnswers[qNum]) {
+        btn.classList.add('correct');
+      } else if (idx === selectedOption) {
+        btn.classList.add('incorrect');
+      }
+    });
+
+    feedback.style.display = 'block';
+  }
+
+  /* ==========================================================================
+     PYTHON EXPORTER (MATCHING COURSE NOTEBOOKS)
+     ========================================================================== */
+  function generatePythonScript() {
+    const m = state.metrics;
+    const yPt = state.yieldPt;
+    const nPt = state.nomPt;
+    const mPt = state.maxPt;
+    const uPt = state.ultPt;
+
+    const code = `# ==============================================================================
+# ANÁLISIS DE MOMENTO - CURVATURA Y LAS 4 UTILIDADES EN DISEÑO ESTRUCTURAL
+# Cátedra de Diseño de Concreto Armado (Funciones exactas del curso)
+# ==============================================================================
+import numpy as np
+import matplotlib.pyplot as plt
+
+# 1. PARÁMETROS DE LA SECCIÓN (Preset: ${state.preset.toUpperCase()})
+b = ${state.b} / 100.0          # Base de la columna (m)
+h = ${state.h} / 100.0          # Altura de la columna (m)
+fc = ${state.fc}                # Resistencia f'c del concreto (MPa)
+fy = ${state.fy}                # Fluencia fy del acero (MPa)
+Es = ${state.Es}             # Módulo Es del acero (MPa)
+P_axial = ${state.P}            # Carga axial impuesta (kN)
+L_clear = ${state.Lclear}        # Longitud libre de columna (m)
+db = ${state.db} / 1000.0       # Diámetro de barra longitudinal (m)
+
+# 2. PROPIEDADES GEOMÉTRICAS BRUTAS
+Ec = 4400.0 * np.sqrt(fc) * 1e3  # kN/m² (Módulo según el script del curso)
+Ig = (b * h**3) / 12.0           # Inercia gruesa (m⁴)
+EcIg = Ec * Ig                   # Rigidez elástica gruesa (kN·m²)
+
+# 3. HITOS EXTRAÍDOS DEL DIAGRAMA MOMENTO - CURVATURA
+phi_y = ${yPt.phi.toFixed(5)}         # Curvatura de primera fluencia (rad/m)
+M_y = ${yPt.M.toFixed(1)}              # Momento de primera fluencia (kN·m)
+phi_n = ${nPt.phi.toFixed(5)}         # Curvatura a límite nominal ec = 0.003 (rad/m)
+M_n = ${nPt.M.toFixed(1)}              # Momento nominal ACI (kN·m)
+phi_max = ${mPt.phi.toFixed(5)}       # Curvatura a momento máximo (rad/m)
+M_pr = ${mPt.M.toFixed(1)}             # Momento probable máximo con endurecimiento (kN·m)
+phi_u = ${uPt.phi.toFixed(5)}         # Curvatura última por aplastamiento/rotura (rad/m)
+
+# ==============================================================================
+# PILAR 1: RIGIDEZ EFECTIVA REFINADA (EI_eff = My / phiy)
+# ==============================================================================
+EI_eff = M_y / phi_y             # kN·m²
+ratio_EI = EI_eff / EcIg
+print(f"--- PILAR 1: RIGIDEZ EFECTIVA REFINADA ---")
+print(f"EI_eff = {EI_eff:.1f} kN·m² ({ratio_EI:.3f} * Ec·Ig)")
+print(f"Código estándar ({m.codeModifier:.2f} Ig): {m.EI_code:.1f} kN·m²")
+print(f"Alargamiento de período T_real / T_code = {m.t_ratio:.2f}x (+{int(m.drift_amp*100)}% de derivas)")
+
+# ==============================================================================
+# PILAR 2: EVALUACIÓN DE DUCTILIDAD SECCIONAL (mu_phi = phiu / phiy)
+# ==============================================================================
+mu_phi = phi_u / phi_y
+print(f"\\n--- PILAR 2: DUCTILIDAD SECCIONAL ---")
+print(f"Ductilidad de curvatura mu_phi = {mu_phi:.2f} ({'DES - Dúctil' if mu_phi>=8 else 'DMO - Moderada'})")
+
+# ==============================================================================
+# PILAR 3: SOBRERRESISTENCIA & DISEÑO POR CAPACIDAD A CORTANTE (Ve)
+# ==============================================================================
+omega_s = M_pr / M_n
+Ve = 2.0 * M_pr / L_clear        # kN
+V_nom = 2.0 * M_n / L_clear      # kN
+print(f"\\n--- PILAR 3: DISEÑO POR CAPACIDAD A CORTANTE ---")
+print(f"Sobrerresistencia seccional Omega_s = {omega_s:.2f}")
+print(f"Cortante de diseño requerido Ve = {Ve:.1f} kN (Margen protegido: +{Ve - V_nom:.1f} kN)")
+
+# ==============================================================================
+# PILAR 4: ROTACIÓN PLÁSTICA PRELIMINAR (theta_p = (phiu - phiy) * Lp) & ASCE 41
+# ==============================================================================
+Lp = 0.08 * L_clear + 0.022 * db * fy # Longitud de rótula Paulay & Priestley (m)
+phi_p = max(0.0, phi_u - phi_y)
+theta_p = phi_p * Lp             # rad
+theta_y = (phi_y * L_clear) / 6.0
+theta_u = theta_y + theta_p
+print(f"\\n--- PILAR 4: ROTACIÓN PLÁSTICA LOCAL ---")
+print(f"Longitud de rótula Lp = {Lp*100:.1f} cm")
+print(f"Rotación plástica theta_p = {theta_p:.4f} rad ({theta_p*100:.2f}% deriva)")
+print(f"Rotación de cuerda total theta_u = {theta_u:.4f} rad")
+`;
+
+    document.getElementById('python-code-display').textContent = code;
+  }
+
+  function copyPythonCode() {
+    const code = document.getElementById('python-code-display').textContent;
+    navigator.clipboard.writeText(code).then(() => {
+      const btnText = document.getElementById('copy-btn-text');
+      btnText.textContent = '✅ ¡Copiado!';
+      setTimeout(() => { btnText.textContent = '📋 Copiar Código'; }, 2000);
+    });
+  }
+
+  function downloadPythonScript() {
+    const code = document.getElementById('python-code-display').textContent;
+    const blob = new Blob([code], { type: 'text/x-python' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = `utilidad_momento_curvatura_${state.b}x${state.h}.py`;
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    URL.revokeObjectURL(url);
+  }
+
+  /* ==========================================================================
+     THEME TOGGLE
+     ========================================================================== */
+  function toggleTheme() {
+    const html = document.documentElement;
+    const isDark = html.getAttribute('data-theme') === 'dark';
+    const newTheme = isDark ? 'light' : 'dark';
+    html.setAttribute('data-theme', newTheme);
+    document.getElementById('theme-icon').textContent = newTheme === 'dark' ? '☀️' : '🌙';
+    document.getElementById('theme-text').textContent = newTheme === 'dark' ? 'Modo Claro' : 'Modo Oscuro';
+    localStorage.setItem('concreto_portal_theme', newTheme);
+    drawMPhiCanvas();
+    drawColumnCanvas();
+  }
+
+  window.addEventListener('DOMContentLoaded', () => {
+    const savedTheme = localStorage.getItem('concreto_portal_theme') || 'dark';
+    document.documentElement.setAttribute('data-theme', savedTheme);
+    document.getElementById('theme-icon').textContent = savedTheme === 'dark' ? '☀️' : '🌙';
+    document.getElementById('theme-text').textContent = savedTheme === 'dark' ? 'Modo Claro' : 'Modo Oscuro';
+
+    // Load canonical rectangular column
+    loadPreset('rect');
+  });
+
+  window.addEventListener('resize', () => {
+    drawMPhiCanvas();
+    drawColumnCanvas();
+  });
+  </script>
+</body>
+</html>

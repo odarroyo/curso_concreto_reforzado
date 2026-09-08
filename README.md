@@ -55,6 +55,14 @@ Plataforma web didáctica para la visualización y aprendizaje de la mecánica s
 - **Balance de energía de Mander:** Cálculo analítico de la deformación última $\varepsilon_{cu}$ al fracturar el primer estribo transversal.
 - Presets normativos (Pobre, DMO, DES, Viga asimétrica y Validación del Ejemplo Numérico del Paper 1988), lupa didáctica paso a paso y retos socráticos.
 
+### 8. 🎯 [Utilidad del Diagrama Momento - Curvatura (M - φ)](https://odarroyo.github.io/curso_concreto_reforzado/utilidad_momento_curvatura.html)
+- **Aviso Metodológico y Alcance:** Enfatiza que los resultados son **estimaciones seccionales preliminares** para orientar el criterio práctico y **NO reemplazan un análisis estructural no lineal riguroso** (Pushover global o NL-THA).
+- **Pilar 1: Rigidez Efectiva Refinada ($EI_{eff} = M_y / \phi_y$):** Reemplazo del factor simplificado de código ($0.70 I_g$ en columnas), demostrando cómo el agrietamiento real a la fluencia alarga el período estructural $T$ y amplifica las derivas laterales $\Delta$.
+- **Pilar 2: Ductilidad Seccional ($\mu_\phi = \phi_u / \phi_y$):** Verificación directa de la idoneidad del detallado de estribos y la capacidad inelástica antes del pandeo de barras longitudinales (DMO vs DES).
+- **Pilar 3: Sobrerresistencia y Cortante por Capacidad ($V_e = 2M_{pr}/L_c$):** Evaluación del momento probable $M_{pr}$ (con endurecimiento $1.25 f_y$ y confinamiento Mander) para prevenir falla frágil por cortante en columnas sísmicas.
+- **Pilar 4: Rotación Plástica ($\theta_p = \phi_p \cdot L_p$):** Estimación de la longitud de rótula plástica de Paulay & Priestley (1992) y cotejo con niveles de desempeño ASCE 41-17 (IO, LS, CP).
+- Visualizador doble de Canvas (Diagrama $M-\phi$ bilineal y Elevación de Columna con perfil $\phi(z)$), 5 retos socráticos y exportador de código Python.
+
 ---
 
 ## 💻 Características Técnicas

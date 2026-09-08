@@ -8,6 +8,20 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Outfit:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
+  
+  <!-- MathJax 3 for Crisp LaTeX Math Rendering -->
+  <script>
+    window.MathJax = {
+      tex: {
+        inlineMath: [['\\(', '\\)']],
+        displayMath: [['\\[', '\\]']]
+      },
+      chtml: {
+        scale: 0.95
+      }
+    };
+  </script>
+  <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
   <style>
     :root {
       --bg-primary: #f8fafc;
@@ -415,14 +429,14 @@
           <div class="card-icon">🌀</div>
           <span class="card-stage-pill pill-purple">Etapa 3 · No Lineal y Ductilidad</span>
         </div>
-        <h3 class="card-title">Diagrama Momento - Curvatura (M - φ)</h3>
+        <h3 class="card-title">Diagrama Momento - Curvatura (\(M - \phi\))</h3>
         <p class="card-desc">
-          Descubre el "Momento Eureka": cómo nace la curva Momento-Curvatura cortando la familia de curvas de interacción a carga axial constante P.
+          Descubre el "Momento Eureka": cómo nace la curva Momento-Curvatura cortando la familia de curvas de interacción a carga axial constante \(P\).
         </p>
         <ul class="card-features">
-          <li>Vista dual sincronizada (Familia P-M vs M-φ)</li>
+          <li>Vista dual sincronizada (Familia \(P-M\) vs \(M-\phi\))</li>
           <li>Simulador animado paso a paso</li>
-          <li>Cálculo de ductilidad seccional (μφ = φu / φy)</li>
+          <li>Cálculo de ductilidad seccional (\(\mu_\phi = \phi_u / \phi_y\))</li>
           <li>Presets de viga, columna y muro estructural</li>
         </ul>
         <div class="btn-launch btn-purple">
@@ -438,13 +452,13 @@
           <div class="card-icon">🧱</div>
           <span class="card-stage-pill pill-amber">Avanzado · Concreto Confinado</span>
         </div>
-        <h3 class="card-title">Cálculo de un Punto (Pn, Mn) Confinado</h3>
+        <h3 class="card-title">Cálculo de un Punto (\(P_n, M_n\)) Confinado</h3>
         <p class="card-desc">
           Modela la diferencia entre el recubrimiento no confinado (Hognestad) y el núcleo confinado por estribos (Mander: \(f'_{cc} = K f'_c\) y ductilidad ampliada).
         </p>
         <ul class="card-features">
           <li>Mander en núcleo vs Hognestad en recubrimiento</li>
-          <li>Factor de confinamiento K y deformación última extendida</li>
+          <li>Factor de confinamiento \(K\) y deformación última extendida</li>
           <li>Lupa didáctica detallada para cada zona</li>
           <li>Interruptor en vivo para comparar con y sin confinamiento</li>
         </ul>
@@ -461,14 +475,14 @@
           <div class="card-icon">📈</div>
           <span class="card-stage-pill pill-rose">Avanzado · Envolvente Confinada</span>
         </div>
-        <h3 class="card-title">Diagrama de Interacción P - M Confinado</h3>
+        <h3 class="card-title">Diagrama de Interacción \(P - M\) Confinado</h3>
         <p class="card-desc">
           Compara en una sola gráfica la envolvente completa de resistencia para concreto confinado (Mander) frente a concreto simple (Hognestad).
         </p>
         <ul class="card-features">
-          <li>Curvas superpuestas P-M (Confinada vs No Confinada)</li>
-          <li>Cuantificación de ganancia de carga ΔPn y momento ΔMn</li>
-          <li>Aumento en compresión pura P0 (+15.8%) e invariancia en Pt</li>
+          <li>Curvas superpuestas \(P-M\) (Confinada vs No Confinada)</li>
+          <li>Cuantificación de ganancia de carga \(\Delta P_n\) y momento \(\Delta M_n\)</li>
+          <li>Aumento en compresión pura \(P_0\) (+15.8%) e invariancia en \(P_t\)</li>
           <li>Explorador interactivo de puntos notables y falla balanceada</li>
         </ul>
         <div class="btn-launch btn-rose">
@@ -519,6 +533,29 @@
         </ul>
         <div class="btn-launch btn-purple">
           <span>Abrir Módulo Mander</span>
+          <span>→</span>
+        </div>
+      </a>
+
+      <!-- CARD 8: UTILIDAD DEL DIAGRAMA MOMENTO - CURVATURA -->
+      <a href="utilidad_momento_curvatura.html" class="module-card">
+        <div class="card-stripe stripe-blue"></div>
+        <div class="card-top">
+          <div class="card-icon">🎯</div>
+          <span class="card-stage-pill pill-blue">Concreto Avanzado · Diseño Práctico</span>
+        </div>
+        <h3 class="card-title">Utilidad del Diagrama Momento - Curvatura (\(M - \phi\))</h3>
+        <p class="card-desc">
+          Obtén estimaciones preliminares del comportamiento seccional (\(EI_{eff}\), \(\mu_\phi\), \(M_{pr}\), \(\theta_p\)) para orientar el criterio práctico y perfeccionar modelos elásticos, reconociendo su alcance y por qué no reemplazan un análisis estructural no lineal global.
+        </p>
+        <ul class="card-features">
+          <li>Estimaciones seccionales preliminares vs análisis no lineal global</li>
+          <li>Rigidez efectiva refinada (\(EI_{eff} = M_y / \phi_y\)) vs código (\(0.70 I_g\))</li>
+          <li>Verificación inmediata de ductilidad (\(\mu_\phi\)) y detallado transversal</li>
+          <li>Sobrerresistencia \(M_{pr}\) para cortante por capacidad (\(V_e = 2M_{pr}/L_c\))</li>
+        </ul>
+        <div class="btn-launch">
+          <span>Abrir Lección Utilidad M-φ</span>
           <span>→</span>
         </div>
       </a>
