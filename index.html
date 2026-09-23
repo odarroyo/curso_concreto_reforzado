@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Diseño de Concreto Armado I - Portal de Herramientas Interactivas</title>
+  <title>Diseño de Concreto Armado - Portal de Herramientas Interactivas</title>
   <!-- Google Fonts -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -39,6 +39,7 @@
       --accent-emerald: #059669;
       --accent-rose: #e11d48;
       --accent-amber: #d97706;
+      --accent-teal: #0d9488;
 
       --shadow-sm: 0 1px 2px rgba(0,0,0,0.05);
       --shadow-md: 0 4px 6px -1px rgba(0,0,0,0.07), 0 2px 4px -2px rgba(0,0,0,0.05);
@@ -66,6 +67,10 @@
     }
 
     * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    html {
+      scroll-behavior: smooth;
+    }
 
     body {
       font-family: var(--font-main);
@@ -148,7 +153,7 @@
 
     /* HERO */
     .hero {
-      padding: 50px 0 35px 0;
+      padding: 45px 0 30px 0;
       text-align: center;
     }
 
@@ -165,24 +170,133 @@
       font-weight: 700;
       letter-spacing: 0.04em;
       text-transform: uppercase;
-      margin-bottom: 18px;
+      margin-bottom: 16px;
     }
 
     .hero h2 {
       font-family: var(--font-title);
-      font-size: 2.5rem;
+      font-size: 2.35rem;
       font-weight: 800;
       color: var(--text-bright);
       line-height: 1.2;
       max-width: 850px;
-      margin: 0 auto 16px auto;
+      margin: 0 auto 14px auto;
     }
 
     .hero p {
-      font-size: 1.1rem;
+      font-size: 1.05rem;
       color: var(--text-muted);
-      max-width: 720px;
+      max-width: 760px;
       margin: 0 auto;
+      line-height: 1.6;
+    }
+
+    /* QUICK JUMP BAR */
+    .quick-jump-bar {
+      display: flex;
+      justify-content: center;
+      gap: 14px;
+      margin-top: 24px;
+      flex-wrap: wrap;
+    }
+
+    .quick-jump-link {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 8px 18px;
+      background: var(--bg-card);
+      border: 1px solid var(--border-color);
+      border-radius: 999px;
+      font-family: var(--font-title);
+      font-size: 0.875rem;
+      font-weight: 700;
+      color: var(--text-main);
+      text-decoration: none;
+      box-shadow: var(--shadow-sm);
+      transition: all 0.2s ease;
+    }
+
+    .quick-jump-link:hover {
+      border-color: var(--accent-blue);
+      color: var(--accent-blue);
+      transform: translateY(-2px);
+      box-shadow: var(--shadow-md);
+    }
+
+    .jump-count {
+      font-size: 0.725rem;
+      font-weight: 600;
+      padding: 2px 8px;
+      border-radius: 999px;
+      background: var(--bg-card-subtle);
+      color: var(--text-muted);
+    }
+
+    /* SECTION BLOCKS */
+    .section-block {
+      margin-top: 45px;
+      margin-bottom: 55px;
+      scroll-margin-top: 30px;
+    }
+
+    .section-header {
+      margin-bottom: 22px;
+      padding-bottom: 16px;
+      border-bottom: 1px solid var(--border-color);
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+
+    .section-badge-wrapper {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .section-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 4px 12px;
+      border-radius: 999px;
+      font-size: 0.75rem;
+      font-weight: 800;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+    }
+
+    .badge-fundamentos {
+      background: rgba(37, 99, 235, 0.1);
+      color: var(--accent-blue);
+      border: 1px solid rgba(37, 99, 235, 0.25);
+    }
+
+    .badge-avanzado {
+      background: rgba(124, 58, 237, 0.1);
+      color: var(--accent-purple);
+      border: 1px solid rgba(124, 58, 237, 0.25);
+    }
+
+    .section-count-badge {
+      font-size: 0.8rem;
+      font-weight: 600;
+      color: var(--text-muted);
+    }
+
+    .section-title {
+      font-family: var(--font-title);
+      font-size: 1.8rem;
+      font-weight: 800;
+      color: var(--text-bright);
+      line-height: 1.25;
+    }
+
+    .section-subtitle {
+      font-size: 0.95rem;
+      color: var(--text-muted);
+      max-width: 880px;
       line-height: 1.6;
     }
 
@@ -191,8 +305,7 @@
       display: grid;
       grid-template-columns: repeat(auto-fit, minmax(330px, 1fr));
       gap: 26px;
-      margin-top: 20px;
-      margin-bottom: 60px;
+      margin-top: 16px;
     }
 
     .module-card {
@@ -354,7 +467,7 @@
       <div class="brand">
         <div class="brand-icon">🏛️</div>
         <div class="brand-text">
-          <h1>Diseño de Concreto Armado I</h1>
+          <h1>Diseño de Concreto Armado</h1>
           <p>Portal de Simuladores y Material Educativo Interactivo</p>
         </div>
       </div>
@@ -369,247 +482,294 @@
   <main class="container">
     <section class="hero">
       <div class="hero-badge">🎓 Laboratorio Virtual Interactivo</div>
-      <h2>Aprende Mecánica y Diseño de Concreto Armado</h2>
+      <h2>Mecánica y Diseño de Concreto Armado</h2>
       <p>
-        Explora las herramientas didácticas interactivas diseñadas para visualizar el comportamiento de secciones de concreto reforzado.
+        Explora herramientas interactivas basadas en primeros principios físicos, normativas de diseño sísmico y modelos constitutivos no lineales para vigas, columnas y muros estructurales.
       </p>
+      <div class="quick-jump-bar">
+        <a href="#fundamentos" class="quick-jump-link">
+          <span>📘</span>
+          <span>Fundamentos</span>
+          <span class="jump-count">4 Temas</span>
+        </a>
+        <a href="#avanzado" class="quick-jump-link">
+          <span>🔬</span>
+          <span>Avanzado y No Lineal</span>
+          <span class="jump-count">6 Temas</span>
+        </a>
+      </div>
     </section>
 
-    <div class="cards-grid">
-      <!-- CARD 1: CÁLCULO DE UN PUNTO -->
-      <a href="calculo_punto_fibras.html" class="module-card">
-        <div class="card-stripe stripe-blue"></div>
-        <div class="card-top">
-          <div class="card-icon">📘</div>
-          <span class="card-stage-pill pill-blue">Etapa 1 · Mecánica Seccional</span>
+    <!-- =========================================================================
+         SECCIÓN 1: FUNDAMENTOS
+         ========================================================================= -->
+    <section id="fundamentos" class="section-block">
+      <div class="section-header">
+        <div class="section-badge-wrapper">
+          <span class="section-badge badge-fundamentos">📘 Fundamentos</span>
+          <span class="section-count-badge">4 Herramientas Seccionales</span>
         </div>
-        <h3 class="card-title">Cálculo de un Punto (P, M) con Fibras</h3>
-        <p class="card-desc">
-          Enfocado exclusivamente en la cinemática, el modelo de Hognestad, la lupa paso a paso fibra por fibra y el equilibrio estático de fuerzas internas sin distracciones.
+        <h2 class="section-title">Fundamentos del Concreto Armado</h2>
+        <p class="section-subtitle">
+          Cinemática de Euler-Bernoulli, bloque equivalente de Whitney (1937), análisis de capacidad nominal y diseño seccional de vigas a flexión, y cálculo de envolventes de resistencia \(P - M\) para columnas según NSR-10 / ACI 318.
         </p>
-        <ul class="card-features">
-          <li>Cinemática de Euler-Bernoulli</li>
-          <li>Lupa didáctica con desglose paso a paso</li>
-          <li>Balanza gráfica de equilibrio estático</li>
-          <li>Convergencia de discretización numérica</li>
-        </ul>
-        <div class="btn-launch">
-          <span>Abrir Módulo 1</span>
-          <span>→</span>
-        </div>
-      </a>
+      </div>
 
-      <!-- CARD 2: DIAGRAMA DE INTERACCIÓN COMPLETO -->
-      <a href="material_educativo_fibras.html" class="module-card">
-        <div class="card-stripe stripe-emerald"></div>
-        <div class="card-top">
-          <div class="card-icon">📗</div>
-          <span class="card-stage-pill pill-emerald">Etapa 2 · Diseño y Envolvente</span>
-        </div>
-        <h3 class="card-title">Diagrama de Interacción Completo (P - M)</h3>
-        <p class="card-desc">
-          Aprende el comportamiento global a flexocompresión con la envolvente completa de resistencia nominal y de diseño con factores de reducción según NSR-10 / ACI 318.
-        </p>
-        <ul class="card-features">
-          <li>Curva completa de interacción (Pn vs Mn)</li>
-          <li>Factores de reducción de resistencia φ</li>
-          <li>Clasificación de tipos de falla (Tracción / Compresión)</li>
-          <li>5 paneles gráficos dinámicos sincronizados</li>
-        </ul>
-        <div class="btn-launch btn-emerald">
-          <span>Abrir Módulo 2</span>
-          <span>→</span>
-        </div>
-      </a>
+      <div class="cards-grid">
+        <!-- CARD 1: CAPACIDAD Y DISEÑO DE VIGAS CON BLOQUE DE WHITNEY -->
+        <a href="capacidad_y_diseno_vigas.html" class="module-card">
+          <div class="card-stripe stripe-teal"></div>
+          <div class="card-top">
+            <div class="card-icon">📏</div>
+            <span class="card-stage-pill pill-teal">Flexión & Diseño · Script de Clase</span>
+          </div>
+          <h3 class="card-title">Capacidad y Diseño de Vigas (Bloque de Whitney)</h3>
+          <p class="card-desc">
+            Aprende el cálculo directo de capacidad nominal \(M_n\) y diseño por momento actuante \(M_u\) según el script oficial del curso. Visualiza en 4 lienzos sincronizados la cinemática de Euler-Bernoulli, la ductilidad por tracción (\(\varepsilon_t \ge 0.005\)) y selecciona armaduras comerciales con un clic.
+          </p>
+          <ul class="card-features">
+            <li>Modo dual: Análisis de Capacidad (\(M_n, \phi M_n\)) vs Diseño (\(M_u \to \rho, A_s\))</li>
+            <li>Visualizador cuádruple: Sección, Euler-Bernoulli, Bloque Whitney y Fuerzas</li>
+            <li>Verificación rigurosa de ductilidad (\(\varepsilon_t \ge 0.005 \implies \phi = 0.90\))</li>
+            <li>Asistente de barras comerciales, pizarrón MathJax y código Python en vivo</li>
+          </ul>
+          <div class="btn-launch btn-teal">
+            <span>Abrir Módulo Capacidad y Diseño</span>
+            <span>→</span>
+          </div>
+        </a>
 
-      <!-- CARD 3: MOMENTO - CURVATURA -->
-      <a href="momento_curvatura_educativo.html" class="module-card">
-        <div class="card-stripe stripe-purple"></div>
-        <div class="card-top">
-          <div class="card-icon">🌀</div>
-          <span class="card-stage-pill pill-purple">Etapa 3 · No Lineal y Ductilidad</span>
-        </div>
-        <h3 class="card-title">Diagrama Momento - Curvatura (\(M - \phi\))</h3>
-        <p class="card-desc">
-          Descubre el "Momento Eureka": cómo nace la curva Momento-Curvatura cortando la familia de curvas de interacción a carga axial constante \(P\).
-        </p>
-        <ul class="card-features">
-          <li>Vista dual sincronizada (Familia \(P-M\) vs \(M-\phi\))</li>
-          <li>Simulador animado paso a paso</li>
-          <li>Cálculo de ductilidad seccional (\(\mu_\phi = \phi_u / \phi_y\))</li>
-          <li>Presets de viga, columna y muro estructural</li>
-        </ul>
-        <div class="btn-launch btn-purple">
-          <span>Abrir Módulo 3</span>
-          <span>→</span>
-        </div>
-      </a>
+        <!-- CARD 2: EL BLOQUE DE WHITNEY (1937) VS FIBRAS -->
+        <a href="bloque_whitney_vs_fibras.html" class="module-card">
+          <div class="card-stripe stripe-amber"></div>
+          <div class="card-top">
+            <div class="card-icon">📜</div>
+            <span class="card-stage-pill pill-amber">Historia & Mecánica · Whitney (1937)</span>
+          </div>
+          <h3 class="card-title">El Bloque de Whitney (1937) vs. Modelo de Fibras</h3>
+          <p class="card-desc">
+            Comprende el hito histórico del paper de Whitney (1937) y comprueba cómo su bloque rectangular equivalente (\(a = \beta_1 c\), \(0.85 f'_c\)) se defiende con asombrosa precisión frente a una discretización no lineal de fibras para cualquier profundidad del eje neutro \(c\).
+          </p>
+          <ul class="card-features">
+            <li>Salto de esfuerzos admisibles (ASD) a resistencia última (USD)</li>
+            <li>Comparativa interactiva para cualquier \(c\): \(C_c\), centroide \(\bar{y}\), \(P_n\) y \(M_n\)</li>
+            <li>3 paneles gráficos dinámicos: Cinemática, Duelo de Esfuerzos y Curva \(P-M\)</li>
+            <li>Fundamento físico de segundo orden y exportador a Python</li>
+          </ul>
+          <div class="btn-launch btn-amber">
+            <span>Abrir Módulo Whitney vs Fibras</span>
+            <span>→</span>
+          </div>
+        </a>
 
-      <!-- CARD 4: CÁLCULO CON CONCRETO CONFINADO -->
-      <a href="calculo_punto_fibras_confinado.html" class="module-card">
-        <div class="card-stripe stripe-amber"></div>
-        <div class="card-top">
-          <div class="card-icon">🧱</div>
-          <span class="card-stage-pill pill-amber">Avanzado · Concreto Confinado</span>
-        </div>
-        <h3 class="card-title">Cálculo de un Punto (\(P_n, M_n\)) Confinado</h3>
-        <p class="card-desc">
-          Modela la diferencia entre el recubrimiento no confinado (Hognestad) y el núcleo confinado por estribos (Mander: \(f'_{cc} = K f'_c\) y ductilidad ampliada).
-        </p>
-        <ul class="card-features">
-          <li>Mander en núcleo vs Hognestad en recubrimiento</li>
-          <li>Factor de confinamiento \(K\) y deformación última extendida</li>
-          <li>Lupa didáctica detallada para cada zona</li>
-          <li>Interruptor en vivo para comparar con y sin confinamiento</li>
-        </ul>
-        <div class="btn-launch btn-amber">
-          <span>Abrir Módulo Confinado</span>
-          <span>→</span>
-        </div>
-      </a>
+        <!-- CARD 3: CÁLCULO DE UN PUNTO (P, M) CON FIBRAS -->
+        <a href="calculo_punto_fibras.html" class="module-card">
+          <div class="card-stripe stripe-blue"></div>
+          <div class="card-top">
+            <div class="card-icon">📘</div>
+            <span class="card-stage-pill pill-blue">Cinemática & Equilibrio · Fibras</span>
+          </div>
+          <h3 class="card-title">Cálculo de un Punto (P, M) con Fibras</h3>
+          <p class="card-desc">
+            Enfocado exclusivamente en la cinemática, el modelo parabólico de Hognestad, la lupa paso a paso fibra por fibra y el equilibrio estático de fuerzas internas en secciones rectangulares.
+          </p>
+          <ul class="card-features">
+            <li>Cinemática lineal de Euler-Bernoulli</li>
+            <li>Lupa didáctica con desglose paso a paso fibra por fibra</li>
+            <li>Balanza gráfica interactiva de equilibrio estático</li>
+            <li>Análisis de convergencia de discretización numérica</li>
+          </ul>
+          <div class="btn-launch">
+            <span>Abrir Módulo Cálculo de un Punto</span>
+            <span>→</span>
+          </div>
+        </a>
 
-      <!-- CARD 5: DIAGRAMA DE INTERACCIÓN CONFINADO -->
-      <a href="diagrama_interaccion_confinado.html" class="module-card">
-        <div class="card-stripe stripe-rose"></div>
-        <div class="card-top">
-          <div class="card-icon">📈</div>
-          <span class="card-stage-pill pill-rose">Avanzado · Envolvente Confinada</span>
-        </div>
-        <h3 class="card-title">Diagrama de Interacción \(P - M\) Confinado</h3>
-        <p class="card-desc">
-          Compara en una sola gráfica la envolvente completa de resistencia para concreto confinado (Mander) frente a concreto simple (Hognestad).
-        </p>
-        <ul class="card-features">
-          <li>Curvas superpuestas \(P-M\) (Confinada vs No Confinada)</li>
-          <li>Cuantificación de ganancia de carga \(\Delta P_n\) y momento \(\Delta M_n\)</li>
-          <li>Aumento en compresión pura \(P_0\) (+15.8%) e invariancia en \(P_t\)</li>
-          <li>Explorador interactivo de puntos notables y falla balanceada</li>
-        </ul>
-        <div class="btn-launch btn-rose">
-          <span>Abrir Módulo P-M Confinado</span>
-          <span>→</span>
-        </div>
-      </a>
+        <!-- CARD 4: DIAGRAMA DE INTERACCIÓN COMPLETO (P - M) -->
+        <a href="material_educativo_fibras.html" class="module-card">
+          <div class="card-stripe stripe-emerald"></div>
+          <div class="card-top">
+            <div class="card-icon">📗</div>
+            <span class="card-stage-pill pill-emerald">Columnas & Envolvente · P - M</span>
+          </div>
+          <h3 class="card-title">Diagrama de Interacción Completo (P - M)</h3>
+          <p class="card-desc">
+            Aprende el comportamiento global a flexocompresión con la envolvente completa de resistencia nominal y de diseño con factores de reducción \(\phi\) según NSR-10 / ACI 318.
+          </p>
+          <ul class="card-features">
+            <li>Curva completa de interacción nominal (\(P_n\) vs \(M_n\)) y de diseño (\(\phi P_n\) vs \(\phi M_n\))</li>
+            <li>Factores de reducción de resistencia \(\phi\) según deformación de tracción \(\varepsilon_t\)</li>
+            <li>Clasificación rigurosa de fallas: Compresión, Transición y Tracción</li>
+            <li>5 paneles gráficos dinámicos sincronizados</li>
+          </ul>
+          <div class="btn-launch btn-emerald">
+            <span>Abrir Módulo Diagrama P-M</span>
+            <span>→</span>
+          </div>
+        </a>
+      </div>
+    </section>
 
-      <!-- CARD 6: MODELO DE FIBRAS DE SECCIÓN GENERAL -->
-      <a href="modelo_fibras_seccion_general.html" class="module-card">
-        <div class="card-stripe stripe-teal"></div>
-        <div class="card-top">
-          <div class="card-icon">🏛️</div>
-          <span class="card-stage-pill pill-teal">Avanzado · Sección General</span>
+    <!-- =========================================================================
+         SECCIÓN 2: AVANZADO
+         ========================================================================= -->
+    <section id="avanzado" class="section-block">
+      <div class="section-header">
+        <div class="section-badge-wrapper">
+          <span class="section-badge badge-avanzado">🔬 Avanzado</span>
+          <span class="section-count-badge">6 Herramientas Avanzadas & No Lineales</span>
         </div>
-        <h3 class="card-title">Modelo de Fibras de Sección General (int_diag2)</h3>
-        <p class="card-desc">
-          Implementa el algoritmo general de interacción para cualquier geometría arbitraria (muros con aletas en T, perfiles en I, armadura distribuida o asimétrica).
+        <h2 class="section-title">Comportamiento Avanzado y No Lineal</h2>
+        <p class="section-subtitle">
+          Mecánica física del confinamiento pasivo con estribos (Mander et al. 1988), análisis no lineal momento-curvatura (\(M - \phi\)), rigidez efectiva agrietada \(EI_{eff}\), sobrerresistencia por capacidad \(M_{pr}\), ductilidad seccional y discretización de geometrías arbitrarias mediante integración por fibras.
         </p>
-        <ul class="card-features">
-          <li>Visualizador interactivo de la malla de fibras de concreto y barras</li>
-          <li>Cálculo del centroide plástico \(\bar{y}\) y momentos respecto a \(\bar{y}\)</li>
-          <li>Presets del script: Muro T, Muro asimétrico y Columna I</li>
-          <li>Exportador dinámico de código Python para Spyder / Jupyter</li>
-        </ul>
-        <div class="btn-launch btn-teal">
-          <span>Abrir Módulo Sección General</span>
-          <span>→</span>
-        </div>
-      </a>
+      </div>
 
-      <!-- CARD 7: MODELO DE CONCRETO CONFINADO SEGÚN MANDER (1988) -->
-      <a href="tutorial_mander_confinamiento.html" class="module-card">
-        <div class="card-stripe stripe-purple"></div>
-        <div class="card-top">
-          <div class="card-icon">🌀</div>
-          <span class="card-stage-pill pill-purple">Concreto Avanzado · Mander (1988)</span>
-        </div>
-        <h3 class="card-title">Modelo de Concreto Confinado (Mander et al. 1988)</h3>
-        <p class="card-desc">
-          Explora la acción de arco 2D en secciones rectangulares, la efectividad \(k_e\), la ganancia de resistencia \(K\) con la superficie multiaxial de William-Warnke y la ductilidad última \(\varepsilon_{cu}\) por balance energético.
-        </p>
-        <ul class="card-features">
-          <li>Visualizador interactivo de arcos inefectivos en planta y elevación</li>
-          <li>Digitalización de la superficie multiaxial 2D (Figura 4 de Mander)</li>
-          <li>Curva constitutiva completa de Popovics y modo comparador (Ghost)</li>
-          <li>Lupa analítica paso a paso, retos socráticos y exportador Python</li>
-        </ul>
-        <div class="btn-launch btn-purple">
-          <span>Abrir Módulo Mander</span>
-          <span>→</span>
-        </div>
-      </a>
+      <div class="cards-grid">
+        <!-- CARD 5: MOMENTO - CURVATURA -->
+        <a href="momento_curvatura_educativo.html" class="module-card">
+          <div class="card-stripe stripe-purple"></div>
+          <div class="card-top">
+            <div class="card-icon">🌀</div>
+            <span class="card-stage-pill pill-purple">No Linealidad & Ductilidad · M - φ</span>
+          </div>
+          <h3 class="card-title">Diagrama Momento - Curvatura (\(M - \phi\))</h3>
+          <p class="card-desc">
+            Descubre el "Momento Eureka": cómo nace la curva Momento-Curvatura cortando la familia de curvas de interacción a carga axial constante \(P\). Evalúa la fluencia del acero, el aplastamiento del concreto y la ductilidad seccional.
+          </p>
+          <ul class="card-features">
+            <li>Vista dual sincronizada (Familia \(P-M\) vs Curva \(M-\phi\))</li>
+            <li>Simulador animado interactivo paso a paso</li>
+            <li>Cálculo analítico de ductilidad seccional (\(\mu_\phi = \phi_u / \phi_y\))</li>
+            <li>Presets didácticos de viga, columna y muro estructural</li>
+          </ul>
+          <div class="btn-launch btn-purple">
+            <span>Abrir Módulo Momento - Curvatura</span>
+            <span>→</span>
+          </div>
+        </a>
 
-      <!-- CARD 8: UTILIDAD DEL DIAGRAMA MOMENTO - CURVATURA -->
-      <a href="utilidad_momento_curvatura.html" class="module-card">
-        <div class="card-stripe stripe-blue"></div>
-        <div class="card-top">
-          <div class="card-icon">🎯</div>
-          <span class="card-stage-pill pill-blue">Concreto Avanzado · Diseño Práctico</span>
-        </div>
-        <h3 class="card-title">Utilidad del Diagrama Momento - Curvatura (\(M - \phi\))</h3>
-        <p class="card-desc">
-          Obtén estimaciones preliminares del comportamiento seccional (\(EI_{eff}\), \(\mu_\phi\), \(M_{pr}\), \(\theta_p\)) para orientar el criterio práctico y perfeccionar modelos elásticos, reconociendo su alcance y por qué no reemplazan un análisis estructural no lineal global.
-        </p>
-        <ul class="card-features">
-          <li>Estimaciones seccionales preliminares vs análisis no lineal global</li>
-          <li>Rigidez efectiva refinada (\(EI_{eff} = M_y / \phi_y\)) vs código (\(0.70 I_g\))</li>
-          <li>Verificación inmediata de ductilidad (\(\mu_\phi\)) y detallado transversal</li>
-          <li>Sobrerresistencia \(M_{pr}\) para cortante por capacidad (\(V_e = 2M_{pr}/L_c\))</li>
-        </ul>
-        <div class="btn-launch">
-          <span>Abrir Lección Utilidad M-φ</span>
-          <span>→</span>
-        </div>
-      </a>
-      <!-- CARD 9: EL BLOQUE DE WHITNEY (1937) VS FIBRAS -->
-      <a href="bloque_whitney_vs_fibras.html" class="module-card">
-        <div class="card-stripe stripe-amber"></div>
-        <div class="card-top">
-          <div class="card-icon">📜</div>
-          <span class="card-stage-pill pill-amber">Historia & Mecánica · Whitney (1937)</span>
-        </div>
-        <h3 class="card-title">El Bloque de Whitney (1937) vs. Modelo de Fibras</h3>
-        <p class="card-desc">
-          Comprende el hito histórico del paper de Whitney (1937) y comprueba cómo su bloque rectangular equivalente (\(a = \beta_1 c\), \(0.85 f'_c\)) se defiende con asombrosa precisión frente a una discretización no lineal de fibras para cualquier profundidad del eje neutro \(c\).
-        </p>
-        <ul class="card-features">
-          <li>Salto de esfuerzos admisibles (ASD) a resistencia última (USD)</li>
-          <li>Comparativa interactiva para cualquier \(c\): \(C_c\), centroide \(\bar{y}\), \(P_n\) y \(M_n\)</li>
-          <li>3 paneles gráficos dinámicos: Cinemática, Duelo de Esfuerzos y Curva \(P-M\)</li>
-          <li>Fundamento físico de segundo orden y exportador a Python</li>
-        </ul>
-        <div class="btn-launch btn-amber">
-          <span>Abrir Módulo Whitney vs Fibras</span>
-          <span>→</span>
-        </div>
-      </a>
+        <!-- CARD 6: UTILIDAD DEL DIAGRAMA MOMENTO - CURVATURA -->
+        <a href="utilidad_momento_curvatura.html" class="module-card">
+          <div class="card-stripe stripe-blue"></div>
+          <div class="card-top">
+            <div class="card-icon">🎯</div>
+            <span class="card-stage-pill pill-blue">Criterio de Diseño · M - φ Práctico</span>
+          </div>
+          <h3 class="card-title">Utilidad del Diagrama Momento - Curvatura (\(M - \phi\))</h3>
+          <p class="card-desc">
+            Obtén estimaciones preliminares del comportamiento seccional (\(EI_{eff}\), \(\mu_\phi\), \(M_{pr}\), \(\theta_p\)) para orientar el criterio práctico y perfeccionar modelos elásticos, reconociendo su alcance frente a análisis no lineales globales.
+          </p>
+          <ul class="card-features">
+            <li>Estimaciones seccionales preliminares vs análisis no lineal global</li>
+            <li>Rigidez efectiva refinada (\(EI_{eff} = M_y / \phi_y\)) vs código (\(0.70 I_g\))</li>
+            <li>Verificación inmediata de ductilidad (\(\mu_\phi\)) y detallado transversal</li>
+            <li>Sobrerresistencia \(M_{pr}\) para cortante por capacidad (\(V_e = 2M_{pr}/L_c\))</li>
+          </ul>
+          <div class="btn-launch">
+            <span>Abrir Lección Utilidad M-φ</span>
+            <span>→</span>
+          </div>
+        </a>
 
-      <!-- CARD 10: CAPACIDAD Y DISEÑO DE VIGAS CON BLOQUE DE WHITNEY -->
-      <a href="capacidad_y_diseno_vigas.html" class="module-card">
-        <div class="card-stripe stripe-teal"></div>
-        <div class="card-top">
-          <div class="card-icon">📏</div>
-          <span class="card-stage-pill pill-teal">Flexión & Diseño · Script de Clase</span>
-        </div>
-        <h3 class="card-title">Capacidad y Diseño de Vigas (Bloque de Whitney)</h3>
-        <p class="card-desc">
-          Aprende el cálculo directo de capacidad nominal \(M_n\) y diseño por momento actuante \(M_u\) según el script oficial del curso. Visualiza en 4 lienzos sincronizados la cinemática de Euler-Bernoulli, la ductilidad por tracción (\(\varepsilon_t \ge 0.005\)) y selecciona armaduras comerciales con un clic.
-        </p>
-        <ul class="card-features">
-          <li>Modo dual: Análisis de Capacidad (\(M_n, \phi M_n\)) vs Diseño (\(M_u \to \rho, A_s\))</li>
-          <li>Visualizador cuádruple: Sección, Euler-Bernoulli, Bloque Whitney y Fuerzas</li>
-          <li>Verificación rigurosa de ductilidad (\(\varepsilon_t \ge 0.005 \implies \phi = 0.90\))</li>
-          <li>Asistente de barras comerciales, pizarrón MathJax y código Python en vivo</li>
-        </ul>
-        <div class="btn-launch btn-teal">
-          <span>Abrir Módulo Capacidad y Diseño</span>
-          <span>→</span>
-        </div>
-      </a>
-    </div>
+        <!-- CARD 7: MODELO DE CONCRETO CONFINADO SEGÚN MANDER (1988) -->
+        <a href="tutorial_mander_confinamiento.html" class="module-card">
+          <div class="card-stripe stripe-rose"></div>
+          <div class="card-top">
+            <div class="card-icon">🔬</div>
+            <span class="card-stage-pill pill-rose">Confinamiento · Mander et al. (1988)</span>
+          </div>
+          <h3 class="card-title">Modelo de Concreto Confinado (Mander et al. 1988)</h3>
+          <p class="card-desc">
+            Explora la acción de arco 2D en secciones rectangulares, la efectividad \(k_e\), la ganancia de resistencia \(K\) con la superficie multiaxial de William-Warnke y la ductilidad última \(\varepsilon_{cu}\) por balance energético.
+          </p>
+          <ul class="card-features">
+            <li>Visualizador interactivo de arcos inefectivos en planta y elevación</li>
+            <li>Digitalización precisa de la superficie multiaxial 2D (Figura 4 de Mander)</li>
+            <li>Curva constitutiva completa de Popovics y modo comparador (Ghost)</li>
+            <li>Lupa analítica paso a paso, retos socráticos y exportador Python</li>
+          </ul>
+          <div class="btn-launch btn-rose">
+            <span>Abrir Módulo Mander</span>
+            <span>→</span>
+          </div>
+        </a>
+
+        <!-- CARD 8: CÁLCULO CON CONCRETO CONFINADO -->
+        <a href="calculo_punto_fibras_confinado.html" class="module-card">
+          <div class="card-stripe stripe-amber"></div>
+          <div class="card-top">
+            <div class="card-icon">🧱</div>
+            <span class="card-stage-pill pill-amber">Sección Confinada · Mander vs Recubrimiento</span>
+          </div>
+          <h3 class="card-title">Cálculo de un Punto (\(P_n, M_n\)) Confinado</h3>
+          <p class="card-desc">
+            Modela la diferencia física entre el recubrimiento no confinado (Hognestad con desconchamiento/spalling) y el núcleo confinado por estribos (Mander: \(f'_{cc} = K f'_c\) y deformación última extendida).
+          </p>
+          <ul class="card-features">
+            <li>Mander en núcleo confinado vs Hognestad en recubrimiento</li>
+            <li>Factor de confinamiento \(K\) y deformación última extendida \(\varepsilon_{cu}\)</li>
+            <li>Lupa didáctica detallada fibra por fibra para cada zona</li>
+            <li>Interruptor en vivo para contrastar con y sin confinamiento</li>
+          </ul>
+          <div class="btn-launch btn-amber">
+            <span>Abrir Módulo Confinado</span>
+            <span>→</span>
+          </div>
+        </a>
+
+        <!-- CARD 9: DIAGRAMA DE INTERACCIÓN CONFINADO -->
+        <a href="diagrama_interaccion_confinado.html" class="module-card">
+          <div class="card-stripe stripe-emerald"></div>
+          <div class="card-top">
+            <div class="card-icon">📈</div>
+            <span class="card-stage-pill pill-emerald">Envolvente Confinada · P - M</span>
+          </div>
+          <h3 class="card-title">Diagrama de Interacción \(P - M\) Confinado</h3>
+          <p class="card-desc">
+            Compara en una sola gráfica la envolvente completa de resistencia para concreto confinado (Mander) frente a concreto simple (Hognestad), evaluando la ampliación de resistencia y ductilidad.
+          </p>
+          <ul class="card-features">
+            <li>Curvas superpuestas \(P-M\) (Confinada vs No Confinada)</li>
+            <li>Cuantificación de ganancia de carga axial \(\Delta P_n\) y momento flector \(\Delta M_n\)</li>
+            <li>Aumento notable en compresión pura \(P_0\) e invariancia en tracción pura \(P_t\)</li>
+            <li>Explorador interactivo de puntos notables y falla balanceada</li>
+          </ul>
+          <div class="btn-launch btn-emerald">
+            <span>Abrir Módulo P-M Confinado</span>
+            <span>→</span>
+          </div>
+        </a>
+
+        <!-- CARD 10: MODELO DE FIBRAS DE SECCIÓN GENERAL -->
+        <a href="modelo_fibras_seccion_general.html" class="module-card">
+          <div class="card-stripe stripe-teal"></div>
+          <div class="card-top">
+            <div class="card-icon">🏛️</div>
+            <span class="card-stage-pill pill-teal">Geometría Arbitraria · int_diag2</span>
+          </div>
+          <h3 class="card-title">Modelo de Fibras de Sección General (int_diag2)</h3>
+          <p class="card-desc">
+            Implementa el algoritmo general de interacción para cualquier geometría arbitraria (muros con aletas en T, perfiles en I, armadura distribuida o asimétrica) con discretización automática en fibras.
+          </p>
+          <ul class="card-features">
+            <li>Visualizador interactivo de la malla 2D de fibras de concreto y barras</li>
+            <li>Cálculo automático del centroide plástico \(\bar{y}\) y momentos respecto a \(\bar{y}\)</li>
+            <li>Presets del script: Muro T, Muro asimétrico y Columna I</li>
+            <li>Exportador dinámico de código Python para Spyder / Jupyter</li>
+          </ul>
+          <div class="btn-launch btn-teal">
+            <span>Abrir Módulo Sección General</span>
+            <span>→</span>
+          </div>
+        </a>
+      </div>
+    </section>
   </main>
 
   <footer>
     <div class="container">
-      <p>Material Educativo para el Curso de <strong>Diseño de Concreto Armado I</strong></p>
+      <p>Material Educativo para el Curso de <strong>Diseño de Concreto Armado</strong></p>
       <p style="margin-top:4px; opacity:0.75; font-size:0.775rem;">Desarrollado con HTML5, CSS y JavaScript Vanilla. Compatible con cualquier navegador web moderno.</p>
     </div>
   </footer>
@@ -620,8 +780,8 @@
     const isDark = html.getAttribute('data-theme') === 'dark';
     const newTheme = isDark ? 'light' : 'dark';
     html.setAttribute('data-theme', newTheme);
-    document.getElementById('theme-icon').textContent = newTheme === 'dark' ? '☀️' : '🌙';
-    document.getElementById('theme-text').textContent = newTheme === 'dark' ? 'Modo Claro' : 'Modo Oscuro';
+    document.getElementById('theme-icon').textContent = newTheme === 'light' ? '☀️' : '🌙';
+    document.getElementById('theme-text').textContent = newTheme === 'light' ? 'Modo Oscuro' : 'Modo Claro';
     localStorage.setItem('concreto_portal_theme', newTheme);
   }
 
