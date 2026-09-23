@@ -63,6 +63,17 @@ Plataforma web didáctica para la visualización y aprendizaje de la mecánica s
 - **Pilar 4: Rotación Plástica ($\theta_p = \phi_p \cdot L_p$):** Estimación de la longitud de rótula plástica de Paulay & Priestley (1992) y cotejo con niveles de desempeño ASCE 41-17 (IO, LS, CP).
 - Visualizador doble de Canvas (Diagrama $M-\phi$ bilineal y Elevación de Columna con perfil $\phi(z)$), 5 retos socráticos y exportador de código Python.
 
+### 9. 📜 [El Bloque de Whitney (1937) vs. Modelo de Fibras](https://odarroyo.github.io/curso_concreto_reforzado/bloque_whitney_vs_fibras.html)
+- El hito histórico de Whitney (1937) y el salto de esfuerzos admisibles (ASD) a resistencia última (USD).
+- Comparativa interactiva continua para cualquier profundidad del eje neutro $c$: $C_c$, centroide $\bar{y}_c$, $P_n$ y $M_n$.
+- 3 paneles dinámicos: Cinemática, Duelo de Esfuerzos y Diagrama $P-M$.
+- Fundamento físico de segundo orden y exportador a Python.
+
+### 10. 📏 [Capacidad y Diseño de Vigas con Bloque de Whitney](https://odarroyo.github.io/curso_concreto_reforzado/capacidad_y_diseno_vigas.html)
+- Doble modalidad basada en el script oficial de clase: Análisis de Capacidad ($M_n, \phi M_n$) y Diseño por momento actuante ($M_u \to \rho, A_{s,\text{req}}$).
+- Visualizador cuádruple sincronizado: Sección, Euler-Bernoulli, bloque equivalente de Whitney y equilibrio de fuerzas con compresión al lado derecho.
+- Criterio de ductilidad ($\varepsilon_t \ge 0.005 \implies \phi = 0.90$), asistente de armaduras comerciales colombianas (NSR-10 / ACI 318), pizarrón MathJax paso a paso y consola Python en vivo.
+
 ---
 
 ## 💻 Características Técnicas
@@ -73,4 +84,5 @@ Plataforma web didáctica para la visualización y aprendizaje de la mecánica s
 - **Exportación:** Generación de archivos CSV y código LaTeX para informes de laboratorio.
 
 ---
+
 Prof. Orlando Arroyo — *Diseño de Concreto Armado I*

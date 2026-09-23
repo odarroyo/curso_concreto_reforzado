@@ -1,0 +1,2858 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>El Bloque de Whitney (1937) vs. Modelo de Fibras | Concreto Armado I</title>
+  
+  <!-- Modern Google Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500;600;700&family=Outfit:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+
+  <!-- MathJax 3 for Crisp LaTeX Rendering -->
+  <script>
+    window.MathJax = {
+      tex: {
+        inlineMath: [['\\(', '\\)']],
+        displayMath: [['\\[', '\\]']]
+      },
+      chtml: {
+        scale: 0.95
+      }
+    };
+  </script>
+  <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+
+  <style>
+    :root {
+      /* LIGHT THEME (DEFAULT) */
+      --bg-canvas: #f8fafc;
+      --bg-card: #ffffff;
+      --bg-card-subtle: #f1f5f9;
+      --bg-card-hover: #e2e8f0;
+      --bg-input: #ffffff;
+      --border-color: #e2e8f0;
+      --border-focus: #2563eb;
+
+      --text-main: #0f172a;
+      --text-muted: #64748b;
+      --text-faint: #94a3b8;
+      --text-bright: #0284c7;
+
+      --header-bg: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
+      --header-text: #f8fafc;
+      --header-subtext: #94a3b8;
+
+      /* BRAND & ACCENTS */
+      --accent-blue: #2563eb;
+      --accent-cyan: #0284c7;
+      --accent-amber: #d97706;
+      --accent-emerald: #059669;
+      --accent-purple: #7c3aed;
+      --accent-rose: #e11d48;
+
+      --whitney-color: #0284c7;
+      --whitney-glow: rgba(2, 132, 199, 0.2);
+      --fiber-color: #ea580c;
+      --fiber-glow: rgba(234, 88, 12, 0.2);
+
+      --canvas-bg: #ffffff;
+      --canvas-grid: rgba(0, 0, 0, 0.05);
+      --canvas-axis: #94a3b8;
+      --canvas-text: #64748b;
+
+      --shadow-sm: 0 1px 3px rgba(0,0,0,0.05);
+      --shadow-md: 0 4px 6px -1px rgba(0,0,0,0.07), 0 2px 4px -2px rgba(0,0,0,0.05);
+      --shadow-lg: 0 10px 15px -3px rgba(0,0,0,0.08), 0 4px 6px -4px rgba(0,0,0,0.04);
+      --shadow-xl: 0 20px 25px -5px rgba(0,0,0,0.1), 0 10px 10px -5px rgba(0,0,0,0.04);
+
+      --radius-sm: 8px;
+      --radius-md: 12px;
+      --radius-lg: 18px;
+
+      --font-main: 'Inter', system-ui, -apple-system, sans-serif;
+      --font-title: 'Outfit', system-ui, sans-serif;
+      --font-mono: 'JetBrains Mono', monospace;
+    }
+
+    [data-theme="dark"] {
+      /* DARK THEME */
+      --bg-canvas: #090d16;
+      --bg-card: #111827;
+      --bg-card-subtle: #1a2438;
+      --bg-card-hover: #22324e;
+      --bg-input: #0b1120;
+      --border-color: #1f2d47;
+      --border-focus: #38bdf8;
+
+      --text-main: #f1f5f9;
+      --text-muted: #94a3b8;
+      --text-faint: #64748b;
+      --text-bright: #38bdf8;
+
+      --header-bg: linear-gradient(135deg, #060911 0%, #0e1726 100%);
+      --header-text: #f8fafc;
+      --header-subtext: #94a3b8;
+
+      --whitney-color: #38bdf8;
+      --whitney-glow: rgba(56, 189, 248, 0.25);
+      --fiber-color: #fb923c;
+      --fiber-glow: rgba(251, 146, 60, 0.25);
+
+      --canvas-bg: #0c1322;
+      --canvas-grid: rgba(255, 255, 255, 0.05);
+      --canvas-axis: #475569;
+      --canvas-text: #94a3b8;
+
+      --shadow-sm: 0 2px 4px rgba(0,0,0,0.3);
+      --shadow-md: 0 4px 12px rgba(0,0,0,0.4);
+      --shadow-lg: 0 10px 25px rgba(0,0,0,0.5);
+      --shadow-xl: 0 20px 30px rgba(0,0,0,0.6);
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: var(--font-main);
+      background: var(--bg-canvas);
+      color: var(--text-main);
+      line-height: 1.5;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      transition: background-color 0.25s ease, color 0.25s ease;
+    }
+
+    /* TOP HEADER */
+    header.top-header {
+      background: var(--header-bg);
+      color: var(--header-text);
+      padding: 14px 24px;
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      border-bottom: 1px solid var(--border-color);
+      box-shadow: var(--shadow-md);
+    }
+
+    .header-container {
+      max-width: 1400px;
+      margin: 0 auto;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 16px;
+      flex-wrap: wrap;
+    }
+
+    .brand-group {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      text-decoration: none;
+      color: inherit;
+    }
+
+    .brand-badge {
+      background: linear-gradient(135deg, #0284c7, #7c3aed);
+      color: #fff;
+      font-family: var(--font-title);
+      font-weight: 800;
+      font-size: 1.15rem;
+      padding: 6px 12px;
+      border-radius: var(--radius-sm);
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      box-shadow: 0 2px 8px rgba(2, 132, 199, 0.4);
+    }
+
+    .brand-info h1 {
+      font-family: var(--font-title);
+      font-size: 1.15rem;
+      font-weight: 700;
+      letter-spacing: -0.01em;
+    }
+
+    .brand-info p {
+      font-size: 0.775rem;
+      color: var(--header-subtext);
+    }
+
+    .header-actions {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .btn-nav {
+      background: rgba(255, 255, 255, 0.08);
+      border: 1px solid rgba(255, 255, 255, 0.15);
+      color: #ffffff;
+      padding: 7px 14px;
+      border-radius: var(--radius-sm);
+      font-size: 0.825rem;
+      font-weight: 600;
+      text-decoration: none;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      transition: all 0.2s ease;
+      cursor: pointer;
+    }
+
+    .btn-nav:hover {
+      background: rgba(255, 255, 255, 0.18);
+      border-color: rgba(255, 255, 255, 0.3);
+    }
+
+    /* MAIN CONTAINER */
+    main.main-content {
+      max-width: 1400px;
+      margin: 0 auto;
+      padding: 28px 24px 60px 24px;
+      width: 100%;
+      flex-grow: 1;
+    }
+
+    /* HERO SECTION */
+    .hero-banner {
+      background: var(--bg-card);
+      border: 1px solid var(--border-color);
+      border-radius: var(--radius-lg);
+      padding: 32px 36px;
+      margin-bottom: 28px;
+      box-shadow: var(--shadow-md);
+      position: relative;
+      overflow: hidden;
+    }
+
+    .hero-banner::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: 5px;
+      background: linear-gradient(90deg, #0284c7, #ea580c, #7c3aed);
+    }
+
+    .hero-tags {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      margin-bottom: 14px;
+      flex-wrap: wrap;
+    }
+
+    .tag-pill {
+      font-size: 0.725rem;
+      font-weight: 800;
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+      padding: 4px 10px;
+      border-radius: 999px;
+    }
+
+    .tag-blue { background: rgba(2, 132, 199, 0.12); color: var(--accent-cyan); border: 1px solid rgba(2, 132, 199, 0.25); }
+    .tag-amber { background: rgba(234, 88, 12, 0.12); color: var(--fiber-color); border: 1px solid rgba(234, 88, 12, 0.25); }
+    .tag-purple { background: rgba(124, 58, 237, 0.12); color: var(--accent-purple); border: 1px solid rgba(124, 58, 237, 0.25); }
+
+    .hero-title {
+      font-family: var(--font-title);
+      font-size: 2.2rem;
+      font-weight: 800;
+      line-height: 1.2;
+      margin-bottom: 14px;
+      color: var(--text-main);
+    }
+
+    .hero-desc {
+      font-size: 1.05rem;
+      color: var(--text-muted);
+      max-width: 950px;
+      line-height: 1.6;
+      margin-bottom: 20px;
+    }
+
+    /* HISTORICAL QUOTE CARD */
+    .quote-box {
+      background: var(--bg-card-subtle);
+      border-left: 4px solid var(--accent-cyan);
+      border-radius: 0 var(--radius-md) var(--radius-md) 0;
+      padding: 16px 20px;
+      margin-top: 18px;
+    }
+
+    .quote-text {
+      font-style: italic;
+      color: var(--text-main);
+      font-size: 0.95rem;
+      line-height: 1.55;
+      margin-bottom: 6px;
+    }
+
+    .quote-cite {
+      font-size: 0.8rem;
+      color: var(--text-muted);
+      font-weight: 600;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    /* HISTORICAL ACCORDION / CARDS */
+    .history-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+      gap: 20px;
+      margin-bottom: 32px;
+    }
+
+    .history-card {
+      background: var(--bg-card);
+      border: 1px solid var(--border-color);
+      border-radius: var(--radius-md);
+      padding: 22px;
+      box-shadow: var(--shadow-sm);
+      transition: transform 0.2s ease, border-color 0.2s ease;
+    }
+
+    .history-card:hover {
+      transform: translateY(-3px);
+      border-color: var(--accent-cyan);
+    }
+
+    .history-header {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      margin-bottom: 12px;
+    }
+
+    .history-icon {
+      font-size: 1.5rem;
+      line-height: 1;
+      padding: 8px;
+      background: var(--bg-card-subtle);
+      border-radius: var(--radius-sm);
+    }
+
+    .history-title {
+      font-family: var(--font-title);
+      font-size: 1.05rem;
+      font-weight: 700;
+      color: var(--text-main);
+    }
+
+    .history-body {
+      font-size: 0.875rem;
+      color: var(--text-muted);
+      line-height: 1.6;
+    }
+
+    /* MATHEMATICAL EQUIVALENCE CARD */
+    .math-card {
+      background: var(--bg-card);
+      border: 1px solid var(--border-color);
+      border-radius: var(--radius-lg);
+      padding: 26px 30px;
+      margin-bottom: 32px;
+      box-shadow: var(--shadow-md);
+    }
+
+    .section-headline {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      margin-bottom: 14px;
+    }
+
+    .section-headline h2 {
+      font-family: var(--font-title);
+      font-size: 1.45rem;
+      font-weight: 800;
+      color: var(--text-main);
+    }
+
+    .math-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(290px, 1fr));
+      gap: 20px;
+      margin-top: 18px;
+    }
+
+    .math-subbox {
+      background: var(--bg-card-subtle);
+      border: 1px solid var(--border-color);
+      border-radius: var(--radius-md);
+      padding: 18px 20px;
+    }
+
+    .math-subbox h3 {
+      font-family: var(--font-title);
+      font-size: 0.95rem;
+      font-weight: 700;
+      margin-bottom: 10px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      color: var(--text-main);
+    }
+
+    /* CONTROLS & LABORATORY */
+    .lab-container {
+      display: grid;
+      grid-template-columns: 360px 1fr;
+      gap: 24px;
+      margin-bottom: 32px;
+    }
+
+    @media (max-width: 1050px) {
+      .lab-container {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    /* SIDEBAR CONTROLS */
+    .controls-panel {
+      background: var(--bg-card);
+      border: 1px solid var(--border-color);
+      border-radius: var(--radius-lg);
+      padding: 22px;
+      box-shadow: var(--shadow-md);
+      display: flex;
+      flex-direction: column;
+      gap: 20px;
+    }
+
+    .panel-block-title {
+      font-family: var(--font-title);
+      font-size: 0.95rem;
+      font-weight: 800;
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+      color: var(--text-main);
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      border-bottom: 1px solid var(--border-color);
+      padding-bottom: 8px;
+      margin-bottom: 12px;
+    }
+
+    .control-row {
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+      margin-bottom: 12px;
+    }
+
+    .control-row-cols {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 12px;
+      margin-bottom: 12px;
+    }
+
+    .control-label {
+      font-size: 0.8rem;
+      font-weight: 600;
+      color: var(--text-main);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .control-val-badge {
+      font-family: var(--font-mono);
+      font-size: 0.8rem;
+      font-weight: 700;
+      color: var(--accent-cyan);
+      background: var(--bg-card-subtle);
+      padding: 2px 7px;
+      border-radius: 4px;
+    }
+
+    input[type="range"] {
+      width: 100%;
+      height: 6px;
+      background: var(--border-color);
+      border-radius: 3px;
+      outline: none;
+      -webkit-appearance: none;
+      appearance: none;
+      cursor: pointer;
+    }
+
+    input[type="range"]::-webkit-slider-thumb {
+      -webkit-appearance: none;
+      width: 18px;
+      height: 18px;
+      border-radius: 50%;
+      background: var(--accent-blue);
+      cursor: pointer;
+      box-shadow: 0 0 8px rgba(37, 99, 235, 0.4);
+      transition: transform 0.15s ease;
+    }
+
+    input[type="range"]::-webkit-slider-thumb:hover {
+      transform: scale(1.15);
+    }
+
+    select, input[type="number"] {
+      background: var(--bg-input);
+      border: 1px solid var(--border-color);
+      color: var(--text-main);
+      padding: 7px 10px;
+      border-radius: var(--radius-sm);
+      font-family: var(--font-main);
+      font-size: 0.85rem;
+      outline: none;
+      transition: border-color 0.2s ease;
+      width: 100%;
+    }
+
+    select:focus, input[type="number"]:focus {
+      border-color: var(--border-focus);
+    }
+
+    /* QUICK PRESET BUTTONS */
+    .preset-btn-group {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 8px;
+      margin-top: 4px;
+    }
+
+    .btn-preset {
+      background: var(--bg-card-subtle);
+      border: 1px solid var(--border-color);
+      color: var(--text-main);
+      padding: 6px 10px;
+      border-radius: var(--radius-sm);
+      font-size: 0.775rem;
+      font-weight: 600;
+      cursor: pointer;
+      text-align: center;
+      transition: all 0.2s ease;
+    }
+
+    .btn-preset:hover {
+      background: var(--accent-blue);
+      color: #ffffff;
+      border-color: var(--accent-blue);
+    }
+
+    /* NEUTRAL AXIS MASTER CONTROL (HIGHLIGHTED) */
+    .master-c-control {
+      background: linear-gradient(135deg, rgba(2, 132, 199, 0.08), rgba(234, 88, 12, 0.08));
+      border: 1px solid rgba(2, 132, 199, 0.3);
+      border-radius: var(--radius-md);
+      padding: 16px;
+      margin-top: 6px;
+    }
+
+    .btn-action-primary {
+      background: linear-gradient(135deg, #0284c7, #2563eb);
+      color: #ffffff;
+      border: none;
+      padding: 10px 16px;
+      border-radius: var(--radius-sm);
+      font-family: var(--font-title);
+      font-size: 0.875rem;
+      font-weight: 700;
+      cursor: pointer;
+      width: 100%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      box-shadow: 0 4px 10px rgba(2, 132, 199, 0.3);
+      transition: all 0.2s ease;
+    }
+
+    .btn-action-primary:hover {
+      transform: translateY(-1px);
+      box-shadow: 0 6px 14px rgba(2, 132, 199, 0.4);
+    }
+
+    /* RIGHT COLUMN: VISUALIZATIONS & METRICS */
+    .display-panel {
+      display: flex;
+      flex-direction: column;
+      gap: 24px;
+    }
+
+    /* KPI METRICS CARDS */
+    .kpi-row {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(190px, 1fr));
+      gap: 14px;
+    }
+
+    .kpi-card {
+      background: var(--bg-card);
+      border: 1px solid var(--border-color);
+      border-radius: var(--radius-md);
+      padding: 16px 18px;
+      box-shadow: var(--shadow-sm);
+      position: relative;
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .kpi-card-stripe {
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: 3px;
+    }
+
+    .kpi-stripe-blue { background: #0284c7; }
+    .kpi-stripe-amber { background: #ea580c; }
+    .kpi-stripe-purple { background: #7c3aed; }
+    .kpi-stripe-emerald { background: #059669; }
+
+    .kpi-header {
+      font-size: 0.775rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+      color: var(--text-muted);
+      margin-bottom: 8px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .kpi-duo {
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+      margin-bottom: 8px;
+    }
+
+    .kpi-row-val {
+      display: flex;
+      justify-content: space-between;
+      align-items: baseline;
+      font-size: 0.85rem;
+    }
+
+    .kpi-label-w { color: var(--whitney-color); font-weight: 600; }
+    .kpi-label-f { color: var(--fiber-color); font-weight: 600; }
+
+    .kpi-val-num {
+      font-family: var(--font-mono);
+      font-weight: 700;
+      font-size: 1.05rem;
+    }
+
+    .kpi-error-tag {
+      margin-top: auto;
+      padding-top: 6px;
+      border-top: 1px dashed var(--border-color);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-size: 0.75rem;
+      font-weight: 700;
+    }
+
+    .err-good { color: var(--accent-emerald); }
+    .err-warn { color: var(--accent-amber); }
+    .err-diff { color: var(--accent-rose); }
+
+    /* VERDICT BANNER */
+    .verdict-box {
+      background: var(--bg-card);
+      border: 1px solid var(--border-color);
+      border-radius: var(--radius-md);
+      padding: 16px 20px;
+      display: flex;
+      align-items: center;
+      gap: 16px;
+      box-shadow: var(--shadow-sm);
+    }
+
+    .verdict-icon {
+      font-size: 2rem;
+      line-height: 1;
+      padding: 10px;
+      border-radius: var(--radius-sm);
+      background: rgba(5, 150, 105, 0.1);
+      color: var(--accent-emerald);
+      flex-shrink: 0;
+    }
+
+    .verdict-text h4 {
+      font-family: var(--font-title);
+      font-size: 1rem;
+      font-weight: 700;
+      color: var(--text-main);
+      margin-bottom: 4px;
+    }
+
+    .verdict-text p {
+      font-size: 0.85rem;
+      color: var(--text-muted);
+      line-height: 1.5;
+    }
+
+    /* GRAPHICS CONTAINER (2-CANVAS SYSTEM) */
+    .graphics-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 20px;
+    }
+
+    @media (max-width: 900px) {
+      .graphics-grid {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    .canvas-card {
+      background: var(--bg-card);
+      border: 1px solid var(--border-color);
+      border-radius: var(--radius-lg);
+      padding: 18px;
+      box-shadow: var(--shadow-md);
+      display: flex;
+      flex-direction: column;
+    }
+
+    .canvas-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 12px;
+      flex-wrap: wrap;
+      gap: 10px;
+    }
+
+    .canvas-title {
+      font-family: var(--font-title);
+      font-size: 0.95rem;
+      font-weight: 700;
+      color: var(--text-main);
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .canvas-tabs {
+      display: flex;
+      background: var(--bg-card-subtle);
+      border-radius: var(--radius-sm);
+      padding: 3px;
+      gap: 2px;
+    }
+
+    .canvas-tab-btn {
+      background: transparent;
+      border: none;
+      color: var(--text-muted);
+      padding: 4px 10px;
+      border-radius: 4px;
+      font-size: 0.75rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.15s ease;
+    }
+
+    .canvas-tab-btn.active {
+      background: var(--bg-card);
+      color: var(--text-main);
+      box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+    }
+
+    .canvas-wrapper {
+      position: relative;
+      width: 100%;
+      height: 380px;
+      background: var(--canvas-bg);
+      border: 1px solid var(--border-color);
+      border-radius: var(--radius-md);
+      overflow: hidden;
+    }
+
+    canvas {
+      display: block;
+      width: 100%;
+      height: 100%;
+    }
+
+    .canvas-legend {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+      font-size: 0.775rem;
+      color: var(--text-muted);
+      margin-top: 10px;
+      flex-wrap: wrap;
+    }
+
+    .legend-item {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .legend-dot {
+      width: 10px;
+      height: 10px;
+      border-radius: 2px;
+    }
+
+    /* DETAILED COMPARISON TABLE */
+    .table-card {
+      background: var(--bg-card);
+      border: 1px solid var(--border-color);
+      border-radius: var(--radius-lg);
+      padding: 24px;
+      margin-bottom: 32px;
+      box-shadow: var(--shadow-md);
+      overflow-x: auto;
+    }
+
+    table.comp-table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 0.85rem;
+      text-align: left;
+    }
+
+    table.comp-table th {
+      background: var(--bg-card-subtle);
+      color: var(--text-main);
+      font-family: var(--font-title);
+      font-weight: 700;
+      padding: 10px 14px;
+      border-bottom: 2px solid var(--border-color);
+    }
+
+    table.comp-table td {
+      padding: 10px 14px;
+      border-bottom: 1px solid var(--border-color);
+      color: var(--text-main);
+    }
+
+    table.comp-table tr:hover td {
+      background: var(--bg-card-subtle);
+    }
+
+    /* INSIGHTS & LIMITATIONS (WHERE WHITNEY SHINES & FAILS) */
+    .critique-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+      gap: 20px;
+      margin-bottom: 32px;
+    }
+
+    .critique-card {
+      background: var(--bg-card);
+      border: 1px solid var(--border-color);
+      border-radius: var(--radius-md);
+      padding: 22px;
+      box-shadow: var(--shadow-sm);
+    }
+
+    .critique-card h3 {
+      font-family: var(--font-title);
+      font-size: 1.05rem;
+      font-weight: 800;
+      margin-bottom: 10px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .critique-card.success h3 { color: var(--accent-emerald); }
+    .critique-card.warning h3 { color: var(--accent-amber); }
+    .critique-card.info h3 { color: var(--accent-cyan); }
+    .critique-card.danger h3 { color: var(--accent-rose); }
+
+    .critique-card p {
+      font-size: 0.875rem;
+      color: var(--text-muted);
+      line-height: 1.6;
+    }
+
+    /* CODE EXPORTER */
+    .exporter-card {
+      background: var(--bg-card);
+      border: 1px solid var(--border-color);
+      border-radius: var(--radius-lg);
+      padding: 24px 28px;
+      margin-bottom: 40px;
+      box-shadow: var(--shadow-md);
+    }
+
+    .code-box-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 12px;
+    }
+
+    .code-box-header span {
+      font-family: var(--font-mono);
+      font-size: 0.825rem;
+      color: var(--text-muted);
+    }
+
+    .btn-copy {
+      background: var(--bg-card-subtle);
+      border: 1px solid var(--border-color);
+      color: var(--text-main);
+      padding: 6px 12px;
+      border-radius: var(--radius-sm);
+      font-size: 0.775rem;
+      font-weight: 600;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      transition: all 0.2s ease;
+    }
+
+    .btn-copy:hover {
+      background: var(--accent-blue);
+      color: #ffffff;
+      border-color: var(--accent-blue);
+    }
+
+    pre.code-block {
+      background: #0b1120;
+      color: #cbd5e1;
+      padding: 16px 18px;
+      border-radius: var(--radius-sm);
+      font-family: var(--font-mono);
+      font-size: 0.8rem;
+      overflow-x: auto;
+      max-height: 280px;
+      line-height: 1.5;
+      border: 1px solid #1e293b;
+    }
+
+    /* FOOTER */
+    footer.main-footer {
+      background: var(--bg-card);
+      border-top: 1px solid var(--border-color);
+      padding: 24px 0;
+      text-align: center;
+      font-size: 0.85rem;
+      color: var(--text-muted);
+      margin-top: auto;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- HEADER -->
+  <header class="top-header">
+    <div class="header-container">
+      <a href="index.html" class="brand-group">
+        <div class="brand-badge">
+          <span>🏛️</span>
+          <span>1937</span>
+        </div>
+        <div class="brand-info">
+          <h1>Bloque de Whitney vs. Modelo de Fibras</h1>
+          <p>Módulo Pedagógico Comparativo · Concreto Armado I</p>
+        </div>
+      </a>
+
+      <div class="header-actions">
+        <a href="index.html" class="btn-nav">
+          <span>← Volver al Portal</span>
+        </a>
+        <button id="btn-theme" class="btn-nav" onclick="toggleTheme()">
+          <span id="theme-icon">🌙</span>
+          <span id="theme-text">Modo Oscuro</span>
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <!-- MAIN CONTENT -->
+  <main class="main-content">
+    
+    <!-- HERO SECTION -->
+    <section class="hero-banner">
+      <div class="hero-tags">
+        <span class="tag-pill tag-blue">Charles S. Whitney (1937)</span>
+        <span class="tag-pill tag-amber">Mecánica No Lineal de Fibras</span>
+        <span class="tag-pill tag-purple">Integración de Esfuerzos</span>
+      </div>
+
+      <h2 class="hero-title">El Bloque Rectangular Equivalente vs. Integración por Fibras</h2>
+      <p class="hero-desc">
+        En 1937, Charles S. Whitney revolucionó el diseño estructural al postular que la compleja distribución parabólica de esfuerzos en el concreto comprimido podía simplificarse en un bloque rectangular uniforme sin sacrificar la exactitud estática de la fuerza resultante ni de su centroide.
+        Casi un siglo después, frente a potentes modelos numéricos de fibras computarizados, <strong>el bloque de Whitney se defiende con una precisión asombrosa (&lt; 1% a 2% de error)</strong> para el estado límite último de secciones rectangulares.
+      </p>
+
+      <div class="quote-box">
+        <p class="quote-text">
+          "El concreto es un material eminentemente plástico en su estado de falla... La resistencia última de vigas y columnas de concreto armado no está regida por su módulo de elasticidad inicial, sino por el aplastamiento y la fluencia plástica del concreto."
+        </p>
+        <div class="quote-cite">
+          <span>📜</span>
+          <span>Charles S. Whitney — <em>"Design of Reinforced Concrete Members Under Flexure or Combined Flexure and Direct Compression"</em>, ACI Journal, Marzo-Abril 1937.</span>
+        </div>
+      </div>
+    </section>
+
+    <!-- HISTORICAL CONTEXT & WHY IT MATTERS -->
+    <section class="history-grid">
+      <div class="history-card">
+        <div class="history-header">
+          <div class="history-icon">⚖️</div>
+          <h3 class="history-title">1. La Ruptura con el Diseño Elástico (WSD)</h3>
+        </div>
+        <p class="history-body">
+          Hasta los años 30 se utilizaba la teoría elástica (<em>Working Stress Design</em>, con relación modular \(n = E_s/E_c\)). Se asumía un triángulo de esfuerzos elásticos lineales (\(\sigma = E \epsilon\)). Esto subestimaba la capacidad real a flexión, ignoraba la plastificación del acero y no podía predecir el factor de seguridad real ante el colapso. Whitney demostró que en rotura, la cima del concreto entra en un régimen plástico no lineal.
+        </p>
+      </div>
+
+      <div class="history-card">
+        <div class="history-header">
+          <div class="history-icon">📐</div>
+          <h3 class="history-title">2. El Poder del Operador Integral</h3>
+        </div>
+        <p class="history-body">
+          ¿Por qué un rectángulo aproxima tan bien una curva? Porque la integración es un proceso de promediado o suavizado. La estática seccional solo necesita dos parámetros escalares:
+          <strong>(1) El Área total</strong> (la fuerza \(C_c\)) y <strong>(2) El Centroide</strong> (el punto de aplicación \(\bar{y}_c\)). Whitney demostró que un bloque de altura \(0.85 f'_c\) y profundidad \(a = \beta_1 c\) reproduce simultáneamente ambas magnitudes con precisión milimétrica.
+        </p>
+      </div>
+
+      <div class="history-card">
+        <div class="history-header">
+          <div class="history-icon">🚀</div>
+          <h3 class="history-title">3. Vigencia Absoluta en Códigos Modernos</h3>
+        </div>
+        <p class="history-body">
+          Aunque hoy disponemos de computadoras que resuelven 200 fibras en microsegundos, el ACI 318-19, ACI 318-25 y la norma colombiana NSR-10 conservan el bloque de Whitney como el método estándar por excelencia. Para secciones rectangulares a flexión o flexo-compresión, las fibras proporcionan los mismos resultados prácticos pero con mayor complejidad analítica innecesaria.
+        </p>
+      </div>
+    </section>
+
+    <!-- MATHEMATICAL DERIVATION OF EQUIVALENCE -->
+    <section class="math-card">
+      <div class="section-headline">
+        <span style="font-size: 1.6rem;">🧮</span>
+        <h2>Fundamento Analítico: Las Dos Ecuaciones de Equivalencia</h2>
+      </div>
+      <p style="color: var(--text-muted); font-size: 0.95rem; line-height: 1.6;">
+        Para que el bloque rectangular sea estáticamente idéntico a la distribución continua de esfuerzos de fibras \(\sigma_c(y)\), debe cumplir con dos condiciones de equivalencia simultáneas:
+      </p>
+
+      <div class="math-grid">
+        <div class="math-subbox">
+          <h3><span>1.</span> Equivalencia de Fuerza Resultante (\(C_c\))</h3>
+          <p style="font-size: 0.85rem; color: var(--text-muted); margin-bottom: 8px;">
+            El volumen bajo el bloque rectangular debe ser igual al volumen de la curva real integrada en la zona comprimida de profundidad \(c\):
+          </p>
+          <div style="background: var(--bg-card); padding: 10px; border-radius: var(--radius-sm); font-size: 0.9rem; text-align: center; margin-bottom: 8px;">
+            \[C_c = \int_0^c \sigma_c(y) \cdot b \, dy = \alpha_1 f'_c \cdot a \cdot b = \alpha_1 \beta_1 f'_c \cdot c \cdot b\]
+          </div>
+          <p style="font-size: 0.8rem; color: var(--text-muted);">
+            Donde el factor de área experimental es \(k_1 k_3 = \alpha_1 \beta_1 \approx 0.85 \times 0.85 = 0.7225\).
+          </p>
+        </div>
+
+        <div class="math-subbox">
+          <h3><span>2.</span> Equivalencia del Centroide (\(\bar{y}_c\))</h3>
+          <p style="font-size: 0.85rem; color: var(--text-muted); margin-bottom: 8px;">
+            El primer momento de área de la distribución de esfuerzos debe coincidir con el momento del bloque, fijando el brazo de palanca:
+          </p>
+          <div style="background: var(--bg-card); padding: 10px; border-radius: var(--radius-sm); font-size: 0.9rem; text-align: center; margin-bottom: 8px;">
+            \[\bar{y}_c = \frac{\int_0^c y \, \sigma_c(y) \, dy}{\int_0^c \sigma_c(y) \, dy} = \frac{a}{2} = \frac{\beta_1 c}{2} = k_2 c\]
+          </div>
+          <p style="font-size: 0.8rem; color: var(--text-muted);">
+            Por tanto, \(k_2 = \beta_1 / 2 \approx 0.85 / 2 = 0.425\). El centroide del bloque rectangular cae prácticamente en la misma posición que el de la parábola de Hognestad (\(k_2 \approx 0.40 - 0.42\)).
+          </p>
+        </div>
+
+        <div class="math-subbox">
+          <h3><span>3.</span> Factor \(\beta_1\) según Resistencia (\(f'_c\))</h3>
+          <p style="font-size: 0.85rem; color: var(--text-muted); margin-bottom: 8px;">
+            A medida que \(f'_c\) aumenta, el concreto se vuelve más frágil y su deformación en la cima disminuye, reduciendo la meseta plástica:
+          </p>
+          <div style="background: var(--bg-card); padding: 10px; border-radius: var(--radius-sm); font-size: 0.85rem; text-align: center; margin-bottom: 8px;">
+            \[\beta_1 = 0.85 - \frac{0.05 (f'_c - 28)}{7} \quad (0.65 \le \beta_1 \le 0.85)\]
+          </div>
+          <p style="font-size: 0.8rem; color: var(--text-muted);" id="math-beta-live">
+            Para \(f'_c = 28\text{ MPa}\): \(\beta_1 = 0.85\), \(a = 0.85 c\), \(k_2 = 0.425\).
+          </p>
+        </div>
+      </div>
+    </section>
+
+    <!-- INTERACTIVE LABORATORY -->
+    <div class="lab-container">
+      
+      <!-- CONTROLS SIDEBAR -->
+      <aside class="controls-panel">
+        <div>
+          <div class="panel-block-title">
+            <span>⚙️</span>
+            <span>Presets Rápidos</span>
+          </div>
+          <div class="preset-btn-group">
+            <button class="btn-preset" onclick="applyPreset('viga')">Viga 30×50</button>
+            <button class="btn-preset" onclick="applyPreset('columna')">Columna 40×40</button>
+            <button class="btn-preset" onclick="applyPreset('altorc')">Alta Res. 50 MPa</button>
+            <button class="btn-preset" onclick="applyPreset('muro')">Muro 20×70</button>
+          </div>
+        </div>
+
+        <!-- SECTION GEOMETRY -->
+        <div>
+          <div class="panel-block-title">
+            <span>📐</span>
+            <span>Geometría de la Sección</span>
+          </div>
+
+          <div class="control-row-cols">
+            <div>
+              <label class="control-label" for="inp-b">
+                <span>Ancho \(b\)</span>
+                <span class="control-val-badge" id="lbl-b">30 cm</span>
+              </label>
+              <input type="number" id="inp-b" min="15" max="120" step="5" value="30" oninput="updateAll()">
+            </div>
+            <div>
+              <label class="control-label" for="inp-h">
+                <span>Altura \(h\)</span>
+                <span class="control-val-badge" id="lbl-h">50 cm</span>
+              </label>
+              <input type="number" id="inp-h" min="20" max="150" step="5" value="50" oninput="updateAll()">
+            </div>
+          </div>
+
+          <div class="control-row">
+            <label class="control-label" for="inp-r">
+              <span>Recubrimiento centroide \(r\) (\(d' = r\))</span>
+              <span class="control-val-badge" id="lbl-r">6.0 cm</span>
+            </label>
+            <input type="range" id="inp-r" min="3.0" max="10.0" step="0.5" value="6.0" oninput="updateAll()">
+          </div>
+        </div>
+
+        <!-- MATERIAL PROPERTIES -->
+        <div>
+          <div class="panel-block-title">
+            <span>🧱</span>
+            <span>Materiales</span>
+          </div>
+
+          <div class="control-row">
+            <label class="control-label" for="inp-fc">
+              <span>Resistencia \(f'_c\) (MPa)</span>
+              <span class="control-val-badge" id="lbl-fc">28.0 MPa</span>
+            </label>
+            <input type="range" id="inp-fc" min="21" max="60" step="1" value="28" oninput="updateAll()">
+            <div style="font-size: 0.75rem; color: var(--text-muted); margin-top: 2px;">
+              Factor resultante: <strong id="lbl-beta1" style="color: var(--accent-cyan);">\(\beta_1 = 0.85\)</strong>
+            </div>
+          </div>
+
+          <div class="control-row-cols">
+            <div>
+              <label class="control-label" for="inp-fy">
+                <span>Fluencia \(f_y\)</span>
+              </label>
+              <select id="inp-fy" onchange="updateAll()">
+                <option value="420" selected>420 MPa</option>
+                <option value="280">280 MPa</option>
+                <option value="520">520 MPa</option>
+              </select>
+            </div>
+            <div>
+              <label class="control-label" for="inp-fibers">
+                <span>Num. Fibras</span>
+              </label>
+              <select id="inp-fibers" onchange="updateAll()">
+                <option value="50">50 fibras</option>
+                <option value="100" selected>100 fibras</option>
+                <option value="200">200 fibras</option>
+              </select>
+            </div>
+          </div>
+        </div>
+
+        <!-- REINFORCEMENT -->
+        <div>
+          <div class="panel-block-title">
+            <span>🔩</span>
+            <span>Armadura de Acero</span>
+          </div>
+
+          <div class="control-row">
+            <label class="control-label" for="inp-as">
+              <span>Acero a Tracción \(A_s\) (cm²)</span>
+              <span class="control-val-badge" id="lbl-as">11.40 cm²</span>
+            </label>
+            <input type="range" id="inp-as" min="2.0" max="40.0" step="0.5" value="11.4" oninput="updateAll()">
+            <span style="font-size: 0.725rem; color: var(--text-muted);" id="lbl-as-desc">≈ 4 #6 (cuantía \(\rho = 0.86\%\))</span>
+          </div>
+
+          <div class="control-row">
+            <label class="control-label" for="inp-asp">
+              <span>Acero a Compresión \(A'_s\) (cm²)</span>
+              <span class="control-val-badge" id="lbl-asp">2.58 cm²</span>
+            </label>
+            <input type="range" id="inp-asp" min="0.0" max="25.0" step="0.5" value="2.58" oninput="updateAll()">
+            <span style="font-size: 0.725rem; color: var(--text-muted);" id="lbl-asp-desc">≈ 2 #4 de montaje</span>
+          </div>
+        </div>
+
+        <!-- MASTER NEUTRAL AXIS (C) CONTROL -->
+        <div class="master-c-control">
+          <div class="panel-block-title" style="border-bottom:none; margin-bottom: 6px;">
+            <span>🎯</span>
+            <span>Profundidad del Eje Neutro (\(c\))</span>
+          </div>
+
+          <div class="control-row" style="margin-bottom: 8px;">
+            <div style="display: flex; justify-content: space-between; align-items: baseline; margin-bottom: 4px;">
+              <span style="font-size: 0.825rem; font-weight: 700; color: var(--text-main);">Valor de \(c\):</span>
+              <span class="control-val-badge" id="lbl-c-val" style="font-size: 0.95rem; color: var(--text-bright);">12.5 cm</span>
+            </div>
+            <input type="range" id="inp-c" min="2.0" max="60.0" step="0.2" value="12.5" oninput="onSliderCChange()">
+            <div style="display: flex; justify-content: space-between; font-size: 0.725rem; color: var(--text-muted); margin-top: 4px;">
+              <span id="lbl-c-ratio">c/d = 0.28</span>
+              <span id="lbl-a-val">a = 10.6 cm</span>
+            </div>
+          </div>
+
+          <!-- QUICK SOLVER BUTTONS -->
+          <div style="display: flex; flex-direction: column; gap: 6px; margin-top: 10px;">
+            <button class="btn-action-primary" onclick="solvePureFlexure()">
+              <span>⚖️</span>
+              <span>Equilibrar Viga Pura (\(P_n = 0\))</span>
+            </button>
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 6px;">
+              <button class="btn-preset" onclick="setBalancedPoint()">🔹 Balanceada (\(c_b\))</button>
+              <button class="btn-preset" onclick="setTensionDuctile()">🟢 Dúctil (\(\varepsilon_t = 0.005\))</button>
+            </div>
+          </div>
+        </div>
+
+      </aside>
+
+      <!-- MAIN DISPLAY: KPIS & VISUALIZATIONS -->
+      <section class="display-panel">
+        
+        <!-- KPI METRICS COMPARISON (FOR THE CURRENT C) -->
+        <div class="kpi-row">
+          
+          <!-- KPI 1: CONCRETE COMPRESSION FORCE (Cc) -->
+          <div class="kpi-card">
+            <div class="kpi-card-stripe kpi-stripe-blue"></div>
+            <div class="kpi-header">
+              <span>Fuerza Concreto \(C_c\)</span>
+              <span>kN</span>
+            </div>
+            <div class="kpi-duo">
+              <div class="kpi-row-val">
+                <span class="kpi-label-w">Whitney:</span>
+                <span class="kpi-val-num" id="kpi-cc-w">758.6</span>
+              </div>
+              <div class="kpi-row-val">
+                <span class="kpi-label-f">Fibras:</span>
+                <span class="kpi-val-num" id="kpi-cc-f">748.2</span>
+              </div>
+            </div>
+            <div class="kpi-error-tag">
+              <span style="color:var(--text-muted)">Diferencia:</span>
+              <span id="kpi-cc-err" class="err-good">+1.39%</span>
+            </div>
+          </div>
+
+          <!-- KPI 2: CENTROID OF COMPRESSION (yc) -->
+          <div class="kpi-card">
+            <div class="kpi-card-stripe kpi-stripe-amber"></div>
+            <div class="kpi-header">
+              <span>Centroide \(\bar{y}_c\)</span>
+              <span>cm (desde tope)</span>
+            </div>
+            <div class="kpi-duo">
+              <div class="kpi-row-val">
+                <span class="kpi-label-w">Whitney (\(a/2\)):</span>
+                <span class="kpi-val-num" id="kpi-yc-w">5.32</span>
+              </div>
+              <div class="kpi-row-val">
+                <span class="kpi-label-f">Fibras:</span>
+                <span class="kpi-val-num" id="kpi-yc-f">5.08</span>
+              </div>
+            </div>
+            <div class="kpi-error-tag">
+              <span style="color:var(--text-muted)">Distancia \(\Delta \bar{y}_c\):</span>
+              <span id="kpi-yc-err" class="err-good">+2.4 mm</span>
+            </div>
+          </div>
+
+          <!-- KPI 3: LEVER ARM (jd) -->
+          <div class="kpi-card">
+            <div class="kpi-card-stripe kpi-stripe-purple"></div>
+            <div class="kpi-header">
+              <span>Brazo Interno \(j d\)</span>
+              <span>cm (\(d - \bar{y}_c\))</span>
+            </div>
+            <div class="kpi-duo">
+              <div class="kpi-row-val">
+                <span class="kpi-label-w">Whitney:</span>
+                <span class="kpi-val-num" id="kpi-jd-w">38.68</span>
+              </div>
+              <div class="kpi-row-val">
+                <span class="kpi-label-f">Fibras:</span>
+                <span class="kpi-val-num" id="kpi-jd-f">38.92</span>
+              </div>
+            </div>
+            <div class="kpi-error-tag">
+              <span style="color:var(--text-muted)">Diferencia:</span>
+              <span id="kpi-jd-err" class="err-good">-0.62%</span>
+            </div>
+          </div>
+
+          <!-- KPI 4: NOMINAL MOMENT (Mn) -->
+          <div class="kpi-card">
+            <div class="kpi-card-stripe kpi-stripe-emerald"></div>
+            <div class="kpi-header">
+              <span>Momento \(M_n\)</span>
+              <span>kN·m (al c.p.)</span>
+            </div>
+            <div class="kpi-duo">
+              <div class="kpi-row-val">
+                <span class="kpi-label-w">Whitney:</span>
+                <span class="kpi-val-num" id="kpi-mn-w">224.5</span>
+              </div>
+              <div class="kpi-row-val">
+                <span class="kpi-label-f">Fibras:</span>
+                <span class="kpi-val-num" id="kpi-mn-f">223.1</span>
+              </div>
+            </div>
+            <div class="kpi-error-tag">
+              <span style="color:var(--text-muted)">Diferencia:</span>
+              <span id="kpi-mn-err" class="err-good">+0.63%</span>
+            </div>
+          </div>
+
+          <!-- KPI 5: NOMINAL AXIAL LOAD (Pn) -->
+          <div class="kpi-card">
+            <div class="kpi-card-stripe kpi-stripe-blue"></div>
+            <div class="kpi-header">
+              <span>Carga Axial \(P_n\)</span>
+              <span>kN</span>
+            </div>
+            <div class="kpi-duo">
+              <div class="kpi-row-val">
+                <span class="kpi-label-w">Whitney:</span>
+                <span class="kpi-val-num" id="kpi-pn-w">388.2</span>
+              </div>
+              <div class="kpi-row-val">
+                <span class="kpi-label-f">Fibras:</span>
+                <span class="kpi-val-num" id="kpi-pn-f">377.8</span>
+              </div>
+            </div>
+            <div class="kpi-error-tag">
+              <span style="color:var(--text-muted)">Diferencia:</span>
+              <span id="kpi-pn-err" class="err-good">+2.75%</span>
+            </div>
+          </div>
+
+        </div>
+
+        <!-- DYNAMIC PEDAGOGICAL VERDICT -->
+        <div class="verdict-box" id="verdict-box">
+          <div class="verdict-icon" id="verdict-icon">🎯</div>
+          <div class="verdict-text">
+            <h4 id="verdict-title">Concordancia Extraordinaria: Error menor al 1% en Resistencia a Flexión</h4>
+            <p id="verdict-desc">
+              Para \(c = 12.5\text{ cm}\), el brazo de palanca difiere apenas en 2.4 mm y el momento nominal difiere en +0.63%. Whitney predice la capacidad seccional con una exactitud prácticamente perfecta frente al modelo no lineal continuo.
+            </p>
+          </div>
+        </div>
+
+        <!-- DUAL GRAPHICS PANELS (CANVAS) -->
+        <div class="graphics-grid">
+          
+          <!-- CANVAS 1: SECTION STRESS PROFILE OVERLAY -->
+          <div class="canvas-card">
+            <div class="canvas-header">
+              <div class="canvas-title">
+                <span>🔬</span>
+                <span>Sección y Distribución de Esfuerzos Superpuesta</span>
+              </div>
+            </div>
+
+            <div class="canvas-wrapper">
+              <canvas id="canvas-section"></canvas>
+            </div>
+
+            <div class="canvas-legend">
+              <div class="legend-item">
+                <div class="legend-dot" style="background: var(--fiber-color);"></div>
+                <span>Curva Continua No Lineal (Hognestad / Fibras)</span>
+              </div>
+              <div class="legend-item">
+                <div class="legend-dot" style="background: var(--whitney-color);"></div>
+                <span>Bloque Rectangular Equivalente (Whitney 1937, \(a = \beta_1 c\))</span>
+              </div>
+              <div class="legend-item">
+                <div class="legend-dot" style="background: #a855f7;"></div>
+                <span>Eje Neutro \(c\)</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- CANVAS 2: GLOBAL COMPARISON SPECTRA -->
+          <div class="canvas-card">
+            <div class="canvas-header">
+              <div class="canvas-title">
+                <span>📈</span>
+                <span id="canvas2-title">Fuerza \(C_c\) vs. \(c\) y Curva de Error</span>
+              </div>
+              <div class="canvas-tabs">
+                <button class="canvas-tab-btn active" onclick="switchGraphTab('cc')">\(C_c(c)\)</button>
+                <button class="canvas-tab-btn" onclick="switchGraphTab('pm')">Curva \(P_n - M_n\)</button>
+                <button class="canvas-tab-btn" onclick="switchGraphTab('centroid')">Centroide \(\bar{y}_c/c\)</button>
+              </div>
+            </div>
+
+            <div class="canvas-wrapper">
+              <canvas id="canvas-global"></canvas>
+            </div>
+
+            <div class="canvas-legend" id="canvas2-legend">
+              <div class="legend-item">
+                <div class="legend-dot" style="background: var(--whitney-color);"></div>
+                <span>Whitney (1937)</span>
+              </div>
+              <div class="legend-item">
+                <div class="legend-dot" style="background: var(--fiber-color);"></div>
+                <span>Integración Fibras</span>
+              </div>
+              <div class="legend-item">
+                <div class="legend-dot" style="background: var(--accent-emerald);"></div>
+                <span>Punto Actual (\(c\) fijado)</span>
+              </div>
+            </div>
+          </div>
+
+        </div>
+
+      </section>
+    </div>
+
+    <!-- DETAILED EQUILIBRIUM COMPARISON TABLE -->
+    <section class="table-card">
+      <div class="section-headline">
+        <span style="font-size: 1.5rem;">📋</span>
+        <h2>Desglose Analítico de Fuerzas Internas para \(c = \)<span id="tbl-c-val" style="color:var(--accent-cyan)">12.5 cm</span></h2>
+      </div>
+
+      <table class="comp-table">
+        <thead>
+          <tr>
+            <th>Componente Interno</th>
+            <th>Formulación Whitney (1937)</th>
+            <th>Fuerza Whitney (\(F_{\text{W}}\))</th>
+            <th>Brazo al C.P. (\(y_{\text{W}}\))</th>
+            <th>Momento Whitney (\(M_{\text{W}}\))</th>
+            <th>Fuerza Fibras (\(F_{\text{F}}\))</th>
+            <th>Brazo Fibras (\(y_{\text{F}}\))</th>
+            <th>Momento Fibras (\(M_{\text{F}}\))</th>
+            <th>Error Relativo</th>
+          </tr>
+        </thead>
+        <tbody id="comp-table-body">
+          <!-- Populated by JavaScript -->
+        </tbody>
+        <tfoot style="font-weight: 700; background: var(--bg-card-subtle);">
+          <tr id="comp-table-total">
+            <!-- Populated by JavaScript -->
+          </tr>
+        </tfoot>
+      </table>
+    </section>
+
+    <!-- CRITICAL SYNTHESIS: WHERE WHITNEY SHINES & LIMITATIONS -->
+    <section>
+      <div class="section-headline" style="margin-bottom: 20px;">
+        <span style="font-size: 1.5rem;">💡</span>
+        <h2>Síntesis Crítica: ¿Dónde Brilla Whitney y Dónde se Requieren Fibras?</h2>
+      </div>
+
+      <div class="critique-grid">
+        <div class="critique-card success">
+          <h3><span>✅</span> Dominio de Excelencia de Whitney</h3>
+          <p>
+            En secciones rectangulares de vigas y columnas bajo estado límite último (\(\varepsilon_{cu} \approx 0.003\)) con falla controlada por tracción o balanceada. La discrepancia en capacidad resistente \(M_n\) y \(P_n\) es usualmente <strong>inferior al 1.5%</strong>, lo que hace absurdo e innecesario recurrir a métodos numéricos complejos para el diseño cotidiano.
+          </p>
+        </div>
+
+        <div class="critique-card warning">
+          <h3><span>⚠️</span> La Corrección por Concreto de Alta Resistencia</h3>
+          <p>
+            Cuando \(f'_c > 28\text{ MPa}\), el concreto exhibe una curva constitutiva más empinada y frágil, con menor deformación en la cumbre y descenso abrupto. Whitney no mantuvo constantes sus factores: ACI 318 y NSR-10 exigen castigar \(\beta_1\) a razón de 0.05 por cada 7 MPa por encima de 28 MPa (hasta un mínimo de 0.65) para mantener la equivalencia integral.
+          </p>
+        </div>
+
+        <div class="critique-card danger">
+          <h3><span>⛔</span> La Trampa del Estado de Servicio</h3>
+          <p>
+            El bloque de Whitney <strong>no tiene ninguna validez en condiciones de servicio</strong> (cálculo de deflexiones, fisuración o vibraciones bajo cargas de trabajo). En servicio, los esfuerzos son bajos (\(\sigma_c \le 0.45 f'_c\)) y el concreto se encuentra en su fase elástica lineal, requiriendo secciones agrietadas elásticas o modelos de fibras.
+          </p>
+        </div>
+
+        <div class="critique-card info">
+          <h3><span>🧩</span> Secciones Complejas y Confinamiento</h3>
+          <p>
+            Las fibras son insustituibles en: (1) Vigas T cuando el bloque de compresión penetra profundamente en el alma (\(a > h_f\)); (2) Columnas circulares o geometrías irregulares; y (3) Concreto fuertemente confinado por estribos cerrados (modelo de Mander), donde la meseta plástica supera \(f'_c\) y la deformación última se multiplica (\(\varepsilon_{cu} > 0.015\)).
+          </p>
+        </div>
+      </div>
+    </section>
+
+    <!-- PYTHON CODE EXPORTER -->
+    <section class="exporter-card">
+      <div class="code-box-header">
+        <div class="section-headline" style="margin-bottom:0;">
+          <span style="font-size: 1.3rem;">🐍</span>
+          <h3 style="font-family: var(--font-title); font-size: 1.15rem; font-weight: 700; color: var(--text-main);">
+            Script en Python Reproducible (Jupyter / Spyder)
+          </h3>
+        </div>
+        <button class="btn-copy" onclick="copyPythonCode()">
+          <span id="copy-icon">📋</span>
+          <span id="copy-text">Copiar Código Python</span>
+        </button>
+      </div>
+      <p style="font-size: 0.85rem; color: var(--text-muted); margin-bottom: 12px;">
+        Este script autónomo en Python utiliza NumPy y Matplotlib para comparar el bloque de Whitney frente a 200 fibras con el modelo constitutivo de Hognestad para la sección configurada actualmente:
+      </p>
+      <pre class="code-block" id="python-code-display"></pre>
+    </section>
+
+  </main>
+
+  <!-- FOOTER -->
+  <footer class="main-footer">
+    <div style="max-width: 1200px; margin: 0 auto; padding: 0 24px;">
+      <p>Material Educativo para el Curso de <strong>Diseño de Concreto Armado I</strong></p>
+      <p style="margin-top:4px; opacity:0.75; font-size:0.775rem;">
+        Homenaje histórico al artículo seminal: Whitney, C.S. (1937), <em>"Design of Reinforced Concrete Members Under Flexure or Combined Flexure and Direct Compression"</em>, ACI Journal.
+      </p>
+    </div>
+  </footer>
+
+  <!-- JAVASCRIPT LOGIC -->
+  <script>
+  /* ==========================================================================
+     GLOBAL STATE & CONSTITUTIVE MODELS
+     ========================================================================== */
+  const state = {
+    b: 30.0,       // cm
+    h: 50.0,       // cm
+    r: 6.0,        // cm (centroid cover)
+    fc: 28.0,      // MPa
+    fy: 420.0,     // MPa
+    Es: 200000.0,  // MPa
+    ecu: 0.003,    // ultimate concrete strain
+    As: 11.40,     // cm2 (tension steel)
+    Asp: 2.58,     // cm2 (compression steel)
+    c: 12.5,       // cm (neutral axis depth)
+    numFibers: 100,// number of concrete fibers
+    currentTab: 'cc' // 'cc', 'pm', 'centroid'
+  };
+
+  // Beta 1 factor calculation according to ACI 318 / NSR-10
+  function computeBeta1(fc) {
+    if (fc <= 28.0) {
+      return 0.85;
+    } else {
+      const b1 = 0.85 - (0.05 * (fc - 28.0) / 7.0);
+      return Math.max(0.65, Math.min(0.85, b1));
+    }
+  }
+
+  // Hognestad Constitutive Law for Concrete (Unconfined, Peak = fc)
+  function hognestadStress(eps, fc) {
+    if (eps <= 0.0) return 0.0;
+    const Ec = 4400.0 * Math.sqrt(fc); // MPa
+    const e0 = 1.8 * fc / Ec;
+    const eu = 0.0038;
+
+    if (eps <= e0) {
+      return fc * (2.0 * (eps / e0) - Math.pow(eps / e0, 2));
+    } else if (eps <= eu) {
+      const m = -0.15 * fc / (eu - e0);
+      return fc + m * (eps - e0);
+    } else {
+      return 0.0;
+    }
+  }
+
+  // Steel Elastoplastic Model
+  function steelStress(eps, fy, Es) {
+    const fs = eps * Es;
+    return Math.max(-fy, Math.min(fy, fs));
+  }
+
+  /* ==========================================================================
+     SECTION ANALYSIS ENGINES (WHITNEY VS FIBERS)
+     ========================================================================== */
+  
+  // 1. Fiber Discretization Analysis for a given c (in cm)
+  function analyzeFibers(cVal, nFibers = state.numFibers) {
+    const b = state.b; // cm
+    const h = state.h; // cm
+    const fc = state.fc;
+    const ecu = state.ecu;
+    const ypc = h / 2.0; // cm (geometric/plastic centroid)
+
+    // Concrete fibers
+    const dy = h / nFibers; // cm
+    let sumFc = 0.0; // kN
+    let sumMc = 0.0; // kN*m (about plastic centroid)
+    let sumYFc = 0.0; // kN * cm (for centroid from top)
+
+    const fiberDetails = [];
+
+    for (let i = 0; i < nFibers; i++) {
+      const y_top = (i + 0.5) * dy; // cm from top edge
+      const eps = (cVal > 0.0001) ? ecu * (cVal - y_top) / cVal : -0.003;
+      const sigma = (eps > 0.0) ? hognestadStress(eps, fc) : 0.0; // MPa
+      const dA = (dy * b); // cm^2
+      const dF = (sigma * dA) / 10.0; // kN  (1 MPa * cm2 = 1 N/mm2 * 100 mm2 = 100 N = 0.1 kN)
+      
+      const arm_pc = (ypc - y_top) / 100.0; // m
+      const dM = dF * arm_pc; // kN*m
+
+      if (eps > 0.0) {
+        sumFc += dF;
+        sumMc += dM;
+        sumYFc += dF * y_top;
+      }
+
+      fiberDetails.push({
+        y: y_top,
+        eps: eps,
+        sigma: sigma,
+        dF: dF
+      });
+    }
+
+    const yc_top = (sumFc > 0.0) ? (sumYFc / sumFc) : 0.0; // cm from top edge
+
+    // Steel layers: Layer 1 (Bottom, tension: d = h - r), Layer 2 (Top, compression: d' = r)
+    const d_bot = h - state.r; // cm
+    const d_top = state.r;     // cm
+
+    const eps_s_bot = (cVal > 0.0001) ? ecu * (cVal - d_bot) / cVal : 0.0;
+    const fs_bot = steelStress(eps_s_bot, state.fy, state.Es); // MPa
+    const Fs_bot = (fs_bot * state.As) / 10.0; // kN (tension is negative)
+    const arm_s_bot = (ypc - d_bot) / 100.0; // m
+    const Ms_bot = Fs_bot * arm_s_bot; // kN*m
+
+    const eps_s_top = (cVal > 0.0001) ? ecu * (cVal - d_top) / cVal : 0.0;
+    const fs_top = steelStress(eps_s_top, state.fy, state.Es); // MPa
+    const Fs_top = (fs_top * state.Asp) / 10.0; // kN
+    const arm_s_top = (ypc - d_top) / 100.0; // m
+    const Ms_top = Fs_top * arm_s_top; // kN*m
+
+    const Pn = sumFc + Fs_bot + Fs_top; // kN
+    const Mn = sumMc + Ms_bot + Ms_top; // kN*m
+
+    return {
+      c: cVal,
+      Cc: sumFc,
+      yc: yc_top, // cm from top
+      jd: (d_bot - yc_top), // cm
+      Mc: sumMc,
+      eps_s_bot: eps_s_bot,
+      fs_bot: fs_bot,
+      Fs_bot: Fs_bot,
+      Ms_bot: Ms_bot,
+      eps_s_top: eps_s_top,
+      fs_top: fs_top,
+      Fs_top: Fs_top,
+      Ms_top: Ms_top,
+      Pn: Pn,
+      Mn: Mn,
+      fibers: fiberDetails
+    };
+  }
+
+  // 2. Whitney Rectangular Stress Block Analysis for a given c (in cm)
+  function analyzeWhitney(cVal) {
+    const b = state.b;
+    const h = state.h;
+    const fc = state.fc;
+    const ecu = state.ecu;
+    const beta1 = computeBeta1(fc);
+    const ypc = h / 2.0;
+
+    // Block depth: a = min(beta1 * c, h)
+    const a = Math.min(beta1 * cVal, h); // cm
+    const sigma_w = 0.85 * fc; // MPa
+    const Area_w = a * b; // cm2
+    const Cc = (sigma_w * Area_w) / 10.0; // kN
+    const yc = a / 2.0; // cm from top
+
+    const arm_pc_c = (ypc - yc) / 100.0; // m
+    const Mc = Cc * arm_pc_c; // kN*m
+
+    // Steel layers (Euler-Bernoulli kinematic strain)
+    const d_bot = h - state.r; // cm
+    const d_top = state.r;     // cm
+
+    const eps_s_bot = (cVal > 0.0001) ? ecu * (cVal - d_bot) / cVal : 0.0;
+    const fs_bot = steelStress(eps_s_bot, state.fy, state.Es);
+    const Fs_bot = (fs_bot * state.As) / 10.0;
+    const arm_s_bot = (ypc - d_bot) / 100.0;
+    const Ms_bot = Fs_bot * arm_s_bot;
+
+    const eps_s_top = (cVal > 0.0001) ? ecu * (cVal - d_top) / cVal : 0.0;
+    const fs_top = steelStress(eps_s_top, state.fy, state.Es);
+    const Fs_top = (fs_top * state.Asp) / 10.0;
+    const arm_s_top = (ypc - d_top) / 100.0;
+    const Ms_top = Fs_top * arm_s_top;
+
+    const Pn = Cc + Fs_bot + Fs_top;
+    const Mn = Mc + Ms_bot + Ms_top;
+
+    return {
+      c: cVal,
+      beta1: beta1,
+      a: a,
+      sigma_w: sigma_w,
+      Cc: Cc,
+      yc: yc,
+      jd: (d_bot - yc),
+      Mc: Mc,
+      eps_s_bot: eps_s_bot,
+      fs_bot: fs_bot,
+      Fs_bot: Fs_bot,
+      Ms_bot: Ms_bot,
+      eps_s_top: eps_s_top,
+      fs_top: fs_top,
+      Fs_top: Fs_top,
+      Ms_top: Ms_top,
+      Pn: Pn,
+      Mn: Mn
+    };
+  }
+
+  /* ==========================================================================
+     UI SYNCHRONIZATION & INTERACTION
+     ========================================================================= */
+  
+  function onSliderCChange() {
+    state.c = parseFloat(document.getElementById('inp-c').value);
+    updateAll(false);
+  }
+
+  function updateAll(updateSliderLimit = true) {
+    // Read Inputs
+    state.b = parseFloat(document.getElementById('inp-b').value) || 30.0;
+    state.h = parseFloat(document.getElementById('inp-h').value) || 50.0;
+    state.r = parseFloat(document.getElementById('inp-r').value) || 6.0;
+    state.fc = parseFloat(document.getElementById('inp-fc').value) || 28.0;
+    state.fy = parseFloat(document.getElementById('inp-fy').value) || 420.0;
+    state.As = parseFloat(document.getElementById('inp-as').value) || 11.4;
+    state.Asp = parseFloat(document.getElementById('inp-asp').value) || 2.58;
+    state.numFibers = parseInt(document.getElementById('inp-fibers').value) || 100;
+
+    // Update c slider bounds
+    const sliderC = document.getElementById('inp-c');
+    const maxC = Math.round(state.h * 1.2 * 10) / 10;
+    sliderC.max = maxC;
+    sliderC.min = Math.round(state.h * 0.05 * 10) / 10;
+
+    if (updateSliderLimit) {
+      if (state.c > maxC) state.c = maxC;
+      sliderC.value = state.c;
+    }
+
+    // Run analyses
+    const resW = analyzeWhitney(state.c);
+    const resF = analyzeFibers(state.c);
+
+    // Update Labels
+    document.getElementById('lbl-b').textContent = `${state.b.toFixed(0)} cm`;
+    document.getElementById('lbl-h').textContent = `${state.h.toFixed(0)} cm`;
+    document.getElementById('lbl-r').textContent = `${state.r.toFixed(1)} cm`;
+    document.getElementById('lbl-fc').textContent = `${state.fc.toFixed(1)} MPa`;
+    document.getElementById('lbl-as').textContent = `${state.As.toFixed(2)} cm²`;
+    document.getElementById('lbl-asp').textContent = `${state.Asp.toFixed(2)} cm²`;
+
+    const beta1 = computeBeta1(state.fc);
+    document.getElementById('lbl-beta1').innerHTML = `\\(\\beta_1 = ${beta1.toFixed(3)}\\)`;
+    document.getElementById('math-beta-live').innerHTML = 
+      `Para \\(f'_c = ${state.fc.toFixed(0)}\\text{ MPa}\\): \\(\\beta_1 = ${beta1.toFixed(3)}\\), ` +
+      `\\(a = ${beta1.toFixed(3)} c\\), \\(k_2 = ${(beta1/2).toFixed(3)}\\).`;
+
+    // Steel descriptions
+    const d = state.h - state.r;
+    const rho = (state.As / (state.b * d)) * 100.0;
+    document.getElementById('lbl-as-desc').textContent = `Cuantía \\(\\rho = ${rho.toFixed(2)}\\%\\), d = ${d.toFixed(1)} cm`;
+    const rhoP = (state.Asp / (state.b * d)) * 100.0;
+    document.getElementById('lbl-asp-desc').textContent = `Cuantía \\(\\rho' = ${rhoP.toFixed(2)}\\%\\), d' = ${state.r.toFixed(1)} cm`;
+
+    // Neutral axis readouts
+    document.getElementById('lbl-c-val').textContent = `${state.c.toFixed(1)} cm`;
+    document.getElementById('lbl-c-ratio').textContent = `c/d = ${(state.c / d).toFixed(3)} (${(state.c / state.h).toFixed(2)} h)`;
+    document.getElementById('lbl-a-val').textContent = `a = ${resW.a.toFixed(1)} cm`;
+
+    // Update KPI Cards
+    updateKPICards(resW, resF);
+
+    // Update Verdict
+    updateVerdict(resW, resF);
+
+    // Update Table
+    updateTable(resW, resF);
+
+    // Render Canvas
+    renderSectionCanvas(resW, resF);
+    renderGlobalCanvas(resW, resF);
+
+    // Update Python exporter
+    updatePythonCode();
+
+    // Rerender MathJax formulas if available
+    if (window.MathJax && MathJax.typesetPromise) {
+      MathJax.typesetPromise();
+    }
+  }
+
+  function updateKPICards(w, f) {
+    // 1. Cc
+    document.getElementById('kpi-cc-w').textContent = w.Cc.toFixed(1);
+    document.getElementById('kpi-cc-f').textContent = f.Cc.toFixed(1);
+    const errCc = (f.Cc > 0.1) ? ((w.Cc - f.Cc) / f.Cc * 100.0) : 0.0;
+    const badgeCc = document.getElementById('kpi-cc-err');
+    badgeCc.textContent = `${errCc >= 0 ? '+' : ''}${errCc.toFixed(2)}%`;
+    badgeCc.className = Math.abs(errCc) < 3.0 ? 'err-good' : (Math.abs(errCc) < 7.0 ? 'err-warn' : 'err-diff');
+
+    // 2. yc
+    document.getElementById('kpi-yc-w').textContent = w.yc.toFixed(2);
+    document.getElementById('kpi-yc-f').textContent = f.yc.toFixed(2);
+    const diffYcMm = (w.yc - f.yc) * 10.0; // mm
+    const badgeYc = document.getElementById('kpi-yc-err');
+    badgeYc.textContent = `${diffYcMm >= 0 ? '+' : ''}${diffYcMm.toFixed(1)} mm`;
+    badgeYc.className = Math.abs(diffYcMm) < 4.0 ? 'err-good' : 'err-warn';
+
+    // 3. jd
+    document.getElementById('kpi-jd-w').textContent = w.jd.toFixed(2);
+    document.getElementById('kpi-jd-f').textContent = f.jd.toFixed(2);
+    const errJd = (f.jd > 0.1) ? ((w.jd - f.jd) / f.jd * 100.0) : 0.0;
+    const badgeJd = document.getElementById('kpi-jd-err');
+    badgeJd.textContent = `${errJd >= 0 ? '+' : ''}${errJd.toFixed(2)}%`;
+    badgeJd.className = Math.abs(errJd) < 2.0 ? 'err-good' : 'err-warn';
+
+    // 4. Mn
+    document.getElementById('kpi-mn-w').textContent = w.Mn.toFixed(1);
+    document.getElementById('kpi-mn-f').textContent = f.Mn.toFixed(1);
+    const errMn = (Math.abs(f.Mn) > 1.0) ? ((w.Mn - f.Mn) / Math.abs(f.Mn) * 100.0) : 0.0;
+    const badgeMn = document.getElementById('kpi-mn-err');
+    badgeMn.textContent = `${errMn >= 0 ? '+' : ''}${errMn.toFixed(2)}%`;
+    badgeMn.className = Math.abs(errMn) < 2.5 ? 'err-good' : (Math.abs(errMn) < 5.0 ? 'err-warn' : 'err-diff');
+
+    // 5. Pn
+    document.getElementById('kpi-pn-w').textContent = w.Pn.toFixed(1);
+    document.getElementById('kpi-pn-f').textContent = f.Pn.toFixed(1);
+    const errPn = (Math.abs(f.Pn) > 10.0) ? ((w.Pn - f.Pn) / Math.abs(f.Pn) * 100.0) : 0.0;
+    const badgePn = document.getElementById('kpi-pn-err');
+    if (Math.abs(f.Pn) <= 10.0) {
+      badgePn.textContent = `Δ = ${(w.Pn - f.Pn).toFixed(1)} kN`;
+      badgePn.className = 'err-good';
+    } else {
+      badgePn.textContent = `${errPn >= 0 ? '+' : ''}${errPn.toFixed(2)}%`;
+      badgePn.className = Math.abs(errPn) < 3.5 ? 'err-good' : 'err-warn';
+    }
+  }
+
+  function updateVerdict(w, f) {
+    const titleEl = document.getElementById('verdict-title');
+    const descEl = document.getElementById('verdict-desc');
+    const iconEl = document.getElementById('verdict-icon');
+
+    const errMn = (Math.abs(f.Mn) > 1.0) ? Math.abs((w.Mn - f.Mn) / f.Mn * 100.0) : 0.0;
+    const errCc = (f.Cc > 0.1) ? Math.abs((w.Cc - f.Cc) / f.Cc * 100.0) : 0.0;
+    const diffYcMm = Math.abs((w.yc - f.yc) * 10.0);
+    const d = state.h - state.r;
+    const cRatio = state.c / d;
+
+    if (errMn < 1.0) {
+      iconEl.textContent = '🌟';
+      iconEl.style.color = '#10b981';
+      iconEl.style.background = 'rgba(16, 185, 129, 0.12)';
+      titleEl.textContent = `¡Precisión Asombrosa! Diferencia en Momento de solo ${errMn.toFixed(2)}%`;
+      descEl.textContent = `Para c = ${state.c.toFixed(1)} cm (c/d = ${cRatio.toFixed(2)}), el centroide de compresión calculado por Whitney difiere en apenas ${diffYcMm.toFixed(1)} mm respecto al modelo no lineal continuo de fibras. Whitney resolvió en 1937 con simple álgebra lo que a una computadora le toma 100 operaciones de integración.`;
+    } else if (errMn < 3.0) {
+      iconEl.textContent = '🎯';
+      iconEl.style.color = '#0284c7';
+      iconEl.style.background = 'rgba(2, 132, 199, 0.12)';
+      titleEl.textContent = `Excelente Concordancia Práctica (Diferencia: ${errMn.toFixed(2)}%)`;
+      descEl.textContent = `La fuerza de compresión del concreto Cc difiere en ${errCc.toFixed(2)}% y el brazo de palanca jd es prácticamente idéntico. En ingeniería de diseño, cualquier incertidumbre en materiales supera ampliamente este margen de error numérico.`;
+    } else {
+      iconEl.textContent = '⚠️';
+      iconEl.style.color = '#ea580c';
+      iconEl.style.background = 'rgba(234, 88, 12, 0.12)';
+      titleEl.textContent = `Rango con Mayor Discrepancia (${errMn.toFixed(2)}%)`;
+      descEl.textContent = `Para profundidades relativas altas (c/d = ${cRatio.toFixed(2)}), el bloque rectangular truncado a la altura de la sección y las deformaciones del acero experimentan mayores diferencias con el perfil curvo continuo. Aun así, la estimación es conservadora y segura.`;
+    }
+  }
+
+  function updateTable(w, f) {
+    document.getElementById('tbl-c-val').textContent = `${state.c.toFixed(1)} cm`;
+    const tbody = document.getElementById('comp-table-body');
+    const tfoot = document.getElementById('comp-table-total');
+
+    const d = state.h - state.r;
+    const ypc = state.h / 2.0;
+
+    const arm_c_w = (ypc - w.yc) / 100.0;
+    const arm_c_f = (ypc - f.yc) / 100.0;
+    const arm_s1 = (ypc - d) / 100.0;
+    const arm_s2 = (ypc - state.r) / 100.0;
+
+    const errCc = (f.Cc > 0.1) ? ((w.Cc - f.Cc) / f.Cc * 100.0) : 0.0;
+    const errMn = (Math.abs(f.Mn) > 0.1) ? ((w.Mn - f.Mn) / Math.abs(f.Mn) * 100.0) : 0.0;
+    const errPn = (Math.abs(f.Pn) > 10.0) ? ((w.Pn - f.Pn) / Math.abs(f.Pn) * 100.0) : 0.0;
+
+    tbody.innerHTML = `
+      <tr>
+        <td><strong>Concreto Comprimido (\\(C_c\\))</strong></td>
+        <td>Bloque Rect. (\\(a = ${w.a.toFixed(1)}\\text{ cm}\\))</td>
+        <td style="color:var(--whitney-color); font-weight:700;">${w.Cc.toFixed(1)} kN</td>
+        <td>${(arm_c_w).toFixed(3)} m</td>
+        <td style="color:var(--whitney-color); font-weight:700;">${w.Mc.toFixed(1)} kN·m</td>
+        <td style="color:var(--fiber-color); font-weight:700;">${f.Cc.toFixed(1)} kN</td>
+        <td>${(arm_c_f).toFixed(3)} m</td>
+        <td style="color:var(--fiber-color); font-weight:700;">${f.Mc.toFixed(1)} kN·m</td>
+        <td class="${Math.abs(errCc) < 3.0 ? 'err-good' : 'err-warn'}">${errCc >= 0 ? '+' : ''}${errCc.toFixed(2)}%</td>
+      </tr>
+      <tr>
+        <td><strong>Acero a Tracción (\\(A_s\\))</strong></td>
+        <td>\\(\\varepsilon_s = ${w.eps_s_bot.toFixed(4)}\\), \\(f_s = ${w.fs_bot.toFixed(1)}\\text{ MPa}\\)</td>
+        <td>${w.Fs_bot.toFixed(1)} kN</td>
+        <td>${arm_s1.toFixed(3)} m</td>
+        <td>${w.Ms_bot.toFixed(1)} kN·m</td>
+        <td>${f.Fs_bot.toFixed(1)} kN</td>
+        <td>${arm_s1.toFixed(3)} m</td>
+        <td>${f.Ms_bot.toFixed(1)} kN·m</td>
+        <td class="err-good">0.00% (Igual cinemática)</td>
+      </tr>
+      <tr>
+        <td><strong>Acero a Compresión (\\(A'_s\\))</strong></td>
+        <td>\\(\\varepsilon'_s = ${w.eps_s_top.toFixed(4)}\\), \\(f'_s = ${w.fs_top.toFixed(1)}\\text{ MPa}\\)</td>
+        <td>${w.Fs_top.toFixed(1)} kN</td>
+        <td>${arm_s2.toFixed(3)} m</td>
+        <td>${w.Ms_top.toFixed(1)} kN·m</td>
+        <td>${f.Fs_top.toFixed(1)} kN</td>
+        <td>${arm_s2.toFixed(3)} m</td>
+        <td>${f.Ms_top.toFixed(1)} kN·m</td>
+        <td class="err-good">0.00% (Igual cinemática)</td>
+      </tr>
+    `;
+
+    tfoot.innerHTML = `
+      <td>TOTALES SECCIÓN (\\(P_n, M_n\\))</td>
+      <td>Capacidad Nominal</td>
+      <td style="color:var(--whitney-color); font-size:0.95rem;">${w.Pn.toFixed(1)} kN</td>
+      <td>—</td>
+      <td style="color:var(--whitney-color); font-size:0.95rem;">${w.Mn.toFixed(1)} kN·m</td>
+      <td style="color:var(--fiber-color); font-size:0.95rem;">${f.Pn.toFixed(1)} kN</td>
+      <td>—</td>
+      <td style="color:var(--fiber-color); font-size:0.95rem;">${f.Mn.toFixed(1)} kN·m</td>
+      <td class="${Math.abs(errMn) < 2.5 ? 'err-good' : 'err-warn'}">ΔMn: ${errMn >= 0 ? '+' : ''}${errMn.toFixed(2)}%</td>
+    `;
+  }
+
+  /* ==========================================================================
+     PRESETS & QUICK SOLVERS
+     ========================================================================== */
+  
+  function applyPreset(name) {
+    if (name === 'viga') {
+      document.getElementById('inp-b').value = 30;
+      document.getElementById('inp-h').value = 50;
+      document.getElementById('inp-r').value = 6.0;
+      document.getElementById('inp-fc').value = 28;
+      document.getElementById('inp-as').value = 11.4;
+      document.getElementById('inp-asp').value = 2.58;
+      state.c = 12.5;
+    } else if (name === 'columna') {
+      document.getElementById('inp-b').value = 40;
+      document.getElementById('inp-h').value = 40;
+      document.getElementById('inp-r').value = 5.0;
+      document.getElementById('inp-fc').value = 28;
+      document.getElementById('inp-as').value = 15.48; // 4#7
+      document.getElementById('inp-asp').value = 15.48; // 4#7
+      state.c = 24.0;
+    } else if (name === 'altorc') {
+      document.getElementById('inp-b').value = 35;
+      document.getElementById('inp-h').value = 55;
+      document.getElementById('inp-r').value = 6.0;
+      document.getElementById('inp-fc').value = 50;
+      document.getElementById('inp-as').value = 16.0;
+      document.getElementById('inp-asp').value = 5.0;
+      state.c = 14.0;
+    } else if (name === 'muro') {
+      document.getElementById('inp-b').value = 20;
+      document.getElementById('inp-h').value = 70;
+      document.getElementById('inp-r').value = 5.0;
+      document.getElementById('inp-fc').value = 28;
+      document.getElementById('inp-as').value = 8.0;
+      document.getElementById('inp-asp').value = 8.0;
+      state.c = 18.0;
+    }
+    updateAll(true);
+  }
+
+  // Solves for pure flexure (Pn = 0) via bisection on fibers and sets c
+  function solvePureFlexure() {
+    let c_low = state.h * 0.02;
+    let c_high = state.h * 0.7;
+
+    for (let iter = 0; iter < 45; iter++) {
+      const c_mid = 0.5 * (c_low + c_high);
+      const res = analyzeFibers(c_mid);
+      if (res.Pn < 0.0) {
+        c_low = c_mid;
+      } else {
+        c_high = c_mid;
+      }
+    }
+
+    const c_solved = 0.5 * (c_low + c_high);
+    state.c = Math.round(c_solved * 10) / 10;
+    document.getElementById('inp-c').value = state.c;
+    updateAll(false);
+  }
+
+  function setBalancedPoint() {
+    const d = state.h - state.r;
+    const ey = state.fy / state.Es;
+    const cb = (state.ecu / (state.ecu + ey)) * d;
+    state.c = Math.round(cb * 10) / 10;
+    document.getElementById('inp-c').value = state.c;
+    updateAll(false);
+  }
+
+  function setTensionDuctile() {
+    const d = state.h - state.r;
+    const ct = (state.ecu / (state.ecu + 0.005)) * d; // 3/8 d = 0.375 d
+    state.c = Math.round(ct * 10) / 10;
+    document.getElementById('inp-c').value = state.c;
+    updateAll(false);
+  }
+
+  function switchGraphTab(tab) {
+    state.currentTab = tab;
+    const btns = document.querySelectorAll('.canvas-tab-btn');
+    btns.forEach(b => b.classList.remove('active'));
+    
+    if (tab === 'cc') {
+      btns[0].classList.add('active');
+      document.getElementById('canvas2-title').textContent = 'Fuerza Cc vs. c y Curva de Error (%)';
+    } else if (tab === 'pm') {
+      btns[1].classList.add('active');
+      document.getElementById('canvas2-title').textContent = 'Diagrama de Interacción Completo Pn - Mn';
+    } else if (tab === 'centroid') {
+      btns[2].classList.add('active');
+      document.getElementById('canvas2-title').textContent = 'Razón de Centroide ȳc / c vs. c';
+    }
+
+    const resW = analyzeWhitney(state.c);
+    const resF = analyzeFibers(state.c);
+    renderGlobalCanvas(resW, resF);
+  }
+
+  /* ==========================================================================
+     HI-DPI CANVAS RENDERING ENGINES
+     ========================================================================== */
+  
+  function setupCanvas(canvasId) {
+    const canvas = document.getElementById(canvasId);
+    const container = canvas.parentElement;
+    const dpr = window.devicePixelRatio || 1;
+    const width = container.clientWidth;
+    const height = container.clientHeight;
+
+    canvas.width = width * dpr;
+    canvas.height = height * dpr;
+    canvas.style.width = `${width}px`;
+    canvas.style.height = `${height}px`;
+
+    const ctx = canvas.getContext('2d');
+    ctx.scale(dpr, dpr);
+    return { ctx, width, height };
+  }
+
+  // Canvas 1: Section with Strain & Overlaid Stress Profiles
+  function renderSectionCanvas(w, f) {
+    const { ctx, width, height } = setupCanvas('canvas-section');
+    ctx.clearRect(0, 0, width, height);
+
+    const isDark = document.documentElement.getAttribute('data-theme') === 'dark';
+    const textColor = isDark ? '#cbd5e1' : '#1e293b';
+    const mutedColor = isDark ? '#64748b' : '#94a3b8';
+    const gridColor = isDark ? 'rgba(255,255,255,0.06)' : 'rgba(0,0,0,0.05)';
+
+    // Section geometry scaling
+    const margin = { top: 40, bottom: 45, left: 35, right: 35 };
+    const plotH = height - margin.top - margin.bottom;
+    const scaleY = plotH / state.h; // pixels per cm
+
+    const secW = Math.min(80, (width * 0.18));
+    const secX = margin.left + 10;
+    const strainX0 = secX + secW + 45;
+    const stressX0 = strainX0 + 75;
+    const stressMaxW = width - stressX0 - margin.right - 10;
+
+    // --- (A) CROSS SECTION ---
+    const secTop = margin.top;
+    const secH = state.h * scaleY;
+
+    // Concrete rectangle
+    ctx.fillStyle = isDark ? '#1a2438' : '#f1f5f9';
+    ctx.strokeStyle = isDark ? '#334155' : '#cbd5e1';
+    ctx.lineWidth = 1.5;
+    ctx.fillRect(secX, secTop, secW, secH);
+    ctx.strokeRect(secX, secTop, secW, secH);
+
+    // Section dimensions label
+    ctx.fillStyle = textColor;
+    ctx.font = '10px Inter, sans-serif';
+    ctx.textAlign = 'center';
+    ctx.fillText(`${state.b.toFixed(0)} cm`, secX + secW / 2, secTop - 8);
+    ctx.save();
+    ctx.translate(secX - 10, secTop + secH / 2);
+    ctx.rotate(-Math.PI / 2);
+    ctx.fillText(`h = ${state.h.toFixed(0)} cm`, 0, 0);
+    ctx.restore();
+
+    // Steel bars
+    const yTopSteel = secTop + state.r * scaleY;
+    const yBotSteel = secTop + (state.h - state.r) * scaleY;
+
+    // Top bars (compression steel)
+    ctx.fillStyle = '#ea580c';
+    ctx.beginPath();
+    ctx.arc(secX + secW * 0.25, yTopSteel, 4, 0, Math.PI * 2);
+    ctx.arc(secX + secW * 0.75, yTopSteel, 4, 0, Math.PI * 2);
+    ctx.fill();
+
+    // Bottom bars (tension steel)
+    ctx.fillStyle = '#0284c7';
+    ctx.beginPath();
+    ctx.arc(secX + secW * 0.2, yBotSteel, 5, 0, Math.PI * 2);
+    ctx.arc(secX + secW * 0.5, yBotSteel, 5, 0, Math.PI * 2);
+    ctx.arc(secX + secW * 0.8, yBotSteel, 5, 0, Math.PI * 2);
+    ctx.fill();
+
+    // Neutral axis line across the plot
+    const yNA = secTop + state.c * scaleY;
+    ctx.strokeStyle = '#a855f7';
+    ctx.lineWidth = 1.5;
+    ctx.setLineDash([4, 4]);
+    ctx.beginPath();
+    ctx.moveTo(secX - 15, yNA);
+    ctx.lineTo(width - margin.right, yNA);
+    ctx.stroke();
+    ctx.setLineDash([]);
+
+    ctx.fillStyle = '#a855f7';
+    ctx.font = 'bold 9px JetBrains Mono, monospace';
+    ctx.textAlign = 'right';
+    ctx.fillText(`c = ${state.c.toFixed(1)} cm`, secX - 4, yNA - 4);
+
+    // --- (B) STRAIN PROFILE ---
+    ctx.strokeStyle = mutedColor;
+    ctx.lineWidth = 1;
+    ctx.beginPath();
+    ctx.moveTo(strainX0, secTop);
+    ctx.lineTo(strainX0, secTop + secH);
+    ctx.stroke();
+
+    // Linear strain line from top (0.003) to tension steel
+    const strainScale = 50.0 / 0.003; // 50px for ecu
+    const topStrainX = strainX0 + state.ecu * strainScale;
+    const botStrainX = strainX0 + (w.eps_s_bot) * strainScale;
+
+    ctx.strokeStyle = isDark ? '#38bdf8' : '#0284c7';
+    ctx.lineWidth = 2;
+    ctx.beginPath();
+    ctx.moveTo(topStrainX, secTop);
+    ctx.lineTo(strainX0, yNA);
+    ctx.lineTo(botStrainX, yBotSteel);
+    ctx.stroke();
+
+    // Top strain label
+    ctx.fillStyle = isDark ? '#38bdf8' : '#0284c7';
+    ctx.font = 'bold 9px JetBrains Mono, monospace';
+    ctx.textAlign = 'left';
+    ctx.fillText(`εcu=0.003`, topStrainX + 4, secTop + 4);
+
+    // Bottom steel strain label
+    ctx.textAlign = 'right';
+    ctx.fillText(`εs=${w.eps_s_bot.toFixed(4)}`, botStrainX - 4, yBotSteel + 4);
+
+    // Header label for strain
+    ctx.fillStyle = mutedColor;
+    ctx.font = '10px Outfit, sans-serif';
+    ctx.textAlign = 'center';
+    ctx.fillText('Deformación ε', strainX0, secTop - 8);
+
+    // --- (C) STRESS DISTRIBUTION OVERLAY (WHITNEY VS FIBERS) ---
+    // Axis line
+    ctx.strokeStyle = mutedColor;
+    ctx.lineWidth = 1;
+    ctx.beginPath();
+    ctx.moveTo(stressX0, secTop);
+    ctx.lineTo(stressX0, secTop + secH);
+    ctx.stroke();
+
+    ctx.fillStyle = mutedColor;
+    ctx.font = '10px Outfit, sans-serif';
+    ctx.textAlign = 'center';
+    ctx.fillText('Esfuerzos de Compresión σc (MPa)', stressX0 + stressMaxW * 0.45, secTop - 8);
+
+    const stressScale = (stressMaxW * 0.8) / state.fc; // pixels per MPa
+
+    // 1. FIBER NONLINEAR CURVE (Hognestad - Filled in orange glow)
+    const nPts = 60;
+    const dyPts = Math.min(state.c, state.h) / nPts;
+
+    ctx.beginPath();
+    ctx.moveTo(stressX0, secTop);
+
+    for (let i = 0; i <= nPts; i++) {
+      const yCur = i * dyPts;
+      const epsCur = state.ecu * (state.c - yCur) / state.c;
+      const sigCur = (epsCur > 0.0) ? hognestadStress(epsCur, state.fc) : 0.0;
+      const xCur = stressX0 + sigCur * stressScale;
+      const yPlot = secTop + yCur * scaleY;
+      ctx.lineTo(xCur, yPlot);
+    }
+
+    ctx.lineTo(stressX0, secTop + Math.min(state.c, state.h) * scaleY);
+    ctx.closePath();
+
+    ctx.fillStyle = isDark ? 'rgba(251, 146, 60, 0.22)' : 'rgba(234, 88, 12, 0.18)';
+    ctx.fill();
+    ctx.strokeStyle = '#ea580c';
+    ctx.lineWidth = 2.5;
+    ctx.stroke();
+
+    // 2. WHITNEY RECTANGULAR BLOCK (Cyan - Overlay)
+    const yA = secTop + w.a * scaleY;
+    const wBlockWidth = w.sigma_w * stressScale;
+
+    ctx.fillStyle = isDark ? 'rgba(56, 189, 248, 0.22)' : 'rgba(2, 132, 199, 0.2)';
+    ctx.fillRect(stressX0, secTop, wBlockWidth, w.a * scaleY);
+    
+    ctx.strokeStyle = '#0284c7';
+    ctx.lineWidth = 2.0;
+    ctx.strokeRect(stressX0, secTop, wBlockWidth, w.a * scaleY);
+
+    // Labels for stress magnitudes
+    ctx.fillStyle = '#0284c7';
+    ctx.font = 'bold 9px JetBrains Mono, monospace';
+    ctx.textAlign = 'left';
+    ctx.fillText(`0.85 f'c = ${w.sigma_w.toFixed(1)} MPa`, stressX0 + wBlockWidth + 6, secTop + 14);
+
+    // 3. RESULTANT FORCE ARROWS (Cc_Fibers vs Cc_Whitney)
+    const yCc_W = secTop + w.yc * scaleY;
+    const yCc_F = secTop + f.yc * scaleY;
+
+    // Arrow Whitney (Cyan)
+    drawForceArrow(ctx, stressX0 + wBlockWidth + 45, yCc_W, stressX0 + wBlockWidth, yCc_W, '#0284c7', `Cc,W = ${w.Cc.toFixed(1)} kN (a/2)`);
+
+    // Arrow Fibers (Orange)
+    drawForceArrow(ctx, stressX0 + wBlockWidth + 45, yCc_F, stressX0 + wBlockWidth * 0.7, yCc_F, '#ea580c', `Cc,Fib = ${f.Cc.toFixed(1)} kN (ȳc)`);
+
+    // Steel Tension Force Arrow
+    const yTs = yBotSteel;
+    const Ts_val = Math.abs(w.Fs_bot);
+    drawForceArrow(ctx, stressX0, yTs, stressX0 + Math.min(80, Ts_val * 0.1), yTs, '#0284c7', `Ts = ${Ts_val.toFixed(1)} kN`, true);
+  }
+
+  function drawForceArrow(ctx, x1, y1, x2, y2, color, label, isTension = false) {
+    ctx.strokeStyle = color;
+    ctx.fillStyle = color;
+    ctx.lineWidth = 2;
+
+    ctx.beginPath();
+    ctx.moveTo(x1, y1);
+    ctx.lineTo(x2, y2);
+    ctx.stroke();
+
+    // Arrow head at (x2, y2)
+    const angle = Math.atan2(y2 - y1, x2 - x1);
+    const headLen = 7;
+    ctx.beginPath();
+    ctx.moveTo(x2, y2);
+    ctx.lineTo(x2 - headLen * Math.cos(angle - Math.PI / 6), y2 - headLen * Math.sin(angle - Math.PI / 6));
+    ctx.lineTo(x2 - headLen * Math.cos(angle + Math.PI / 6), y2 - headLen * Math.sin(angle + Math.PI / 6));
+    ctx.closePath();
+    ctx.fill();
+
+    if (label) {
+      ctx.font = 'bold 9px JetBrains Mono, monospace';
+      ctx.textAlign = (x1 > x2) ? 'left' : 'right';
+      ctx.fillText(label, (x1 > x2) ? x1 + 5 : x1 - 5, y1 + 3);
+    }
+  }
+
+  // Canvas 2: Global Spectra (Cc vs c, Pn-Mn, Centroid ratio)
+  function renderGlobalCanvas(w, f) {
+    const { ctx, width, height } = setupCanvas('canvas-global');
+    ctx.clearRect(0, 0, width, height);
+
+    const isDark = document.documentElement.getAttribute('data-theme') === 'dark';
+    const textColor = isDark ? '#cbd5e1' : '#1e293b';
+    const mutedColor = isDark ? '#64748b' : '#94a3b8';
+    const gridColor = isDark ? 'rgba(255,255,255,0.06)' : 'rgba(0,0,0,0.06)';
+
+    if (state.currentTab === 'cc') {
+      renderCcVsCGraph(ctx, width, height, isDark, textColor, mutedColor, gridColor, w, f);
+    } else if (state.currentTab === 'pm') {
+      renderInteractionPMGraph(ctx, width, height, isDark, textColor, mutedColor, gridColor, w, f);
+    } else if (state.currentTab === 'centroid') {
+      renderCentroidRatioGraph(ctx, width, height, isDark, textColor, mutedColor, gridColor, w, f);
+    }
+  }
+
+  // Tab 1: Cc(c) with % Error Curve
+  function renderCcVsCGraph(ctx, width, height, isDark, textColor, mutedColor, gridColor, w, f) {
+    const margin = { top: 25, right: 30, bottom: 65, left: 55 };
+    const plotW = width - margin.left - margin.right;
+    const plotH1 = (height - margin.top - margin.bottom) * 0.65; // Main graph
+    const plotH2 = (height - margin.top - margin.bottom) * 0.28; // Error subplot
+    const gap = 12;
+
+    const maxC = state.h * 1.1;
+    const minC = state.h * 0.05;
+
+    // Calculate curve points
+    const nSteps = 40;
+    const ptsW = [];
+    const ptsF = [];
+    const ptsErr = [];
+    let maxCc = 0;
+
+    for (let i = 0; i <= nSteps; i++) {
+      const cVal = minC + (i / nSteps) * (maxC - minC);
+      const resW = analyzeWhitney(cVal);
+      const resF = analyzeFibers(cVal, 40); // Fast for plotting
+      ptsW.push({ c: cVal, Cc: resW.Cc });
+      ptsF.push({ c: cVal, Cc: resF.Cc });
+      const err = (resF.Cc > 1.0) ? ((resW.Cc - resF.Cc) / resF.Cc * 100.0) : 0.0;
+      ptsErr.push({ c: cVal, err: err });
+
+      if (resW.Cc > maxCc) maxCc = resW.Cc;
+      if (resF.Cc > maxCc) maxCc = resF.Cc;
+    }
+
+    maxCc *= 1.1;
+
+    // Coordinate converters
+    const toX = (cVal) => margin.left + ((cVal - minC) / (maxC - minC)) * plotW;
+    const toY1 = (CcVal) => margin.top + (1.0 - CcVal / maxCc) * plotH1;
+
+    // 1. Draw Main Axes & Grid
+    ctx.strokeStyle = gridColor;
+    ctx.lineWidth = 1;
+    for (let i = 0; i <= 4; i++) {
+      const yVal = (i / 4) * maxCc;
+      const yPlot = toY1(yVal);
+      ctx.beginPath();
+      ctx.moveTo(margin.left, yPlot);
+      ctx.lineTo(margin.left + plotW, yPlot);
+      ctx.stroke();
+
+      ctx.fillStyle = mutedColor;
+      ctx.font = '9px JetBrains Mono, monospace';
+      ctx.textAlign = 'right';
+      ctx.fillText(`${yVal.toFixed(0)}`, margin.left - 6, yPlot + 3);
+    }
+
+    // Y1 Axis label
+    ctx.save();
+    ctx.translate(margin.left - 35, margin.top + plotH1 / 2);
+    ctx.rotate(-Math.PI / 2);
+    ctx.textAlign = 'center';
+    ctx.font = '10px Outfit, sans-serif';
+    ctx.fillStyle = textColor;
+    ctx.fillText('Fuerza Cc (kN)', 0, 0);
+    ctx.restore();
+
+    // Plot Fiber Curve (Orange)
+    ctx.strokeStyle = '#ea580c';
+    ctx.lineWidth = 2.5;
+    ctx.beginPath();
+    ptsF.forEach((pt, idx) => {
+      const px = toX(pt.c);
+      const py = toY1(pt.Cc);
+      if (idx === 0) ctx.moveTo(px, py);
+      else ctx.lineTo(px, py);
+    });
+    ctx.stroke();
+
+    // Plot Whitney Curve (Cyan)
+    ctx.strokeStyle = '#0284c7';
+    ctx.lineWidth = 2.5;
+    ctx.beginPath();
+    ptsW.forEach((pt, idx) => {
+      const px = toX(pt.c);
+      const py = toY1(pt.Cc);
+      if (idx === 0) ctx.moveTo(px, py);
+      else ctx.lineTo(px, py);
+    });
+    ctx.stroke();
+
+    // Current State Marker
+    const curX = toX(state.c);
+    const curY_W = toY1(w.Cc);
+    const curY_F = toY1(f.Cc);
+
+    ctx.strokeStyle = '#10b981';
+    ctx.lineWidth = 1.5;
+    ctx.setLineDash([3, 3]);
+    ctx.beginPath();
+    ctx.moveTo(curX, margin.top);
+    ctx.lineTo(curX, margin.top + plotH1 + gap + plotH2);
+    ctx.stroke();
+    ctx.setLineDash([]);
+
+    ctx.fillStyle = '#0284c7';
+    ctx.beginPath();
+    ctx.arc(curX, curY_W, 5, 0, Math.PI * 2);
+    ctx.fill();
+
+    ctx.fillStyle = '#ea580c';
+    ctx.beginPath();
+    ctx.arc(curX, curY_F, 5, 0, Math.PI * 2);
+    ctx.fill();
+
+    // 2. ERROR SUBPLOT
+    const yTop2 = margin.top + plotH1 + gap;
+    const maxErr = 10.0; // +/- 10%
+    const toY2 = (errVal) => yTop2 + (0.5 - errVal / (2 * maxErr)) * plotH2;
+
+    ctx.strokeStyle = gridColor;
+    ctx.beginPath();
+    ctx.moveTo(margin.left, toY2(0));
+    ctx.lineTo(margin.left + plotW, toY2(0));
+    ctx.stroke();
+
+    // Zero line
+    ctx.strokeStyle = mutedColor;
+    ctx.lineWidth = 1;
+    ctx.beginPath();
+    ctx.moveTo(margin.left, toY2(0));
+    ctx.lineTo(margin.left + plotW, toY2(0));
+    ctx.stroke();
+
+    // Error curve
+    ctx.strokeStyle = '#10b981';
+    ctx.lineWidth = 2;
+    ctx.beginPath();
+    ptsErr.forEach((pt, idx) => {
+      const px = toX(pt.c);
+      const py = toY2(Math.max(-maxErr, Math.min(maxErr, pt.err)));
+      if (idx === 0) ctx.moveTo(px, py);
+      else ctx.lineTo(px, py);
+    });
+    ctx.stroke();
+
+    // Error labels
+    ctx.fillStyle = mutedColor;
+    ctx.font = '8px JetBrains Mono, monospace';
+    ctx.textAlign = 'right';
+    ctx.fillText('+10%', margin.left - 6, toY2(10) + 3);
+    ctx.fillText('0%', margin.left - 6, toY2(0) + 3);
+    ctx.fillText('-10%', margin.left - 6, toY2(-10) + 3);
+
+    ctx.save();
+    ctx.translate(margin.left - 35, yTop2 + plotH2 / 2);
+    ctx.rotate(-Math.PI / 2);
+    ctx.textAlign = 'center';
+    ctx.font = '9px Outfit, sans-serif';
+    ctx.fillStyle = textColor;
+    ctx.fillText('Error %', 0, 0);
+    ctx.restore();
+
+    // Current error marker
+    const curErr = (f.Cc > 1.0) ? ((w.Cc - f.Cc) / f.Cc * 100.0) : 0.0;
+    ctx.fillStyle = '#10b981';
+    ctx.beginPath();
+    ctx.arc(curX, toY2(Math.max(-maxErr, Math.min(maxErr, curErr))), 4, 0, Math.PI * 2);
+    ctx.fill();
+
+    // X axis labels
+    ctx.fillStyle = textColor;
+    ctx.font = '10px Outfit, sans-serif';
+    ctx.textAlign = 'center';
+    ctx.fillText('Profundidad del Eje Neutro c (cm)', margin.left + plotW / 2, height - 12);
+  }
+
+  // Tab 2: Pn - Mn Interaction Diagram Overlay
+  function renderInteractionPMGraph(ctx, width, height, isDark, textColor, mutedColor, gridColor, w, f) {
+    const margin = { top: 25, right: 30, bottom: 45, left: 60 };
+    const plotW = width - margin.left - margin.right;
+    const plotH = height - margin.top - margin.bottom;
+
+    // Generate interaction points
+    const nPts = 45;
+    const ptsW = [];
+    const ptsF = [];
+    let maxMn = 10.0;
+    let maxPn = 100.0;
+    let minPn = -100.0;
+
+    for (let i = 0; i <= nPts; i++) {
+      const cVal = (state.h * 0.04) + (i / nPts) * (state.h * 1.5);
+      const resW = analyzeWhitney(cVal);
+      const resF = analyzeFibers(cVal, 40);
+
+      ptsW.push({ Mn: Math.max(0, resW.Mn), Pn: resW.Pn });
+      ptsF.push({ Mn: Math.max(0, resF.Mn), Pn: resF.Pn });
+
+      if (resW.Mn > maxMn) maxMn = resW.Mn;
+      if (resF.Mn > maxMn) maxMn = resF.Mn;
+      if (resW.Pn > maxPn) maxPn = resW.Pn;
+      if (resF.Pn > maxPn) maxPn = resF.Pn;
+      if (resW.Pn < minPn) minPn = resW.Pn;
+      if (resF.Pn < minPn) minPn = resF.Pn;
+    }
+
+    maxMn *= 1.15;
+    maxPn *= 1.1;
+    minPn = Math.min(minPn * 1.1, -50.0);
+
+    const toX = (mn) => margin.left + (mn / maxMn) * plotW;
+    const toY = (pn) => margin.top + ((maxPn - pn) / (maxPn - minPn)) * plotH;
+
+    // Grid & Zero lines
+    ctx.strokeStyle = gridColor;
+    ctx.lineWidth = 1;
+    for (let i = 0; i <= 4; i++) {
+      const mnVal = (i / 4) * maxMn;
+      ctx.beginPath();
+      ctx.moveTo(toX(mnVal), margin.top);
+      ctx.lineTo(toX(mnVal), margin.top + plotH);
+      ctx.stroke();
+
+      ctx.fillStyle = mutedColor;
+      ctx.font = '9px JetBrains Mono, monospace';
+      ctx.textAlign = 'center';
+      ctx.fillText(`${mnVal.toFixed(0)}`, toX(mnVal), margin.top + plotH + 14);
+    }
+
+    // Pn = 0 line
+    ctx.strokeStyle = isDark ? '#475569' : '#cbd5e1';
+    ctx.lineWidth = 1.5;
+    ctx.beginPath();
+    ctx.moveTo(margin.left, toY(0));
+    ctx.lineTo(margin.left + plotW, toY(0));
+    ctx.stroke();
+
+    // Plot Fiber PM Curve (Orange dashed)
+    ctx.strokeStyle = '#ea580c';
+    ctx.lineWidth = 2.5;
+    ctx.beginPath();
+    ptsF.forEach((pt, idx) => {
+      const px = toX(pt.Mn);
+      const py = toY(pt.Pn);
+      if (idx === 0) ctx.moveTo(px, py);
+      else ctx.lineTo(px, py);
+    });
+    ctx.stroke();
+
+    // Plot Whitney PM Curve (Cyan solid)
+    ctx.strokeStyle = '#0284c7';
+    ctx.lineWidth = 2.5;
+    ctx.beginPath();
+    ptsW.forEach((pt, idx) => {
+      const px = toX(pt.Mn);
+      const py = toY(pt.Pn);
+      if (idx === 0) ctx.moveTo(px, py);
+      else ctx.lineTo(px, py);
+    });
+    ctx.stroke();
+
+    // Active Point marker
+    const curX_W = toX(Math.max(0, w.Mn));
+    const curY_W = toY(w.Pn);
+    const curX_F = toX(Math.max(0, f.Mn));
+    const curY_F = toY(f.Pn);
+
+    ctx.fillStyle = '#0284c7';
+    ctx.beginPath();
+    ctx.arc(curX_W, curY_W, 6, 0, Math.PI * 2);
+    ctx.fill();
+
+    ctx.fillStyle = '#ea580c';
+    ctx.beginPath();
+    ctx.arc(curX_F, curY_F, 6, 0, Math.PI * 2);
+    ctx.fill();
+
+    // Axes labels
+    ctx.fillStyle = textColor;
+    ctx.font = '10px Outfit, sans-serif';
+    ctx.textAlign = 'center';
+    ctx.fillText('Momento Flector Mn (kN·m)', margin.left + plotW / 2, height - 8);
+
+    ctx.save();
+    ctx.translate(margin.left - 40, margin.top + plotH / 2);
+    ctx.rotate(-Math.PI / 2);
+    ctx.textAlign = 'center';
+    ctx.fillText('Carga Axial Pn (kN)', 0, 0);
+    ctx.restore();
+  }
+
+  // Tab 3: Centroid Ratio yc / c vs. c
+  function renderCentroidRatioGraph(ctx, width, height, isDark, textColor, mutedColor, gridColor, w, f) {
+    const margin = { top: 25, right: 30, bottom: 45, left: 60 };
+    const plotW = width - margin.left - margin.right;
+    const plotH = height - margin.top - margin.bottom;
+
+    const maxC = state.h * 1.1;
+    const minC = state.h * 0.05;
+
+    const nSteps = 40;
+    const ptsF = [];
+    const beta1 = computeBeta1(state.fc);
+    const wRatio = beta1 / 2.0;
+
+    for (let i = 0; i <= nSteps; i++) {
+      const cVal = minC + (i / nSteps) * (maxC - minC);
+      const resF = analyzeFibers(cVal, 40);
+      const ratio = (cVal > 0.1) ? (resF.yc / cVal) : wRatio;
+      ptsF.push({ c: cVal, ratio: ratio });
+    }
+
+    const minRatio = 0.35;
+    const maxRatio = 0.50;
+
+    const toX = (cVal) => margin.left + ((cVal - minC) / (maxC - minC)) * plotW;
+    const toY = (rVal) => margin.top + ((maxRatio - rVal) / (maxRatio - minRatio)) * plotH;
+
+    // Grid & Whitney theoretical line (constant beta1/2)
+    ctx.strokeStyle = gridColor;
+    ctx.lineWidth = 1;
+    for (let r = 0.36; r <= 0.48; r += 0.04) {
+      ctx.beginPath();
+      ctx.moveTo(margin.left, toY(r));
+      ctx.lineTo(margin.left + plotW, toY(r));
+      ctx.stroke();
+
+      ctx.fillStyle = mutedColor;
+      ctx.font = '9px JetBrains Mono, monospace';
+      ctx.textAlign = 'right';
+      ctx.fillText(r.toFixed(2), margin.left - 6, toY(r) + 3);
+    }
+
+    // Whitney constant line (Cyan)
+    ctx.strokeStyle = '#0284c7';
+    ctx.lineWidth = 2.5;
+    ctx.beginPath();
+    ctx.moveTo(margin.left, toY(wRatio));
+    ctx.lineTo(margin.left + plotW, toY(wRatio));
+    ctx.stroke();
+
+    ctx.fillStyle = '#0284c7';
+    ctx.font = 'bold 9px JetBrains Mono, monospace';
+    ctx.textAlign = 'left';
+    ctx.fillText(`Whitney: β1/2 = ${wRatio.toFixed(3)}`, margin.left + 10, toY(wRatio) - 8);
+
+    // Fiber ratio curve (Orange)
+    ctx.strokeStyle = '#ea580c';
+    ctx.lineWidth = 2.5;
+    ctx.beginPath();
+    ptsF.forEach((pt, idx) => {
+      const px = toX(pt.c);
+      const py = toY(pt.ratio);
+      if (idx === 0) ctx.moveTo(px, py);
+      else ctx.lineTo(px, py);
+    });
+    ctx.stroke();
+
+    // Active marker
+    const curX = toX(state.c);
+    const curRatio_F = (state.c > 0.1) ? (f.yc / state.c) : wRatio;
+    ctx.fillStyle = '#ea580c';
+    ctx.beginPath();
+    ctx.arc(curX, toY(curRatio_F), 6, 0, Math.PI * 2);
+    ctx.fill();
+
+    // Axes labels
+    ctx.fillStyle = textColor;
+    ctx.font = '10px Outfit, sans-serif';
+    ctx.textAlign = 'center';
+    ctx.fillText('Profundidad del Eje Neutro c (cm)', margin.left + plotW / 2, height - 8);
+
+    ctx.save();
+    ctx.translate(margin.left - 40, margin.top + plotH / 2);
+    ctx.rotate(-Math.PI / 2);
+    ctx.textAlign = 'center';
+    ctx.fillText('Razón Centroide ȳc / c', 0, 0);
+    ctx.restore();
+  }
+
+  /* ==========================================================================
+     PYTHON SCRIPT EXPORTER
+     ========================================================================== */
+  
+  function updatePythonCode() {
+    const code = `import numpy as np
+import matplotlib.pyplot as plt
+
+# ==============================================================================
+# SECCIÓN Y PARÁMETROS DE DISEÑO
+# ==============================================================================
+b = ${state.b.toFixed(1)}      # Ancho [cm]
+h = ${state.h.toFixed(1)}      # Altura [cm]
+r = ${state.r.toFixed(1)}       # Recubrimiento al centroide [cm]
+fc = ${state.fc.toFixed(1)}    # Resistencia concreto [MPa]
+fy = ${state.fy.toFixed(1)}   # Fluencia acero [MPa]
+Es = ${state.Es.toFixed(0)} # Modulo elasticidad acero [MPa]
+ecu = ${state.ecu.toFixed(4)}   # Deformacion ultima concreto
+As = ${state.As.toFixed(2)}    # Acero traccion [cm2]
+Asp = ${state.Asp.toFixed(2)}   # Acero compresion [cm2]
+c_target = ${state.c.toFixed(1)} # Profundidad eje neutro a evaluar [cm]
+
+# ==============================================================================
+# 1. BLOQUE RECTANGULAR DE WHITNEY (1937)
+# ==============================================================================
+beta1 = 0.85 if fc <= 28.0 else max(0.65, min(0.85, 0.85 - 0.05 * (fc - 28.0) / 7.0))
+a = min(beta1 * c_target, h)
+sigma_w = 0.85 * fc
+Cc_w = (sigma_w * a * b) / 10.0   # [kN]
+yc_w = a / 2.0                    # [cm desde tope]
+
+# Cinemática de deformaciones en acero
+d = h - r
+dp = r
+eps_s = ecu * (c_target - d) / c_target
+fs = np.clip(eps_s * Es, -fy, fy)
+Fs = (fs * As) / 10.0             # [kN]
+
+eps_sp = ecu * (c_target - dp) / c_target
+fsp = np.clip(eps_sp * Es, -fy, fy)
+Fsp = (fsp * Asp) / 10.0          # [kN]
+
+ypc = h / 2.0                     # Centroide plastico [cm]
+Pn_w = Cc_w + Fs + Fsp            # [kN]
+Mn_w = (Cc_w * (ypc - yc_w) + Fs * (ypc - d) + Fsp * (ypc - dp)) / 100.0 # [kN*m]
+
+# ==============================================================================
+# 2. MODELO NUMÉRICO DE FIBRAS (HOGNESTAD NO LINEAL)
+# ==============================================================================
+n_fibers = 150
+dy = h / n_fibers
+Ec = 4400.0 * np.sqrt(fc)
+e0 = 1.8 * fc / Ec
+eu = 0.0038
+
+sum_Fc = 0.0
+sum_My = 0.0
+for i in range(n_fibers):
+    y_fib = (i + 0.5) * dy
+    eps_i = ecu * (c_target - y_fib) / c_target
+    if eps_i > 0:
+        if eps_i <= e0:
+            sigma_i = fc * (2.0 * (eps_i / e0) - (eps_i / e0)**2)
+        elif eps_i <= eu:
+            sigma_i = fc * (1.0 - 0.15 * (eps_i - e0) / (eu - e0))
+        else:
+            sigma_i = 0.0
+        dF = (sigma_i * dy * b) / 10.0
+        sum_Fc += dF
+        sum_My += dF * y_fib
+
+yc_f = sum_My / sum_Fc if sum_Fc > 0 else 0.0
+arm_c_f = (ypc - yc_f) / 100.0
+Mc_f = sum_Fc * arm_c_f
+Pn_f = sum_Fc + Fs + Fsp
+Mn_f = Mc_f + (Fs * (ypc - d) + Fsp * (ypc - dp)) / 100.0
+
+# ==============================================================================
+# REPORTE DE RESULTADOS COMPARATIVOS
+# ==============================================================================
+print(f"=== RESULTADOS PARA c = {c_target:.1f} cm ===")
+print(f"Fuerza Cc:      Whitney = {Cc_w:.1f} kN  |  Fibras = {sum_Fc:.1f} kN  (Diff: {(Cc_w - sum_Fc)/sum_Fc*100:+.2f}%)")
+print(f"Centroide yc:   Whitney = {yc_w:.2f} cm  |  Fibras = {yc_f:.2f} cm  (Diff: {(yc_w - yc_f)*10:+.1f} mm)")
+print(f"Momento Mn:     Whitney = {Mn_w:.1f} kNm |  Fibras = {Mn_f:.1f} kNm (Diff: {(Mn_w - Mn_f)/Mn_f*100:+.2f}%)")
+print(f"Carga Axial Pn: Whitney = {Pn_w:.1f} kN  |  Fibras = {Pn_f:.1f} kN")
+`;
+    document.getElementById('python-code-display').textContent = code;
+  }
+
+  function copyPythonCode() {
+    const code = document.getElementById('python-code-display').textContent;
+    navigator.clipboard.writeText(code).then(() => {
+      const copyText = document.getElementById('copy-text');
+      const copyIcon = document.getElementById('copy-icon');
+      copyText.textContent = '¡Copiado con Éxito!';
+      copyIcon.textContent = '✅';
+      setTimeout(() => {
+        copyText.textContent = 'Copiar Código Python';
+        copyIcon.textContent = '📋';
+      }, 2500);
+    });
+  }
+
+  /* ==========================================================================
+     THEME MANAGEMENT
+     ========================================================================== */
+  
+  function toggleTheme() {
+    const html = document.documentElement;
+    const isDark = html.getAttribute('data-theme') === 'dark';
+    const newTheme = isDark ? 'light' : 'dark';
+    html.setAttribute('data-theme', newTheme);
+    document.getElementById('theme-icon').textContent = newTheme === 'dark' ? '☀️' : '🌙';
+    document.getElementById('theme-text').textContent = newTheme === 'dark' ? 'Modo Claro' : 'Modo Oscuro';
+    localStorage.setItem('concreto_portal_theme', newTheme);
+
+    const resW = analyzeWhitney(state.c);
+    const resF = analyzeFibers(state.c);
+    renderSectionCanvas(resW, resF);
+    renderGlobalCanvas(resW, resF);
+  }
+
+  window.addEventListener('DOMContentLoaded', () => {
+    const savedTheme = localStorage.getItem('concreto_portal_theme') || 'light';
+    if (savedTheme === 'dark') {
+      document.documentElement.setAttribute('data-theme', 'dark');
+      document.getElementById('theme-icon').textContent = '☀️';
+      document.getElementById('theme-text').textContent = 'Modo Claro';
+    }
+
+    updateAll(true);
+
+    window.addEventListener('resize', () => {
+      const resW = analyzeWhitney(state.c);
+      const resF = analyzeFibers(state.c);
+      renderSectionCanvas(resW, resF);
+      renderGlobalCanvas(resW, resF);
+    });
+  });
+  </script>
+</body>
+</html>

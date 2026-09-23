@@ -478,6 +478,12 @@
       border-color: rgba(124, 58, 237, 0.4);
     }
 
+    .step-pill-item.no-intersec {
+      opacity: 0.55;
+      border: 1px dashed rgba(225, 29, 72, 0.4);
+      color: var(--accent-rose);
+    }
+
     /* THE DUAL CANVAS VIEW (THE EUREKA MOMENT) */
     .dual-chart-grid {
       display: grid;
@@ -1221,39 +1227,112 @@
     };
   }
 
-  // Solve c for a target axial load P_target via Bisection
-  function solveCForP(ec, Ptarget) {
-    let cLow = 0.01;            // 0.01 cm
-    let cHigh = state.h * 15.0; // very deep neutral axis for pure compression
+  // Helper to find the physical upper limit of c for a given ec along positive moment branch
+  function getCTop(ec) {
+    let cPrev = state.h * 0.5;
+    let resPrev = evalSection(cPrev, ec);
+    const cLimit = state.h * 15.0;
+    const step1 = 0.02 * state.h;
+    const step2 = 0.08 * state.h;
+    for (let c = state.h * 0.5; c <= cLimit; c += (c < 2.0 * state.h ? step1 : step2)) {
+      const res = evalSection(c, ec);
+      if (res.M <= 0.0 && c > 0.6 * state.h) return c;
+      if (res.P < resPrev.P - 2.0 && c > 0.8 * state.h) return cPrev;
+      if (res.M < 0.5 && c > 3.0 * state.h) return c;
+      cPrev = c;
+      resPrev = res;
+    }
+    return cPrev;
+  }
 
-    for (let iter = 0; iter < 45; iter++) {
-      const cMid = 0.5 * (cLow + cHigh);
-      const res = evalSection(cMid, ec);
-      if (res.P < Ptarget) {
-        cLow = cMid;
-      } else {
-        cHigh = cMid;
-      }
+  // Solve c for a target axial load P_target via robust bracket search and bisection
+  function solveCForP(ec, Ptarget) {
+    const cMin = 0.02;
+    const resMin = evalSection(cMin, ec);
+    if (Ptarget < resMin.P) return null; // Ptarget below pure tension
+
+    const cMax = getCTop(ec);
+    const resMax = evalSection(cMax, ec);
+    if (Ptarget > resMax.P + 0.5) {
+      // Ptarget exceeds the maximum axial capacity of this curve
+      return null;
     }
 
-    const cSol = 0.5 * (cLow + cHigh);
+    // Bracket search from cMin up to cMax
+    let cPrev = cMin;
+    let resPrev = resMin;
+    let found = false;
+    let c1 = cMin, c2 = cMax;
+
+    let c = cMin;
+    while (c <= cMax) {
+      let step = (c < state.h) ? 0.01 * state.h : (c < 2.5 * state.h ? 0.03 * state.h : 0.08 * state.h);
+      c = Math.min(cMax, c + step);
+      const res = evalSection(c, ec);
+
+      if (res.P >= Ptarget) {
+        c1 = cPrev;
+        c2 = c;
+        found = true;
+        break;
+      }
+
+      cPrev = c;
+      resPrev = res;
+      if (c >= cMax) break;
+    }
+
+    if (!found) {
+      if (Math.abs(resMax.P - Ptarget) < 5.0) return resMax;
+      return null;
+    }
+
+    // Refine with bisection within [c1, c2]
+    let low = c1, high = c2;
+    for (let iter = 0; iter < 35; iter++) {
+      const mid = 0.5 * (low + high);
+      const res = evalSection(mid, ec);
+      if (res.P < Ptarget) {
+        low = mid;
+      } else {
+        high = mid;
+      }
+    }
+    const cSol = 0.5 * (low + high);
     return evalSection(cSol, ec);
   }
 
   // Generate full P-M interaction curve for a given ec
-  function generatePMCurve(ec, nSteps = 100) {
+  function generatePMCurve(ec, nSteps = 80, exactSol = null) {
     const points = [];
-    // Sweep c from near 0 to deep
-    const cMin = 0.2;
-    const cMax = state.h * 2.0;
+    const cMin = 0.05;
+    let cMax = getCTop(ec);
+    if (exactSol && exactSol.c > cMax) {
+      cMax = exactSol.c * 1.05;
+    }
 
     for (let i = 0; i <= nSteps; i++) {
-      // Non-linear spacing to give more density near balanced point
       const t = i / nSteps;
-      const c = cMin + (cMax - cMin) * Math.pow(t, 1.6);
+      const c = cMin + (cMax - cMin) * Math.pow(t, 1.4);
       const res = evalSection(c, ec);
-      points.push({ c: res.c, P: res.P, M: res.M });
+      points.push({ c: res.c, P: res.P, M: Math.max(0, res.M) });
     }
+
+    // Insert exact solution point into the curve points array if present
+    if (exactSol) {
+      let inserted = false;
+      for (let i = 0; i < points.length; i++) {
+        if (points[i].c >= exactSol.c) {
+          points.splice(i, 0, { c: exactSol.c, P: exactSol.P, M: Math.max(0, exactSol.M) });
+          inserted = true;
+          break;
+        }
+      }
+      if (!inserted) {
+        points.push({ c: exactSol.c, P: exactSol.P, M: Math.max(0, exactSol.M) });
+      }
+    }
+
     return { ec, points };
   }
 
@@ -1461,45 +1540,72 @@
     document.getElementById('tick-p-mid').textContent = `P = ${(state.P0 * 0.2).toFixed(0)} kN (20%)`;
     document.getElementById('tick-p-max').textContent = `P_max = ${pMax} kN`;
 
-    // 1. Generate family of P-M curves
-    state.pmCurves = state.e1List.map(ec => generatePMCurve(ec, 80));
-
-    // 2. Solve M-phi points for each ec at P = state.P
+    // 1. Solve M-phi points for each ec at P = state.P FIRST
     const ey = state.fy / state.Es;
     state.mPhiPoints = [];
 
     state.e1List.forEach((ec, idx) => {
       const res = solveCForP(ec, state.P);
-      const phi = ec / (res.c / 100.0); // 1/m (c in cm -> m)
-      const isYield = Math.abs(res.botFs) >= state.fy - 1e-3;
-      
-      let stateStr = 'Régimen Elástico';
-      if (ec > 0.0035) stateStr = 'Aplastamiento Concreto';
-      else if (isYield) stateStr = 'Fluencia de Acero';
+      if (res) {
+        const phi = ec / (res.c / 100.0); // 1/m (c in cm -> m)
+        const isYield = Math.abs(res.botFs) >= state.fy - 1e-3;
+        
+        let stateStr = 'Régimen Elástico';
+        if (ec > 0.0035) stateStr = 'Aplastamiento Concreto';
+        else if (isYield) stateStr = 'Fluencia de Acero';
 
-      state.mPhiPoints.push({
-        idx: idx + 1,
-        ec,
-        c: res.c,
-        phi,
-        phiRadKm: phi * 1000.0,
-        M: res.M,
-        P: res.P,
-        max_es: res.maxTensionEs,
-        fs_bot: res.botFs,
-        isYield,
-        stateStr,
-        details: res
-      });
+        state.mPhiPoints.push({
+          idx: idx + 1,
+          ec,
+          c: res.c,
+          phi,
+          phiRadKm: phi * 1000.0,
+          M: res.M,
+          P: res.P,
+          max_es: res.maxTensionEs,
+          fs_bot: res.botFs,
+          isYield,
+          stateStr,
+          details: res,
+          hasIntersection: true
+        });
+      } else {
+        state.mPhiPoints.push({
+          idx: idx + 1,
+          ec,
+          c: 0,
+          phi: 0,
+          phiRadKm: 0,
+          M: 0,
+          P: 0,
+          max_es: 0,
+          fs_bot: 0,
+          isYield: false,
+          stateStr: 'P > Capacidad (Sin corte)',
+          details: null,
+          hasIntersection: false
+        });
+      }
+    });
+
+    // 2. Generate family of P-M curves (passing exact intersection solutions so curves pass right through the dots)
+    state.pmCurves = state.e1List.map((ec, idx) => {
+      const pt = state.mPhiPoints[idx];
+      return generatePMCurve(ec, 80, pt && pt.hasIntersection ? pt.details : null);
     });
 
     // Populate step pills
     const pillsContainer = document.getElementById('step-pills-container');
     pillsContainer.innerHTML = '';
     state.e1List.forEach((ec, idx) => {
+      const pt = state.mPhiPoints[idx];
       const pill = document.createElement('div');
-      pill.className = `step-pill-item ${idx === state.activeStepIdx ? 'active' : ''}`;
-      pill.textContent = `ε = ${ec.toFixed(4)}`;
+      const isInter = pt && pt.hasIntersection;
+      pill.className = `step-pill-item ${idx === state.activeStepIdx ? 'active' : ''} ${!isInter ? 'no-intersec' : ''}`;
+      pill.textContent = `ε = ${ec.toFixed(4)}${!isInter ? ' (sin corte)' : ''}`;
+      if (!isInter) {
+        pill.title = 'La carga axial P supera la capacidad de la sección para esta deformación';
+      }
       pill.onclick = () => {
         state.activeStepIdx = idx;
         document.getElementById('slider-ec').value = idx;
@@ -1541,27 +1647,43 @@
     // Update metrics
     document.getElementById('metric-p-applied').textContent = `${state.P.toFixed(1)} kN`;
     document.getElementById('metric-active-ec').textContent = activePt.ec.toFixed(4);
-    document.getElementById('metric-inter-m').textContent = `${activePt.M.toFixed(1)} kN·m`;
-    document.getElementById('metric-inter-c').textContent = `${activePt.c.toFixed(2)} cm`;
-    document.getElementById('metric-active-phi').textContent = `${activePt.phi.toFixed(4)} 1/m`;
 
-    // Find Yield point (My, phiy)
-    const yieldPt = state.mPhiPoints.find(p => p.isYield) || state.mPhiPoints[0];
-    const maxPt = state.mPhiPoints.reduce((max, p) => p.M > max.M ? p : max, state.mPhiPoints[0]);
-    const ultPt = state.mPhiPoints[state.mPhiPoints.length - 1];
-    const ductility = yieldPt.phi > 1e-6 ? (ultPt.phi / yieldPt.phi).toFixed(2) : 'N/A';
+    if (activePt.hasIntersection) {
+      document.getElementById('metric-inter-m').textContent = `${activePt.M.toFixed(1)} kN·m`;
+      document.getElementById('metric-inter-c').textContent = `${activePt.c.toFixed(2)} cm`;
+      document.getElementById('metric-active-phi').textContent = `${activePt.phi.toFixed(4)} 1/m`;
+    } else {
+      document.getElementById('metric-inter-m').textContent = `Sin corte`;
+      document.getElementById('metric-inter-c').textContent = `N/A`;
+      document.getElementById('metric-active-phi').textContent = `N/A`;
+    }
 
-    document.getElementById('metric-my').textContent = `${yieldPt.M.toFixed(1)} kN·m`;
-    document.getElementById('metric-mmax').textContent = `${maxPt.M.toFixed(1)} kN·m`;
+    // Find Yield point (My, phiy) and Max point among valid points
+    const validPoints = state.mPhiPoints.filter(p => p.hasIntersection);
+    const yieldPt = validPoints.find(p => p.isYield) || validPoints[0] || state.mPhiPoints[0];
+    const maxPt = validPoints.reduce((max, p) => p.M > (max ? max.M : 0) ? p : max, validPoints[0] || state.mPhiPoints[0]);
+    const ultPt = validPoints[validPoints.length - 1] || state.mPhiPoints[state.mPhiPoints.length - 1];
+    const ductility = (yieldPt && yieldPt.phi > 1e-6 && ultPt && ultPt.hasIntersection) ? (ultPt.phi / yieldPt.phi).toFixed(2) : 'N/A';
+
+    document.getElementById('metric-my').textContent = yieldPt && yieldPt.hasIntersection ? `${yieldPt.M.toFixed(1)} kN·m` : 'N/A';
+    document.getElementById('metric-mmax').textContent = maxPt && maxPt.hasIntersection ? `${maxPt.M.toFixed(1)} kN·m` : 'N/A';
     document.getElementById('metric-ductility').textContent = ductility;
 
     // Update equilibrium balance box
-    document.getElementById('bal-sum-fc').textContent = `${activePt.details.sumFc >= 0 ? '+' : ''}${activePt.details.sumFc.toFixed(1)} kN`;
-    document.getElementById('bal-sum-fs').textContent = `${activePt.details.sumFs >= 0 ? '+' : ''}${activePt.details.sumFs.toFixed(1)} kN`;
-    document.getElementById('bal-p-int').textContent = `${activePt.details.P.toFixed(1)} kN`;
-    document.getElementById('bal-p-target').textContent = `${state.P.toFixed(1)} kN`;
-    const err = Math.abs(activePt.details.P - state.P);
-    document.getElementById('bal-error').textContent = `${err.toFixed(3)} kN (${err < 0.1 ? 'OK' : 'Buscando'})`;
+    if (activePt.hasIntersection && activePt.details) {
+      document.getElementById('bal-sum-fc').textContent = `${activePt.details.sumFc >= 0 ? '+' : ''}${activePt.details.sumFc.toFixed(1)} kN`;
+      document.getElementById('bal-sum-fs').textContent = `${activePt.details.sumFs >= 0 ? '+' : ''}${activePt.details.sumFs.toFixed(1)} kN`;
+      document.getElementById('bal-p-int').textContent = `${activePt.details.P.toFixed(1)} kN`;
+      document.getElementById('bal-p-target').textContent = `${state.P.toFixed(1)} kN`;
+      const err = Math.abs(activePt.details.P - state.P);
+      document.getElementById('bal-error').textContent = `${err.toFixed(3)} kN (${err < 0.1 ? 'OK' : 'Buscando'})`;
+    } else {
+      document.getElementById('bal-sum-fc').textContent = `N/A`;
+      document.getElementById('bal-sum-fs').textContent = `N/A`;
+      document.getElementById('bal-p-int').textContent = `N/A`;
+      document.getElementById('bal-p-target').textContent = `${state.P.toFixed(1)} kN`;
+      document.getElementById('bal-error').textContent = `P > Capacidad Máx`;
+    }
 
     // Draw all canvases
     drawPMFamily(activePt);
@@ -1609,6 +1731,8 @@
         if (pt.P < minP) minP = pt.P;
       });
     });
+
+    if (state.P > maxP) maxP = state.P * 1.05;
 
     maxM = Math.ceil(maxM * 1.15 / 50) * 50;
     maxP = Math.ceil(maxP * 1.1 / 100) * 100;
@@ -1707,8 +1831,9 @@
     ctx.textAlign = 'right';
     ctx.fillText(`P = ${state.P.toFixed(0)} kN (Línea de Corte)`, padL + plotW - 10, yTarget - 8);
 
-    // Draw intersection dots for all computed M-phi points
+    // Draw intersection dots for all computed M-phi points that intersect
     state.mPhiPoints.forEach((pt, idx) => {
+      if (!pt.hasIntersection) return;
       const isCurrent = idx === state.activeStepIdx;
       const x = toX(pt.M);
       const y = toY(state.P);
@@ -1752,8 +1877,10 @@
     let maxPhi = 0.01;
 
     state.mPhiPoints.forEach(pt => {
-      if (pt.M > maxM) maxM = pt.M;
-      if (pt.phi > maxPhi) maxPhi = pt.phi;
+      if (pt.hasIntersection) {
+        if (pt.M > maxM) maxM = pt.M;
+        if (pt.phi > maxPhi) maxPhi = pt.phi;
+      }
     });
 
     maxM = Math.ceil(maxM * 1.15 / 50) * 50;
@@ -1808,34 +1935,40 @@
     ctx.fillText('Momento Flector M (kN·m)', 0, 0);
     ctx.restore();
 
-    // Draw continuous curve up to active point
-    ctx.beginPath();
-    ctx.moveTo(toX(0), toY(0));
-    state.mPhiPoints.forEach((pt, idx) => {
-      if (idx <= state.activeStepIdx) {
-        ctx.lineTo(toX(pt.phi), toY(pt.M));
-      }
-    });
-    ctx.strokeStyle = '#059669';
-    ctx.lineWidth = 3.5;
-    ctx.stroke();
-
-    // Remaining future curve as dashed
-    if (state.activeStepIdx < state.mPhiPoints.length - 1) {
+    // Draw continuous curve for points with valid intersection
+    const validPts = state.mPhiPoints.filter(p => p.hasIntersection);
+    if (validPts.length > 0) {
       ctx.beginPath();
-      ctx.setLineDash([5, 4]);
-      ctx.moveTo(toX(activePt.phi), toY(activePt.M));
-      for (let i = state.activeStepIdx + 1; i < state.mPhiPoints.length; i++) {
-        ctx.lineTo(toX(state.mPhiPoints[i].phi), toY(state.mPhiPoints[i].M));
-      }
-      ctx.strokeStyle = state.theme === 'dark' ? '#334155' : '#cbd5e1';
-      ctx.lineWidth = 2;
+      ctx.moveTo(toX(0), toY(0));
+      validPts.forEach(pt => {
+        if (pt.idx - 1 <= state.activeStepIdx) {
+          ctx.lineTo(toX(pt.phi), toY(pt.M));
+        }
+      });
+      ctx.strokeStyle = '#059669';
+      ctx.lineWidth = 3.5;
       ctx.stroke();
-      ctx.setLineDash([]);
+
+      // Remaining future curve as dashed
+      const lastActiveValid = validPts.filter(p => p.idx - 1 <= state.activeStepIdx).pop();
+      if (lastActiveValid) {
+        ctx.beginPath();
+        ctx.setLineDash([5, 4]);
+        ctx.moveTo(toX(lastActiveValid.phi), toY(lastActiveValid.M));
+        validPts.forEach(pt => {
+          if (pt.idx - 1 > state.activeStepIdx) {
+            ctx.lineTo(toX(pt.phi), toY(pt.M));
+          }
+        });
+        ctx.strokeStyle = state.theme === 'dark' ? '#334155' : '#cbd5e1';
+        ctx.lineWidth = 2;
+        ctx.stroke();
+        ctx.setLineDash([]);
+      }
     }
 
     // Draw Yield Point marker (My, phiy)
-    if (yieldPt && yieldPt.isYield) {
+    if (yieldPt && yieldPt.isYield && yieldPt.hasIntersection) {
       const yX = toX(yieldPt.phi);
       const yY = toY(yieldPt.M);
       ctx.beginPath();
@@ -1853,7 +1986,7 @@
     }
 
     // Draw Maximum Moment marker
-    if (maxPt) {
+    if (maxPt && maxPt.hasIntersection) {
       const mX = toX(maxPt.phi);
       const mY = toY(maxPt.M);
       ctx.beginPath();
@@ -1872,6 +2005,7 @@
 
     // Draw points on the curve
     state.mPhiPoints.forEach((pt, idx) => {
+      if (!pt.hasIntersection) return;
       const isCurrent = idx === state.activeStepIdx;
       const x = toX(pt.phi);
       const y = toY(pt.M);
@@ -1902,8 +2036,22 @@
   /* ==========================================================================
      CANVAS 3: SUBPANEL SECTION & FIBERS
      ========================================================================== */
+  function drawNoIntersecMessage(ctx, width, height) {
+    ctx.clearRect(0, 0, width, height);
+    ctx.fillStyle = state.theme === 'dark' ? '#94a3b8' : '#64748b';
+    ctx.font = 'bold 12px "Outfit"';
+    ctx.textAlign = 'center';
+    ctx.fillText('Sin corte para esta deformación', width / 2, height / 2 - 8);
+    ctx.font = '10px "JetBrains Mono"';
+    ctx.fillText(`P = ${state.P.toFixed(0)} kN supera capacidad`, width / 2, height / 2 + 12);
+  }
+
   function drawSubSection(activePt) {
     const { ctx, width, height } = setupCanvas('canvas-sub-section');
+    if (!activePt || !activePt.hasIntersection || !activePt.details) {
+      drawNoIntersecMessage(ctx, width, height);
+      return;
+    }
     ctx.clearRect(0, 0, width, height);
 
     const pad = 25;
@@ -1981,6 +2129,10 @@
      ========================================================================== */
   function drawSubStrains(activePt) {
     const { ctx, width, height } = setupCanvas('canvas-sub-strains');
+    if (!activePt || !activePt.hasIntersection || !activePt.details) {
+      drawNoIntersecMessage(ctx, width, height);
+      return;
+    }
     ctx.clearRect(0, 0, width, height);
 
     const padX = 40, padY = 25;
@@ -2057,6 +2209,10 @@
      ========================================================================== */
   function drawSubStresses(activePt) {
     const { ctx, width, height } = setupCanvas('canvas-sub-stresses');
+    if (!activePt || !activePt.hasIntersection || !activePt.details) {
+      drawNoIntersecMessage(ctx, width, height);
+      return;
+    }
     ctx.clearRect(0, 0, width, height);
 
     const padX = 40, padY = 25;
@@ -2106,6 +2262,10 @@
      ========================================================================== */
   function drawSubForces(activePt) {
     const { ctx, width, height } = setupCanvas('canvas-sub-forces');
+    if (!activePt || !activePt.hasIntersection || !activePt.details) {
+      drawNoIntersecMessage(ctx, width, height);
+      return;
+    }
     ctx.clearRect(0, 0, width, height);
 
     const padX = 35, padY = 25;
@@ -2177,21 +2337,39 @@
       const tr = document.createElement('tr');
       if (idx === state.activeStepIdx) tr.className = 'active-row';
 
-      tr.innerHTML = `
-        <td style="text-align:center;">${pt.idx}</td>
-        <td>${pt.ec.toFixed(4)}</td>
-        <td>${pt.c.toFixed(2)}</td>
-        <td style="color:var(--accent-emerald); font-weight:700;">${pt.phi.toFixed(4)}</td>
-        <td>${pt.phiRadKm.toFixed(2)}</td>
-        <td style="color:var(--accent-blue); font-weight:700;">${pt.M.toFixed(1)}</td>
-        <td style="color:${pt.max_es < 0 ? 'var(--color-tens)' : 'var(--color-comp)'};">${pt.max_es.toFixed(5)}</td>
-        <td>${pt.fs_bot.toFixed(1)}</td>
-        <td style="text-align:center;">
-          <span style="font-size:0.75rem; padding:2px 8px; border-radius:4px; font-weight:700; background:${pt.isYield ? 'rgba(217, 119, 6, 0.15)' : 'rgba(37, 99, 235, 0.1)'}; color:${pt.isYield ? 'var(--accent-amber)' : 'var(--accent-blue)'};">
-            ${pt.stateStr}
-          </span>
-        </td>
-      `;
+      if (pt.hasIntersection) {
+        tr.innerHTML = `
+          <td style="text-align:center;">${pt.idx}</td>
+          <td>${pt.ec.toFixed(4)}</td>
+          <td>${pt.c.toFixed(2)}</td>
+          <td style="color:var(--accent-emerald); font-weight:700;">${pt.phi.toFixed(4)}</td>
+          <td>${pt.phiRadKm.toFixed(2)}</td>
+          <td style="color:var(--accent-blue); font-weight:700;">${pt.M.toFixed(1)}</td>
+          <td style="color:${pt.max_es < 0 ? 'var(--color-tens)' : 'var(--color-comp)'};">${pt.max_es.toFixed(5)}</td>
+          <td>${pt.fs_bot.toFixed(1)}</td>
+          <td style="text-align:center;">
+            <span style="font-size:0.75rem; padding:2px 8px; border-radius:4px; font-weight:700; background:${pt.isYield ? 'rgba(217, 119, 6, 0.15)' : 'rgba(37, 99, 235, 0.1)'}; color:${pt.isYield ? 'var(--accent-amber)' : 'var(--accent-blue)'};">
+              ${pt.stateStr}
+            </span>
+          </td>
+        `;
+      } else {
+        tr.innerHTML = `
+          <td style="text-align:center; opacity:0.6;">${pt.idx}</td>
+          <td style="opacity:0.6;">${pt.ec.toFixed(4)}</td>
+          <td style="opacity:0.6;">—</td>
+          <td style="opacity:0.6;">—</td>
+          <td style="opacity:0.6;">—</td>
+          <td style="opacity:0.6;">—</td>
+          <td style="opacity:0.6;">—</td>
+          <td style="opacity:0.6;">—</td>
+          <td style="text-align:center;">
+            <span style="font-size:0.75rem; padding:2px 8px; border-radius:4px; font-weight:700; background:rgba(225, 29, 72, 0.15); color:var(--accent-rose);">
+              ${pt.stateStr}
+            </span>
+          </td>
+        `;
+      }
 
       tr.onclick = () => {
         state.activeStepIdx = idx;
@@ -2209,7 +2387,11 @@
   function downloadCSV() {
     let csv = 'Paso,ec,c_cm,phi_1_m,phi_rad_km,M_kNm,eps_s_tracc,fs_MPa,Estado\n';
     state.mPhiPoints.forEach(p => {
-      csv += `${p.idx},${p.ec},${p.c.toFixed(2)},${p.phi.toFixed(5)},${p.phiRadKm.toFixed(2)},${p.M.toFixed(2)},${p.max_es.toFixed(5)},${p.fs_bot.toFixed(1)},"${p.stateStr}"\n`;
+      if (p.hasIntersection) {
+        csv += `${p.idx},${p.ec},${p.c.toFixed(2)},${p.phi.toFixed(5)},${p.phiRadKm.toFixed(2)},${p.M.toFixed(2)},${p.max_es.toFixed(5)},${p.fs_bot.toFixed(1)},"${p.stateStr}"\n`;
+      } else {
+        csv += `${p.idx},${p.ec},N/A,N/A,N/A,N/A,N/A,N/A,"${p.stateStr}"\n`;
+      }
     });
 
     const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
@@ -2227,7 +2409,11 @@
     tex += `\\begin{tabular}{cccccccc}\n\\hline\n`;
     tex += `Paso & $\\varepsilon_c$ & $c$~(cm) & $\\phi$~(1/m) & $M$~(kN$\\cdot$m) & $\\varepsilon_s$ & $f_s$~(MPa) & Estado \\\\\n\\hline\n`;
     state.mPhiPoints.forEach(p => {
-      tex += `${p.idx} & ${p.ec.toFixed(4)} & ${p.c.toFixed(2)} & ${p.phi.toFixed(4)} & ${p.M.toFixed(1)} & ${p.max_es.toFixed(5)} & ${p.fs_bot.toFixed(1)} & ${p.stateStr} \\\\\n`;
+      if (p.hasIntersection) {
+        tex += `${p.idx} & ${p.ec.toFixed(4)} & ${p.c.toFixed(2)} & ${p.phi.toFixed(4)} & ${p.M.toFixed(1)} & ${p.max_es.toFixed(5)} & ${p.fs_bot.toFixed(1)} & ${p.stateStr} \\\\\n`;
+      } else {
+        tex += `${p.idx} & ${p.ec.toFixed(4)} & -- & -- & -- & -- & -- & ${p.stateStr} \\\\\n`;
+      }
     });
     tex += `\\hline\n\\end{tabular}\n\\end{table}`;
 

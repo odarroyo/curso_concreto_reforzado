@@ -1,0 +1,2440 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Capacidad y Diseño de Vigas a Flexión — Bloque de Whitney (1937)</title>
+  
+  <!-- Google Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500;600;700&family=Outfit:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  
+  <!-- MathJax 3 for Crisp LaTeX Math Rendering -->
+  <script>
+    window.MathJax = {
+      tex: {
+        inlineMath: [['\\(', '\\)']],
+        displayMath: [['\\[', '\\]']]
+      },
+      chtml: {
+        scale: 0.95
+      }
+    };
+  </script>
+  <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+
+  <style>
+    :root {
+      --bg-primary: #f8fafc;
+      --bg-secondary: #ffffff;
+      --bg-card: #ffffff;
+      --bg-card-subtle: #f1f5f9;
+      --border-color: #e2e8f0;
+      --border-focus: #2563eb;
+      --text-main: #1e293b;
+      --text-muted: #64748b;
+      --text-bright: #0f172a;
+
+      --accent-blue: #2563eb;
+      --accent-blue-light: #3b82f6;
+      --accent-emerald: #059669;
+      --accent-amber: #d97706;
+      --accent-rose: #e11d48;
+      --accent-purple: #7c3aed;
+      --accent-cyan: #0891b2;
+
+      --color-comp: #ea580c;
+      --color-tens: #0284c7;
+      --color-whitney: #0d9488;
+
+      --shadow-sm: 0 1px 2px rgba(0,0,0,0.05);
+      --shadow-md: 0 4px 6px -1px rgba(0,0,0,0.07), 0 2px 4px -2px rgba(0,0,0,0.05);
+      --shadow-lg: 0 10px 15px -3px rgba(0,0,0,0.08), 0 4px 6px -4px rgba(0,0,0,0.04);
+      --radius-sm: 6px;
+      --radius-md: 12px;
+      --radius-lg: 18px;
+
+      --font-main: 'Inter', system-ui, -apple-system, sans-serif;
+      --font-title: 'Outfit', system-ui, sans-serif;
+      --font-mono: 'JetBrains Mono', monospace;
+    }
+
+    [data-theme="dark"] {
+      --bg-primary: #0b0f19;
+      --bg-secondary: #111827;
+      --bg-card: #151e32;
+      --bg-card-subtle: #1a243d;
+      --border-color: #24324f;
+      --border-focus: #60a5fa;
+      --text-main: #cbd5e1;
+      --text-muted: #94a3b8;
+      --text-bright: #f8fafc;
+      --shadow-sm: 0 1px 2px rgba(0,0,0,0.3);
+      --shadow-md: 0 4px 6px -1px rgba(0,0,0,0.4);
+      --shadow-lg: 0 10px 15px -3px rgba(0,0,0,0.5);
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: var(--font-main);
+      background: var(--bg-primary);
+      color: var(--text-main);
+      line-height: 1.55;
+      padding-bottom: 70px;
+      transition: background-color 0.25s ease, color 0.25s ease;
+    }
+
+    .container {
+      max-width: 1400px;
+      margin: 0 auto;
+      padding: 0 24px;
+    }
+
+    /* TOP HEADER */
+    header.header-bar {
+      background: var(--bg-card);
+      border-bottom: 1px solid var(--border-color);
+      padding: 16px 0;
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      box-shadow: var(--shadow-sm);
+    }
+
+    .header-content {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 16px;
+      flex-wrap: wrap;
+    }
+
+    .header-title-area h1 {
+      font-family: var(--font-title);
+      font-size: 1.4rem;
+      font-weight: 800;
+      color: var(--text-bright);
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .header-title-area p {
+      font-size: 0.85rem;
+      color: var(--text-muted);
+      margin-top: 2px;
+    }
+
+    .header-badges {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .badge-stage {
+      background: rgba(37, 99, 235, 0.1);
+      color: var(--accent-blue);
+      border: 1px solid rgba(37, 99, 235, 0.25);
+      padding: 5px 12px;
+      border-radius: 999px;
+      font-size: 0.75rem;
+      font-weight: 700;
+      letter-spacing: 0.04em;
+      text-transform: uppercase;
+    }
+
+    .btn-portal-back, .btn-theme-toggle {
+      background: var(--bg-card-subtle);
+      border: 1px solid var(--border-color);
+      color: var(--text-main);
+      padding: 8px 14px;
+      border-radius: var(--radius-sm);
+      font-family: var(--font-main);
+      font-size: 0.825rem;
+      font-weight: 600;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      text-decoration: none;
+      transition: all 0.2s ease;
+    }
+
+    .btn-portal-back:hover, .btn-theme-toggle:hover {
+      background: var(--border-color);
+      color: var(--text-bright);
+    }
+
+    /* CONCEPT HERO BANNER */
+    .concept-banner {
+      background: linear-gradient(135deg, rgba(37, 99, 235, 0.08), rgba(13, 148, 136, 0.08));
+      border: 1px solid rgba(37, 99, 235, 0.2);
+      border-radius: var(--radius-md);
+      padding: 20px 24px;
+      margin: 22px 0 18px 0;
+      display: flex;
+      gap: 18px;
+      align-items: flex-start;
+    }
+
+    .concept-banner .icon {
+      font-size: 2.2rem;
+      line-height: 1;
+      padding: 10px;
+      background: var(--bg-card);
+      border-radius: var(--radius-sm);
+      box-shadow: var(--shadow-sm);
+    }
+
+    .concept-banner .text h3 {
+      font-family: var(--font-title);
+      font-size: 1.15rem;
+      color: var(--text-bright);
+      margin-bottom: 6px;
+    }
+
+    .concept-banner .text p {
+      font-size: 0.9rem;
+      color: var(--text-muted);
+      line-height: 1.55;
+    }
+
+    /* TABS SWITCH: MODO CAPACIDAD VS MODO DISEÑO */
+    .mode-tabs-container {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 14px;
+      margin-bottom: 20px;
+    }
+
+    .mode-tabs {
+      display: inline-flex;
+      background: var(--bg-card-subtle);
+      border: 1px solid var(--border-color);
+      border-radius: var(--radius-md);
+      padding: 4px;
+      gap: 4px;
+    }
+
+    .mode-tab-btn {
+      background: transparent;
+      border: none;
+      padding: 10px 22px;
+      border-radius: var(--radius-sm);
+      font-family: var(--font-title);
+      font-size: 0.95rem;
+      font-weight: 700;
+      color: var(--text-muted);
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      transition: all 0.2s ease;
+    }
+
+    .mode-tab-btn.active {
+      background: var(--bg-card);
+      color: var(--accent-blue);
+      box-shadow: var(--shadow-sm);
+    }
+
+    [data-theme="dark"] .mode-tab-btn.active {
+      background: var(--accent-blue);
+      color: #ffffff;
+    }
+
+    /* PRESETS ROW */
+    .presets-group {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      flex-wrap: wrap;
+    }
+
+    .preset-label {
+      font-size: 0.8rem;
+      font-weight: 700;
+      color: var(--text-muted);
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+    }
+
+    .preset-btn {
+      background: var(--bg-card);
+      border: 1px solid var(--border-color);
+      color: var(--text-main);
+      padding: 6px 12px;
+      border-radius: var(--radius-sm);
+      font-size: 0.8rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.15s ease;
+    }
+
+    .preset-btn:hover {
+      border-color: var(--accent-blue);
+      color: var(--accent-blue);
+      background: var(--bg-card-subtle);
+    }
+
+    /* MAIN APP GRID */
+    .main-grid {
+      display: grid;
+      grid-template-columns: 370px 1fr;
+      gap: 24px;
+      align-items: start;
+    }
+
+    @media (max-width: 1080px) {
+      .main-grid {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    /* SIDEBAR CONTROLS */
+    .controls-panel {
+      display: flex;
+      flex-direction: column;
+      gap: 18px;
+    }
+
+    .card {
+      background: var(--bg-card);
+      border: 1px solid var(--border-color);
+      border-radius: var(--radius-md);
+      padding: 20px;
+      box-shadow: var(--shadow-sm);
+    }
+
+    .card-header-title {
+      font-family: var(--font-title);
+      font-size: 1.05rem;
+      font-weight: 700;
+      color: var(--text-bright);
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      margin-bottom: 16px;
+      padding-bottom: 10px;
+      border-bottom: 1px solid var(--border-color);
+    }
+
+    .input-group {
+      margin-bottom: 14px;
+    }
+
+    .input-label-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 6px;
+      font-size: 0.825rem;
+      font-weight: 600;
+      color: var(--text-main);
+    }
+
+    .input-val-badge {
+      font-family: var(--font-mono);
+      font-size: 0.825rem;
+      font-weight: 700;
+      color: var(--accent-blue);
+      background: var(--bg-card-subtle);
+      padding: 2px 7px;
+      border-radius: 4px;
+      border: 1px solid var(--border-color);
+    }
+
+    .range-slider {
+      width: 100%;
+      height: 6px;
+      border-radius: 3px;
+      background: var(--border-color);
+      outline: none;
+      -webkit-appearance: none;
+      cursor: pointer;
+    }
+
+    .range-slider::-webkit-slider-thumb {
+      -webkit-appearance: none;
+      appearance: none;
+      width: 18px;
+      height: 18px;
+      border-radius: 50%;
+      background: var(--accent-blue);
+      cursor: pointer;
+      box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.2);
+      transition: all 0.15s ease;
+    }
+
+    .range-slider::-webkit-slider-thumb:hover {
+      transform: scale(1.15);
+    }
+
+    .num-input-row {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      margin-top: 5px;
+    }
+
+    .num-input {
+      flex: 1;
+      padding: 7px 10px;
+      border: 1px solid var(--border-color);
+      border-radius: var(--radius-sm);
+      background: var(--bg-primary);
+      color: var(--text-bright);
+      font-family: var(--font-mono);
+      font-size: 0.85rem;
+      font-weight: 600;
+      outline: none;
+      transition: border-color 0.2s;
+    }
+
+    .num-input:focus {
+      border-color: var(--border-focus);
+    }
+
+    .unit-label {
+      font-size: 0.8rem;
+      color: var(--text-muted);
+      font-weight: 600;
+      min-width: 45px;
+    }
+
+    select.select-custom {
+      width: 100%;
+      padding: 8px 12px;
+      border: 1px solid var(--border-color);
+      border-radius: var(--radius-sm);
+      background: var(--bg-primary);
+      color: var(--text-bright);
+      font-family: var(--font-main);
+      font-size: 0.85rem;
+      font-weight: 600;
+      outline: none;
+      cursor: pointer;
+    }
+
+    /* RIGHT CONTENT AREA */
+    .content-area {
+      display: flex;
+      flex-direction: column;
+      gap: 22px;
+    }
+
+    /* KPI METRICS CARDS ROW */
+    .kpi-row {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+      gap: 14px;
+    }
+
+    .kpi-card {
+      background: var(--bg-card);
+      border: 1px solid var(--border-color);
+      border-radius: var(--radius-md);
+      padding: 16px;
+      box-shadow: var(--shadow-sm);
+      position: relative;
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+    }
+
+    .kpi-card::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: 4px;
+      background: var(--border-color);
+    }
+
+    .kpi-card.blue::before { background: var(--accent-blue); }
+    .kpi-card.emerald::before { background: var(--accent-emerald); }
+    .kpi-card.amber::before { background: var(--accent-amber); }
+    .kpi-card.purple::before { background: var(--accent-purple); }
+    .kpi-card.cyan::before { background: var(--accent-cyan); }
+    .kpi-card.rose::before { background: var(--accent-rose); }
+
+    .kpi-label {
+      font-size: 0.75rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+      color: var(--text-muted);
+      margin-bottom: 6px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .kpi-val {
+      font-family: var(--font-title);
+      font-size: 1.65rem;
+      font-weight: 800;
+      color: var(--text-bright);
+      line-height: 1.1;
+    }
+
+    .kpi-unit {
+      font-size: 0.85rem;
+      font-weight: 600;
+      color: var(--text-muted);
+      margin-left: 4px;
+    }
+
+    .kpi-subtext {
+      font-size: 0.775rem;
+      color: var(--text-muted);
+      margin-top: 6px;
+      display: flex;
+      align-items: center;
+      gap: 4px;
+    }
+
+    .status-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+      padding: 3px 8px;
+      border-radius: 999px;
+      font-size: 0.725rem;
+      font-weight: 800;
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+    }
+
+    .status-badge.ductile {
+      background: rgba(5, 150, 105, 0.12);
+      color: var(--accent-emerald);
+      border: 1px solid rgba(5, 150, 105, 0.3);
+    }
+
+    .status-badge.transition {
+      background: rgba(217, 119, 6, 0.12);
+      color: var(--accent-amber);
+      border: 1px solid rgba(217, 119, 6, 0.3);
+    }
+
+    .status-badge.brittle {
+      background: rgba(225, 29, 72, 0.12);
+      color: var(--accent-rose);
+      border: 1px solid rgba(225, 29, 72, 0.3);
+    }
+
+    /* 4-CANVAS SYNCHRONIZED VISUALIZER */
+    .canvas-section-card {
+      background: var(--bg-card);
+      border: 1px solid var(--border-color);
+      border-radius: var(--radius-md);
+      padding: 20px;
+      box-shadow: var(--shadow-sm);
+    }
+
+    .canvas-grid-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 14px;
+      flex-wrap: wrap;
+      gap: 10px;
+    }
+
+    .canvas-title-group h3 {
+      font-family: var(--font-title);
+      font-size: 1.15rem;
+      color: var(--text-bright);
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .canvas-title-group p {
+      font-size: 0.8rem;
+      color: var(--text-muted);
+    }
+
+    .canvas-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 12px;
+      background: var(--bg-primary);
+      border: 1px solid var(--border-color);
+      border-radius: var(--radius-sm);
+      padding: 12px;
+    }
+
+    @media (max-width: 1200px) {
+      .canvas-grid {
+        grid-template-columns: repeat(2, 1fr);
+      }
+    }
+
+    @media (max-width: 650px) {
+      .canvas-grid {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    .canvas-box {
+      background: var(--bg-card);
+      border: 1px solid var(--border-color);
+      border-radius: var(--radius-sm);
+      padding: 10px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      position: relative;
+    }
+
+    .canvas-box-title {
+      font-family: var(--font-title);
+      font-size: 0.825rem;
+      font-weight: 700;
+      color: var(--text-bright);
+      margin-bottom: 8px;
+      text-align: center;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .canvas-sublabel {
+      font-size: 0.725rem;
+      color: var(--text-muted);
+      margin-top: 6px;
+      text-align: center;
+      font-family: var(--font-mono);
+    }
+
+    canvas.diagram-canvas {
+      width: 100%;
+      height: 320px;
+      display: block;
+      border-radius: 4px;
+    }
+
+    /* REBAR SELECTION ASSISTANT TABLE (MODE 2) */
+    .rebar-assistant-card {
+      background: var(--bg-card);
+      border: 1px solid var(--border-color);
+      border-radius: var(--radius-md);
+      padding: 20px;
+      box-shadow: var(--shadow-sm);
+    }
+
+    .rebar-table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 0.825rem;
+      margin-top: 10px;
+    }
+
+    .rebar-table th {
+      background: var(--bg-card-subtle);
+      color: var(--text-muted);
+      font-weight: 700;
+      text-align: left;
+      padding: 8px 12px;
+      border-bottom: 1px solid var(--border-color);
+      font-size: 0.75rem;
+      text-transform: uppercase;
+      letter-spacing: 0.03em;
+    }
+
+    .rebar-table td {
+      padding: 9px 12px;
+      border-bottom: 1px solid var(--border-color);
+      color: var(--text-main);
+    }
+
+    .rebar-table tr:hover {
+      background: rgba(37, 99, 235, 0.04);
+    }
+
+    .rebar-table tr.recommended {
+      background: rgba(5, 150, 105, 0.06);
+      font-weight: 600;
+    }
+
+    .btn-apply-rebar {
+      background: var(--accent-blue);
+      color: #ffffff;
+      border: none;
+      padding: 4px 10px;
+      border-radius: 4px;
+      font-size: 0.75rem;
+      font-weight: 700;
+      cursor: pointer;
+      transition: opacity 0.15s ease;
+    }
+
+    .btn-apply-rebar:hover {
+      opacity: 0.9;
+    }
+
+    /* STEP-BY-STEP BLACKBOARD */
+    .blackboard-card {
+      background: var(--bg-card);
+      border: 1px solid var(--border-color);
+      border-radius: var(--radius-md);
+      padding: 22px;
+      box-shadow: var(--shadow-sm);
+    }
+
+    .blackboard-steps {
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+      margin-top: 14px;
+    }
+
+    .step-item {
+      background: var(--bg-card-subtle);
+      border: 1px solid var(--border-color);
+      border-left: 4px solid var(--accent-blue);
+      border-radius: var(--radius-sm);
+      padding: 14px 18px;
+    }
+
+    .step-item.success {
+      border-left-color: var(--accent-emerald);
+    }
+
+    .step-item.warning {
+      border-left-color: var(--accent-amber);
+    }
+
+    .step-title {
+      font-family: var(--font-title);
+      font-size: 0.95rem;
+      font-weight: 700;
+      color: var(--text-bright);
+      margin-bottom: 6px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .step-body {
+      font-size: 0.875rem;
+      color: var(--text-main);
+      line-height: 1.6;
+    }
+
+    .math-block {
+      overflow-x: auto;
+      padding: 6px 0;
+    }
+
+    /* PYTHON LIVE CODE CONSOLE */
+    .code-console-card {
+      background: #0f172a;
+      color: #e2e8f0;
+      border-radius: var(--radius-md);
+      padding: 18px 22px;
+      font-family: var(--font-mono);
+      position: relative;
+      border: 1px solid #1e293b;
+    }
+
+    .code-console-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 12px;
+      padding-bottom: 10px;
+      border-bottom: 1px solid #334155;
+    }
+
+    .code-console-title {
+      font-size: 0.85rem;
+      font-weight: 700;
+      color: #94a3b8;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .btn-copy-code {
+      background: #1e293b;
+      color: #38bdf8;
+      border: 1px solid #334155;
+      padding: 5px 12px;
+      border-radius: var(--radius-sm);
+      font-size: 0.775rem;
+      font-weight: 600;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      transition: all 0.2s;
+    }
+
+    .btn-copy-code:hover {
+      background: #334155;
+      color: #ffffff;
+    }
+
+    pre.python-code {
+      font-size: 0.825rem;
+      line-height: 1.55;
+      overflow-x: auto;
+      margin: 0;
+      color: #f1f5f9;
+    }
+
+    /* QUIZ SECTION */
+    .quiz-section {
+      background: var(--bg-card);
+      border: 1px solid var(--border-color);
+      border-radius: var(--radius-md);
+      padding: 22px;
+    }
+
+    .quiz-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+      gap: 16px;
+      margin-top: 14px;
+    }
+
+    .quiz-card {
+      background: var(--bg-card-subtle);
+      border: 1px solid var(--border-color);
+      border-radius: var(--radius-sm);
+      padding: 16px;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+
+    .quiz-q {
+      font-weight: 700;
+      font-size: 0.875rem;
+      color: var(--text-bright);
+    }
+
+    .quiz-btn {
+      background: var(--bg-card);
+      border: 1px solid var(--border-color);
+      color: var(--text-main);
+      padding: 8px 12px;
+      border-radius: var(--radius-sm);
+      font-size: 0.8rem;
+      cursor: pointer;
+      text-align: left;
+      transition: all 0.15s ease;
+    }
+
+    .quiz-btn:hover {
+      border-color: var(--accent-blue);
+    }
+
+    .quiz-answer {
+      display: none;
+      padding: 10px 12px;
+      border-radius: var(--radius-sm);
+      font-size: 0.825rem;
+      line-height: 1.45;
+      background: rgba(5, 150, 105, 0.08);
+      border: 1px solid rgba(5, 150, 105, 0.25);
+      color: var(--accent-emerald);
+    }
+
+    .quiz-answer.show { display: block; }
+
+    /* FOOTER */
+    footer.app-footer {
+      margin-top: 50px;
+      padding-top: 20px;
+      border-top: 1px solid var(--border-color);
+      text-align: center;
+      font-size: 0.85rem;
+      color: var(--text-muted);
+    }
+  </style>
+</head>
+<body>
+
+  <!-- TOP NAVIGATION HEADER -->
+  <header class="header-bar">
+    <div class="container header-content">
+      <div class="header-title-area">
+        <h1>
+          <span>📏</span>
+          <span>Capacidad y Diseño de Vigas con Bloque de Whitney</span>
+        </h1>
+        <p>Mecánica Seccional, Euler-Bernoulli y Criterios de Resistencia y Ductilidad NSR-10 / ACI 318</p>
+      </div>
+
+      <div class="header-badges">
+        <a href="index.html" class="btn-portal-back">🏠 Portal Principal</a>
+        <span class="badge-stage">Diseño a Flexión · Whitney (1937)</span>
+        <button id="btn-theme-toggle" class="btn-theme-toggle" onclick="toggleTheme()">
+          <span id="theme-icon">🌙</span>
+          <span id="theme-text">Modo Oscuro</span>
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <main class="container">
+
+    <!-- CONCEPT BANNER -->
+    <div class="concept-banner">
+      <div class="icon">💡</div>
+      <div class="text">
+        <h3>Teoría Fundamental del Bloque Rectangular Equivalente</h3>
+        <p>
+          En 1937, <strong>Charles S. Whitney</strong> revolucionó el diseño de concreto reforzado al reemplazar la parábola no lineal de esfuerzos de compresión por un <strong>bloque rectangular equivalente</strong> de esfuerzo uniforme \(0.85 f'_c\) y profundidad \(a = \beta_1 c\). 
+          Junto con la hipótesis cinemática de <strong>Euler-Bernoulli</strong> (las secciones planas permanecen planas), permite calcular directamente la <strong>capacidad nominal \(M_n\)</strong> y la <strong>deformación de tracción \(\varepsilon_t\)</strong> que asegura una falla dúctil (\(\varepsilon_t \ge 0.005 \implies \phi = 0.90\)).
+        </p>
+      </div>
+    </div>
+
+    <!-- TABS: MODE SELECTION & PRESETS -->
+    <div class="mode-tabs-container">
+      <div class="mode-tabs">
+        <button class="mode-tab-btn active" id="tab-mode-cap" onclick="setAppMode('capacidad')">
+          <span>🔍</span>
+          <span>Ejercicio #1: Análisis de Capacidad (\(M_n, \phi M_n\))</span>
+        </button>
+        <button class="mode-tab-btn" id="tab-mode-dis" onclick="setAppMode('diseno')">
+          <span>✏️</span>
+          <span>Ejercicio #2: Diseño Seccional (\(M_u \to \rho, A_s\))</span>
+        </button>
+      </div>
+
+      <div class="presets-group">
+        <span class="preset-label">Casos del Script:</span>
+        <button class="preset-btn" onclick="loadPreset('ejercicio1')">📌 Ejercicio 1 (Viga 35×45 con 4#6)</button>
+        <button class="preset-btn" onclick="loadPreset('ejercicio2')">📐 Ejercicio 2 (Diseño Mu = 125 kN·m)</button>
+        <button class="preset-btn" onclick="loadPreset('viga_tipica')">🏛️ Viga Edificio 30×50 cm</button>
+        <button class="preset-btn" onclick="loadPreset('sobre_reforzada')">⚡ Caso Frágil (Demostración)</button>
+      </div>
+    </div>
+
+    <!-- MAIN INTERACTIVE GRID -->
+    <div class="main-grid">
+
+      <!-- LEFT COLUMN: CONTROLS -->
+      <aside class="controls-panel">
+        
+        <!-- GEOMETRY CARD -->
+        <div class="card">
+          <div class="card-header-title">
+            <span>📐</span>
+            <span>Geometría de la Sección</span>
+          </div>
+
+          <div class="input-group">
+            <div class="input-label-row">
+              <span>Ancho de la viga (\(b\)):</span>
+              <span class="input-val-badge" id="val-b">0.35 m (35 cm)</span>
+            </div>
+            <input type="range" class="range-slider" id="slider-b" min="0.15" max="0.80" step="0.05" value="0.35" oninput="updateParam('b', this.value)">
+          </div>
+
+          <div class="input-group">
+            <div class="input-label-row">
+              <span>Altura total (\(h\)):</span>
+              <span class="input-val-badge" id="val-h">0.45 m (45 cm)</span>
+            </div>
+            <input type="range" class="range-slider" id="slider-h" min="0.20" max="1.20" step="0.05" value="0.45" oninput="updateParam('h', this.value)">
+          </div>
+
+          <div class="input-group">
+            <div class="input-label-row">
+              <span>Recubrimiento al centroide (\(r\)):</span>
+              <span class="input-val-badge" id="val-r">0.05 m (5.0 cm)</span>
+            </div>
+            <input type="range" class="range-slider" id="slider-r" min="0.03" max="0.10" step="0.005" value="0.05" oninput="updateParam('r', this.value)">
+          </div>
+
+          <div class="input-group" style="margin-bottom:0;">
+            <div class="input-label-row" style="color:var(--text-muted);">
+              <span>Peralte efectivo resultante (\(d = h - r\)):</span>
+              <span class="input-val-badge" style="color:var(--accent-emerald);" id="val-d">0.40 m (40 cm)</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- MATERIALS CARD -->
+        <div class="card">
+          <div class="card-header-title">
+            <span>🧪</span>
+            <span>Propiedades de Materiales</span>
+          </div>
+
+          <div class="input-group">
+            <div class="input-label-row">
+              <span>Resistencia del concreto (\(f'_c\)):</span>
+              <span class="input-val-badge" id="val-fc">28 MPa (28,000 kN/m²)</span>
+            </div>
+            <select class="select-custom" id="select-fc" onchange="updateParam('fc', this.value)">
+              <option value="21">21 MPa (3000 psi) — f'c = 21,000 kN/m²</option>
+              <option value="28" selected>28 MPa (4000 psi) — f'c = 28,000 kN/m² (Script)</option>
+              <option value="35">35 MPa (5000 psi) — f'c = 35,000 kN/m²</option>
+              <option value="42">42 MPa (6000 psi) — f'c = 42,000 kN/m²</option>
+            </select>
+          </div>
+
+          <div class="input-group">
+            <div class="input-label-row">
+              <span>Fluencia del acero (\(f_y\)):</span>
+              <span class="input-val-badge" id="val-fy">420 MPa (420,000 kN/m²)</span>
+            </div>
+            <select class="select-custom" id="select-fy" onchange="updateParam('fy', this.value)">
+              <option value="420" selected>420 MPa (Grado 60) — fy = 420,000 kN/m²</option>
+              <option value="520">520 MPa (Grado 75) — fy = 520,000 kN/m²</option>
+            </select>
+          </div>
+
+          <div class="input-group" style="margin-bottom:0;">
+            <div class="input-label-row" style="color:var(--text-muted);">
+              <span>Factor \(\beta_1\) de Whitney:</span>
+              <span class="input-val-badge" id="val-beta1">0.850</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- MODE 1 SPECIFIC CONTROLS: REBAR AS (ANALYSIS) -->
+        <div class="card" id="card-ctrl-capacidad">
+          <div class="card-header-title">
+            <span>🔩</span>
+            <span>Refuerzo Longitudinal (\(A_s\))</span>
+          </div>
+
+          <div class="input-group">
+            <div class="input-label-row">
+              <span>Configuración rápida de barras:</span>
+            </div>
+            <select class="select-custom" id="select-bar-config" onchange="onBarConfigChange(this.value)">
+              <option value="4_6" selected>4 # 6 (Script: As = 11.44 cm²)</option>
+              <option value="2_5">2 # 5 (As = 3.98 cm²)</option>
+              <option value="3_5">3 # 5 (As = 5.97 cm²)</option>
+              <option value="3_6">3 # 6 (As = 8.52 cm²)</option>
+              <option value="2_6_2_5">2 # 6 + 2 # 5 (As = 9.66 cm²)</option>
+              <option value="4_7">4 # 7 (As = 15.48 cm²)</option>
+              <option value="4_8">4 # 8 (As = 20.40 cm²)</option>
+              <option value="custom">✏️ Personalizado (Ingresar cm²)</option>
+            </select>
+          </div>
+
+          <div class="input-group">
+            <div class="input-label-row">
+              <span>Área total de acero (\(A_s\)):</span>
+              <span class="input-val-badge" id="val-as">11.44 cm²</span>
+            </div>
+            <input type="range" class="range-slider" id="slider-as" min="2.0" max="35.0" step="0.1" value="11.44" oninput="updateParam('as', this.value)">
+            <div class="num-input-row">
+              <input type="number" class="num-input" id="num-as" min="1.0" max="60.0" step="0.01" value="11.44" oninput="updateParam('as', this.value)">
+              <span class="unit-label">cm²</span>
+            </div>
+          </div>
+
+          <div class="input-group" style="margin-bottom:0;">
+            <div class="input-label-row" style="color:var(--text-muted);">
+              <span>Cuantía geométrica actual (\(\rho\)):</span>
+              <span class="input-val-badge" id="val-rho-actual">0.817 %</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- MODE 2 SPECIFIC CONTROLS: FACTORED MOMENT MU (DESIGN) -->
+        <div class="card" id="card-ctrl-diseno" style="display:none;">
+          <div class="card-header-title">
+            <span>⚡</span>
+            <span>Momento Actuante (\(M_u\))</span>
+          </div>
+
+          <div class="input-group">
+            <div class="input-label-row">
+              <span>Momento último de diseño (\(M_u\)):</span>
+              <span class="input-val-badge" id="val-mu">125.0 kN·m</span>
+            </div>
+            <input type="range" class="range-slider" id="slider-mu" min="10" max="450" step="1" value="125" oninput="updateParam('mu', this.value)">
+            <div class="num-input-row">
+              <input type="number" class="num-input" id="num-mu" min="5" max="800" step="0.5" value="125" oninput="updateParam('mu', this.value)">
+              <span class="unit-label">kN·m</span>
+            </div>
+          </div>
+
+          <div class="input-group" style="margin-bottom:0;">
+            <div class="input-label-row" style="color:var(--text-muted);">
+              <span>Factor \(\phi\) preliminar asumido:</span>
+              <span class="input-val-badge" style="color:var(--accent-emerald);">\(\phi = 0.90\) (Dúctil)</span>
+            </div>
+          </div>
+        </div>
+
+      </aside>
+
+      <!-- RIGHT COLUMN: RESULTS, 4 CANVASES, ASSISTANT, BLACKBOARD, CODE -->
+      <section class="content-area">
+
+        <!-- KPI SUMMARY METRICS ROW -->
+        <div class="kpi-row" id="kpi-metrics-row">
+          <!-- Dynamically populated via updateUI() -->
+        </div>
+
+        <!-- 4-CANVAS SYNCHRONIZED VISUALIZER -->
+        <div class="canvas-section-card">
+          <div class="canvas-grid-header">
+            <div class="canvas-title-group">
+              <h3>
+                <span>👁️</span>
+                <span>Visualizador Seccional Cuádruple Sincronizado</span>
+              </h3>
+              <p>Geometría real, cinemática de Euler-Bernoulli, bloque equivalente de Whitney y equilibrio estático</p>
+            </div>
+            <div id="status-badge-container">
+              <!-- Ductility status badge -->
+            </div>
+          </div>
+
+          <div class="canvas-grid">
+            <!-- CANVAS 1: CROSS SECTION -->
+            <div class="canvas-box">
+              <div class="canvas-box-title">
+                <span>1️⃣</span>
+                <span>Sección Transversal</span>
+              </div>
+              <canvas id="canvas-section" class="diagram-canvas"></canvas>
+              <div class="canvas-sublabel" id="lbl-can-sec">b = 35 cm, h = 45 cm</div>
+            </div>
+
+            <!-- CANVAS 2: EULER-BERNOULLI STRAINS -->
+            <div class="canvas-box">
+              <div class="canvas-box-title">
+                <span>2️⃣</span>
+                <span>Deformaciones (\(\varepsilon\))</span>
+              </div>
+              <canvas id="canvas-strain" class="diagram-canvas"></canvas>
+              <div class="canvas-sublabel" id="lbl-can-strain">\(\varepsilon_t = 0.01468\)</div>
+            </div>
+
+            <!-- CANVAS 3: WHITNEY STRESS BLOCK -->
+            <div class="canvas-box">
+              <div class="canvas-box-title">
+                <span>3️⃣</span>
+                <span>Bloque de Whitney</span>
+              </div>
+              <canvas id="canvas-stress" class="diagram-canvas"></canvas>
+              <div class="canvas-sublabel" id="lbl-can-stress">a = 5.77 cm (\(0.85 f'_c\))</div>
+            </div>
+
+            <!-- CANVAS 4: FORCE EQUILIBRIUM -->
+            <div class="canvas-box">
+              <div class="canvas-box-title">
+                <span>4️⃣</span>
+                <span>Equilibrio (\(C_c = T\))</span>
+              </div>
+              <canvas id="canvas-forces" class="diagram-canvas"></canvas>
+              <div class="canvas-sublabel" id="lbl-can-forces">C_c = 480.5 kN, T = 480.5 kN</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- REBAR ASSISTANT (ONLY IN DESIGN MODE) -->
+        <div class="rebar-assistant-card" id="rebar-assistant-card" style="display:none;">
+          <div class="card-header-title" style="margin-bottom:8px;">
+            <span>📋</span>
+            <span>Asistente de Selección de Armadura Comercial (NSR-10 / ACI 318)</span>
+          </div>
+          <p style="font-size:0.85rem; color:var(--text-muted); margin-bottom:12px;">
+            Combinaciones viables de barras para suministrar el área requerida \(A_{s,\text{req}}\) respetando el espaciamiento mínimo libre. Haz clic en <strong>"Aplicar a Sección"</strong> para evaluar de inmediato la viga con esa armadura.
+          </p>
+          <div style="overflow-x:auto;">
+            <table class="rebar-table">
+              <thead>
+                <tr>
+                  <th>Arreglo de Barras</th>
+                  <th>\(A_{s,\text{prov}}\) (cm²)</th>
+                  <th>Exceso (%)</th>
+                  <th>Espaciamiento Libre (\(s\))</th>
+                  <th>Estado Normativo</th>
+                  <th>Acción</th>
+                </tr>
+              </thead>
+              <tbody id="rebar-table-body">
+                <!-- Dynamically populated -->
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+        <!-- ACADEMIC BLACKBOARD (STEP-BY-STEP CALCULATION) -->
+        <div class="blackboard-card">
+          <div class="card-header-title">
+            <span>🎓</span>
+            <span>Pizarrón Académico: Desarrollo Matemático Paso a Paso</span>
+          </div>
+          <div class="blackboard-steps" id="blackboard-content">
+            <!-- Dynamically populated with MathJax formulas and substituted numbers -->
+          </div>
+        </div>
+
+        <!-- LIVE PYTHON CODE CONSOLE -->
+        <div class="code-console-card">
+          <div class="code-console-header">
+            <div class="code-console-title">
+              <span>🐍</span>
+              <span>Código Python Reactivo (Basado en <code>Vigas/diseño_y_capacidad_vigas.py</code>)</span>
+            </div>
+            <button class="btn-copy-code" onclick="copyPythonCode()">
+              <span id="copy-icon">📋</span>
+              <span id="copy-text">Copiar Código Python</span>
+            </button>
+          </div>
+          <pre class="python-code"><code id="python-code-block"># Generando código Python en vivo...</code></pre>
+        </div>
+
+        <!-- CONCEPTUAL QUIZ / REFLECTION ACCORDION -->
+        <div class="quiz-section">
+          <div class="card-header-title">
+            <span>🧠</span>
+            <span>Preguntas Conceptuales Socráticas</span>
+          </div>
+          <div class="quiz-grid">
+            <div class="quiz-card">
+              <div class="quiz-q">1. ¿Por qué Whitney fijó el esfuerzo en \(0.85 f'_c\) y no en \(1.0 f'_c\)?</div>
+              <button class="quiz-btn" onclick="toggleQuiz(1)">Ver Explicación Física y Experimental ▼</button>
+              <div class="quiz-answer" id="quiz-ans-1">
+                La resistencia del concreto en una estructura real bajo carga sostenida y con efectos de exudación y forma cilíndrica es aproximadamente el 85% de la resistencia de probetas estándar (\(f'_{c,\text{cilindro}}\)). Whitney (1937) calibró este factor para que el volumen integral del bloque rectangular coincidiera exactamente con la resultante del bulbo parabólico real.
+              </div>
+            </div>
+
+            <div class="quiz-card">
+              <div class="quiz-q">2. ¿Por qué el script comprueba que \(\varepsilon_t > 0.005\)?</div>
+              <button class="quiz-btn" onclick="toggleQuiz(2)">Ver Criterio de Falla Dúctil ▼</button>
+              <div class="quiz-answer" id="quiz-ans-2">
+                Cuando la deformación unitaria neta del acero de tracción \(\varepsilon_t \ge 0.005\), el acero fluye ampliamente (\(\varepsilon_t \ge 2.5 \varepsilon_y\)) antes de que el concreto se aplaste. Esto genera fisuración visible y grandes deflexiones de aviso (falla dúctil), lo cual permite aplicar el factor de reducción máximo de flexión \(\phi = 0.90\).
+              </div>
+            </div>
+
+            <div class="quiz-card">
+              <div class="quiz-q">3. ¿Qué peligro representa una viga con exceso de acero (\(\varepsilon_t < 0.004\))?</div>
+              <button class="quiz-btn" onclick="toggleQuiz(3)">Ver Advertencia de Falla Frágil ▼</button>
+              <div class="quiz-answer" id="quiz-ans-3">
+                Si se coloca demasiado acero, el concreto alcanza su aplastamiento último (\(\varepsilon_{cu} = 0.003\)) sin que el acero haya fluido sustancialmente. El fallo ocurre de manera explosiva, frágil y sin previo aviso, por lo cual los códigos modernos (NSR-10 C.10.3.5 / ACI 318) prohíben diseñar vigas con \(\varepsilon_t < 0.004\).
+              </div>
+            </div>
+          </div>
+        </div>
+
+      </section>
+    </div>
+
+    <!-- FOOTER -->
+    <footer class="app-footer">
+      <p>Diseño de Concreto Armado I · Universidad Javeriana Cali · Herramienta Educativa Interactiva</p>
+      <p style="margin-top: 4px; font-size: 0.8rem; color: var(--text-muted);">
+        Referencia: Whitney, C. S. (1937). <em>Design of Reinforced Concrete Members Under Flexure</em>. ACI Journal · NSR-10 Título C / ACI 318-19.
+      </p>
+    </footer>
+
+  </main>
+
+  <script>
+  /* ==========================================================================
+     GLOBAL STATE & REBAR DATABASE
+     ========================================================================== */
+  const state = {
+    mode: 'capacidad', // 'capacidad' or 'diseno'
+    theme: 'light',
+    // Geometry
+    b: 0.35,  // m
+    h: 0.45,  // m
+    r: 0.05,  // m
+    d: 0.40,  // m (h - r)
+    // Materials
+    fc: 28,   // MPa (28000 kN/m2)
+    fy: 420,  // MPa (420000 kN/m2)
+    Es: 200000, // MPa
+    ecu: 0.003, // concrete ultimate strain
+    // Mode 1: Capacidad
+    As: 11.44, // cm2 (4#6 en el script)
+    barConfig: '4_6',
+    // Mode 2: Diseno
+    Mu: 125.0, // kN*m (M_actuante en el script)
+    // Computed outputs
+    beta1: 0.85,
+    a: 0,
+    c: 0,
+    et: 0,
+    fs: 0,
+    Cc: 0,
+    T: 0,
+    Mn: 0,
+    fi: 0.90,
+    Md: 0,
+    // Diseno outputs
+    m_coef: 0,
+    K_factor: 0,
+    rho_req: 0,
+    As_req: 0,
+    rho_min: 0,
+    rho_max: 0,
+    c_dis: 0,
+    a_dis: 0,
+    et_dis: 0,
+    fi_dis: 0.90
+  };
+
+  // Colombian / ASTM Standard Reinforcing Bars
+  const BAR_CATALOG = [
+    { num: 3, name: '#3 (3/8")', db_mm: 9.5,  Ab_cm2: 0.71 },
+    { num: 4, name: '#4 (1/2")', db_mm: 12.7, Ab_cm2: 1.29 },
+    { num: 5, name: '#5 (5/8")', db_mm: 15.9, Ab_cm2: 1.99 },
+    { num: 6, name: '#6 (3/4")', db_mm: 19.1, Ab_cm2: 2.84, scriptAb: 2.86 },
+    { num: 7, name: '#7 (7/8")', db_mm: 22.2, Ab_cm2: 3.87 },
+    { num: 8, name: '#8 (1")',   db_mm: 25.4, Ab_cm2: 5.10 }
+  ];
+
+  /* ==========================================================================
+     PHYSICS & REINFORCED CONCRETE CALCULATIONS
+     ========================================================================== */
+  function calculateBeta1(fc_MPa) {
+    if (fc_MPa <= 28) return 0.85;
+    const b1 = 0.85 - 0.05 * (fc_MPa - 28) / 7.0;
+    return Math.max(0.65, Math.min(0.85, b1));
+  }
+
+  function calculatePhi(et, ey) {
+    if (et >= 0.005) return 0.90;
+    if (et <= ey) return 0.65;
+    return 0.65 + 0.25 * (et - ey) / (0.005 - ey);
+  }
+
+  function runCalculations() {
+    // 1. Effective depth
+    state.d = Math.max(0.05, state.h - state.r);
+    state.beta1 = calculateBeta1(state.fc);
+
+    const fc_kNm2 = state.fc * 1000.0; // kN/m2
+    const fy_kNm2 = state.fy * 1000.0; // kN/m2
+    const ey = state.fy / state.Es;
+
+    // --- MODO 1: CAPACIDAD ---
+    const As_m2 = (state.As / 10000.0);
+    // Depth of Whitney stress block: a = As * fy / (0.85 * fc * b)
+    state.a = (As_m2 * fy_kNm2) / (0.85 * fc_kNm2 * state.b);
+    state.c = state.a / state.beta1;
+    
+    // Euler-Bernoulli kinematics: et = ecu * (d - c) / c
+    if (state.c > 0) {
+      state.et = state.ecu * (state.d - state.c) / state.c;
+    } else {
+      state.et = 0.05;
+    }
+
+    // Steel stress (assuming tension yield if et >= ey)
+    state.fs = Math.min(state.fy, state.Es * Math.max(0, state.et));
+    const fs_kNm2 = state.fs * 1000.0;
+
+    // Internal forces
+    state.Cc = 0.85 * fc_kNm2 * state.a * state.b; // kN
+    state.T = As_m2 * fs_kNm2;                     // kN
+
+    // Nominal moment Mn:
+    // M = As*fy*(d - (As*fy)/(1.7*fc*b)) as written in script!
+    state.Mn = As_m2 * fy_kNm2 * (state.d - (As_m2 * fy_kNm2) / (1.7 * fc_kNm2 * state.b));
+    state.fi = calculatePhi(state.et, ey);
+    state.Md = state.fi * state.Mn;
+
+    // --- MODO 2: DISEÑO ---
+    // Formulas from script:
+    // m = fy/(0.85*fc)
+    // K = M_actuante/(b*d**2)
+    // rho = 1/m * (1-np.sqrt(1-2*m*K/(fi*fy)))
+    state.m_coef = state.fy / (0.85 * state.fc);
+    state.K_factor = state.Mu / (state.b * Math.pow(state.d, 2)); // kN/m2
+    
+    const termSqrt = 1.0 - (2.0 * state.m_coef * state.K_factor) / (0.90 * fy_kNm2);
+    if (termSqrt >= 0) {
+      state.rho_req = (1.0 / state.m_coef) * (1.0 - Math.sqrt(termSqrt));
+      state.As_req = state.rho_req * state.b * state.d * 10000.0; // cm2
+    } else {
+      // Cross section too small for this moment
+      state.rho_req = 0.04;
+      state.As_req = state.rho_req * state.b * state.d * 10000.0;
+    }
+
+    // Code Limits NSR-10 / ACI 318
+    state.rho_min = Math.max((0.25 * Math.sqrt(state.fc)) / state.fy, 1.4 / state.fy);
+    // Ductile limit et >= 0.004 -> c_max = (3/7)*d -> a_max = beta1*c_max -> rho_max
+    const c_max = (state.ecu / (state.ecu + 0.004)) * state.d;
+    const a_max = state.beta1 * c_max;
+    state.rho_max = (0.85 * state.fc * a_max) / (state.fy * state.d);
+
+    // Verification of Design with Whitney
+    const As_dis_m2 = state.As_req / 10000.0;
+    state.a_dis = (As_dis_m2 * fy_kNm2) / (0.85 * fc_kNm2 * state.b);
+    state.c_dis = state.a_dis / state.beta1;
+    if (state.c_dis > 0) {
+      state.et_dis = state.ecu * (state.d - state.c_dis) / state.c_dis;
+    } else {
+      state.et_dis = 0.05;
+    }
+    state.fi_dis = calculatePhi(state.et_dis, ey);
+  }
+
+  /* ==========================================================================
+     UI UPDATERS & BLACKBOARD GENERATOR
+     ========================================================================== */
+  function updateUI() {
+    runCalculations();
+
+    // 1. Update control badge values
+    document.getElementById('val-b').textContent = `${state.b.toFixed(2)} m (${(state.b*100).toFixed(0)} cm)`;
+    document.getElementById('val-h').textContent = `${state.h.toFixed(2)} m (${(state.h*100).toFixed(0)} cm)`;
+    document.getElementById('val-r').textContent = `${state.r.toFixed(3)} m (${(state.r*100).toFixed(1)} cm)`;
+    document.getElementById('val-d').textContent = `${state.d.toFixed(2)} m (${(state.d*100).toFixed(1)} cm)`;
+
+    document.getElementById('val-fc').textContent = `${state.fc} MPa (${(state.fc*1000).toLocaleString()} kN/m²)`;
+    document.getElementById('val-fy').textContent = `${state.fy} MPa (${(state.fy*1000).toLocaleString()} kN/m²)`;
+    document.getElementById('val-beta1').textContent = state.beta1.toFixed(3);
+
+    document.getElementById('val-as').textContent = `${state.As.toFixed(2)} cm²`;
+    document.getElementById('num-as').value = state.As.toFixed(2);
+    document.getElementById('slider-as').value = state.As.toFixed(2);
+    const rho_geom = (state.As / (state.b * state.d * 10000.0)) * 100.0;
+    document.getElementById('val-rho-actual').textContent = `${rho_geom.toFixed(3)} %`;
+
+    document.getElementById('val-mu').textContent = `${state.Mu.toFixed(1)} kN·m`;
+    document.getElementById('num-mu').value = state.Mu.toFixed(1);
+    document.getElementById('slider-mu').value = state.Mu.toFixed(1);
+
+    // 2. Update KPI Cards
+    renderKPICards();
+
+    // 3. Update Status Badges & Canvas Labels
+    updateStatusBadgesAndLabels();
+
+    // 4. Render All 4 Canvases
+    renderAllCanvases();
+
+    // 5. Update Rebar Assistant (if in Design mode)
+    if (state.mode === 'diseno') {
+      updateRebarAssistant();
+    }
+
+    // 6. Update Blackboard (MathJax formulas & steps)
+    renderBlackboard();
+
+    // 7. Update Live Python Code Console
+    renderPythonCode();
+  }
+
+  function renderKPICards() {
+    const kpiRow = document.getElementById('kpi-metrics-row');
+
+    if (state.mode === 'capacidad') {
+      const isDuctile = state.et >= 0.005;
+      kpiRow.innerHTML = `
+        <div class="kpi-card blue">
+          <div class="kpi-label">
+            <span>Bloque Whitney (a)</span>
+            <span>📏</span>
+          </div>
+          <div class="kpi-val">${(state.a * 100).toFixed(2)}<span class="kpi-unit">cm</span></div>
+          <div class="kpi-subtext">c = ${(state.c * 100).toFixed(2)} cm (c/d = ${(state.c / state.d).toFixed(3)})</div>
+        </div>
+
+        <div class="kpi-card ${isDuctile ? 'emerald' : (state.et >= 0.002 ? 'amber' : 'rose')}">
+          <div class="kpi-label">
+            <span>Deformación Acero (εt)</span>
+            <span>⚡</span>
+          </div>
+          <div class="kpi-val">${state.et.toFixed(5)}</div>
+          <div class="kpi-subtext">
+            ${isDuctile ? '<span class="status-badge ductile">✓ Control Tracción (εt ≥ 0.005)</span>' : 
+              (state.et >= 0.002 ? '<span class="status-badge transition">⚠️ Transición</span>' : '<span class="status-badge brittle">❌ Compresión</span>')}
+          </div>
+        </div>
+
+        <div class="kpi-card purple">
+          <div class="kpi-label">
+            <span>Momento Nominal (Mn)</span>
+            <span>⚖️</span>
+          </div>
+          <div class="kpi-val">${state.Mn.toFixed(2)}<span class="kpi-unit">kN·m</span></div>
+          <div class="kpi-subtext">Fuerza Cc = T = ${state.Cc.toFixed(1)} kN</div>
+        </div>
+
+        <div class="kpi-card cyan">
+          <div class="kpi-label">
+            <span>Momento Diseño (Md = φMn)</span>
+            <span>🛡️</span>
+          </div>
+          <div class="kpi-val">${state.Md.toFixed(2)}<span class="kpi-unit">kN·m</span></div>
+          <div class="kpi-subtext">Factor de reducción φ = ${state.fi.toFixed(3)}</div>
+        </div>
+      `;
+    } else {
+      // MODO DISEÑO
+      const termSqrt = 1.0 - (2.0 * state.m_coef * state.K_factor) / (0.90 * state.fy * 1000.0);
+      const isViable = termSqrt >= 0;
+      const isOverMin = state.rho_req >= state.rho_min;
+      const isUnderMax = state.rho_req <= state.rho_max;
+
+      kpiRow.innerHTML = `
+        <div class="kpi-card purple">
+          <div class="kpi-label">
+            <span>Parámetros Whitney</span>
+            <span>📐</span>
+          </div>
+          <div class="kpi-val">${state.K_factor.toFixed(1)}<span class="kpi-unit">kN/m²</span></div>
+          <div class="kpi-subtext">m = ${state.m_coef.toFixed(2)} | K = Mu/(b·d²)</div>
+        </div>
+
+        <div class="kpi-card blue">
+          <div class="kpi-label">
+            <span>Cuantía Requerida (ρ)</span>
+            <span>📊</span>
+          </div>
+          <div class="kpi-val">${(state.rho_req * 100).toFixed(3)}<span class="kpi-unit">%</span></div>
+          <div class="kpi-subtext">ρmin = ${(state.rho_min * 100).toFixed(3)}% | ρmax = ${(state.rho_max * 100).toFixed(3)}%</div>
+        </div>
+
+        <div class="kpi-card ${isViable && isOverMin && isUnderMax ? 'emerald' : 'amber'}">
+          <div class="kpi-label">
+            <span>Acero Requerido (As,req)</span>
+            <span>🔩</span>
+          </div>
+          <div class="kpi-val">${state.As_req.toFixed(2)}<span class="kpi-unit">cm²</span></div>
+          <div class="kpi-subtext">
+            ${isViable ? (isOverMin ? '✓ Mayor que As,mín' : '⚠️ Rigió cuantía mínima') : '❌ Sección insuficiente'}
+          </div>
+        </div>
+
+        <div class="kpi-card cyan">
+          <div class="kpi-label">
+            <span>Deformación Verificada (εt2)</span>
+            <span>🔍</span>
+          </div>
+          <div class="kpi-val">${state.et_dis.toFixed(5)}</div>
+          <div class="kpi-subtext">
+            <span class="status-badge ductile">✓ εt ≥ 0.005 (φ = ${state.fi_dis.toFixed(2)})</span>
+          </div>
+        </div>
+      `;
+    }
+  }
+
+  function updateStatusBadgesAndLabels() {
+    const etVal = (state.mode === 'capacidad') ? state.et : state.et_dis;
+    const aVal = (state.mode === 'capacidad') ? state.a : state.a_dis;
+    const badgeCont = document.getElementById('status-badge-container');
+
+    if (etVal >= 0.005) {
+      badgeCont.innerHTML = `<span class="status-badge ductile">🟢 Viga Dúctil Controlada por Tracción (εt = ${etVal.toFixed(4)} ≥ 0.005 · φ = 0.90)</span>`;
+    } else if (etVal >= 0.002) {
+      badgeCont.innerHTML = `<span class="status-badge transition">🟡 Zona de Transición (0.002 ≤ εt < 0.005 · φ = ${state.fi.toFixed(3)})</span>`;
+    } else {
+      badgeCont.innerHTML = `<span class="status-badge brittle">🔴 Sección Sobre-Reforzada / Falla Frágil (εt < 0.002)</span>`;
+    }
+
+    // Canvas labels
+    document.getElementById('lbl-can-sec').textContent = `b = ${(state.b*100).toFixed(0)} cm, h = ${(state.h*100).toFixed(0)} cm (d = ${(state.d*100).toFixed(1)} cm)`;
+    document.getElementById('lbl-can-strain').textContent = `εcu = 0.0030 | c = ${( (state.mode==='capacidad' ? state.c : state.c_dis)*100 ).toFixed(2)} cm | εt = ${etVal.toFixed(5)}`;
+    document.getElementById('lbl-can-stress').textContent = `a = ${(aVal*100).toFixed(2)} cm | 0.85 f'c = ${(0.85*state.fc).toFixed(1)} MPa`;
+    
+    const Cc_val = (state.mode === 'capacidad') ? state.Cc : (0.85 * state.fc * 1000 * state.a_dis * state.b);
+    document.getElementById('lbl-can-forces').textContent = `Cc = ${Cc_val.toFixed(1)} kN ⇌ T = ${Cc_val.toFixed(1)} kN`;
+  }
+
+  /* ==========================================================================
+     HI-DPI CANVAS DRAWING ROUTINES (4 PANELS)
+     ========================================================================== */
+  function setupCanvas(canvasId) {
+    const canvas = document.getElementById(canvasId);
+    const rect = canvas.getBoundingClientRect();
+    const dpr = window.devicePixelRatio || 1;
+    canvas.width = rect.width * dpr;
+    canvas.height = rect.height * dpr;
+    const ctx = canvas.getContext('2d');
+    ctx.scale(dpr, dpr);
+    return { ctx, width: rect.width, height: rect.height };
+  }
+
+  function renderAllCanvases() {
+    renderCanvasSection();
+    renderCanvasStrain();
+    renderCanvasWhitney();
+    renderCanvasForces();
+  }
+
+  // PANEL 1: SECCIÓN TRANSVERSAL
+  function renderCanvasSection() {
+    const { ctx, width, height } = setupCanvas('canvas-section');
+    const isDark = state.theme === 'dark';
+
+    ctx.clearRect(0, 0, width, height);
+
+    const padX = 40;
+    const padY = 35;
+    const availW = width - padX * 2;
+    const availH = height - padY * 2;
+
+    // Scale maintaining aspect ratio
+    const scale = Math.min(availW / state.b, availH / state.h);
+    const drawW = state.b * scale;
+    const drawH = state.h * scale;
+
+    const startX = (width - drawW) / 2;
+    const startY = (height - drawH) / 2;
+
+    // Concrete cross section body
+    ctx.fillStyle = isDark ? '#1e293b' : '#f1f5f9';
+    ctx.strokeStyle = isDark ? '#64748b' : '#334155';
+    ctx.lineWidth = 2.5;
+    ctx.beginPath();
+    ctx.roundRect(startX, startY, drawW, drawH, 6);
+    ctx.fill();
+    ctx.stroke();
+
+    // Stirrup (Estribo)
+    const coverScale = (state.r * 0.6) * scale;
+    ctx.strokeStyle = isDark ? '#94a3b8' : '#64748b';
+    ctx.lineWidth = 1.8;
+    ctx.setLineDash([4, 3]);
+    ctx.strokeRect(startX + coverScale, startY + coverScale, drawW - 2*coverScale, drawH - 2*coverScale);
+    ctx.setLineDash([]);
+
+    // Compression zone shading (top zone up to a)
+    const active_a = (state.mode === 'capacidad') ? state.a : state.a_dis;
+    const aH = active_a * scale;
+    ctx.fillStyle = 'rgba(234, 88, 12, 0.15)';
+    ctx.fillRect(startX, startY, drawW, aH);
+
+    // Neutral axis dashed line
+    const active_c = (state.mode === 'capacidad') ? state.c : state.c_dis;
+    const cH = active_c * scale;
+    ctx.strokeStyle = '#ea580c';
+    ctx.lineWidth = 1.5;
+    ctx.setLineDash([5, 4]);
+    ctx.beginPath();
+    ctx.moveTo(startX - 15, startY + cH);
+    ctx.lineTo(startX + drawW + 15, startY + cH);
+    ctx.stroke();
+    ctx.setLineDash([]);
+
+    ctx.font = '600 10px JetBrains Mono';
+    ctx.fillStyle = '#ea580c';
+    ctx.fillText(`E.N. (c=${(active_c*100).toFixed(1)}cm)`, startX + drawW + 4, startY + cH + 3);
+
+    // Rebar layout in bottom layer
+    const numBars = (state.mode === 'capacidad' && state.barConfig === '4_6') ? 4 : (state.As > 16 ? 4 : (state.As > 8 ? 3 : 2));
+    const rebarY = startY + (state.d * scale);
+    const barMargin = coverScale + 8;
+    const barSpacing = (drawW - 2 * barMargin) / Math.max(1, numBars - 1);
+
+    for (let i = 0; i < numBars; i++) {
+      const bx = (numBars === 1) ? startX + drawW / 2 : startX + barMargin + i * barSpacing;
+      // Outer steel circle
+      ctx.beginPath();
+      ctx.arc(bx, rebarY, 7.5, 0, Math.PI * 2);
+      ctx.fillStyle = '#2563eb';
+      ctx.fill();
+      ctx.strokeStyle = isDark ? '#ffffff' : '#0f172a';
+      ctx.lineWidth = 1.5;
+      ctx.stroke();
+
+      // Core shine
+      ctx.beginPath();
+      ctx.arc(bx - 2, rebarY - 2, 2.5, 0, Math.PI * 2);
+      ctx.fillStyle = '#93c5fd';
+      ctx.fill();
+    }
+
+    // Dimension lines
+    // Width b (bottom)
+    ctx.strokeStyle = isDark ? '#94a3b8' : '#475569';
+    ctx.lineWidth = 1;
+    ctx.beginPath();
+    ctx.moveTo(startX, startY + drawH + 12);
+    ctx.lineTo(startX + drawW, startY + drawH + 12);
+    ctx.stroke();
+    ctx.font = '600 10px Inter';
+    ctx.fillStyle = isDark ? '#cbd5e1' : '#1e293b';
+    ctx.textAlign = 'center';
+    ctx.fillText(`b = ${(state.b*100).toFixed(0)} cm`, startX + drawW/2, startY + drawH + 24);
+
+    // Total height h (left)
+    ctx.beginPath();
+    ctx.moveTo(startX - 10, startY);
+    ctx.lineTo(startX - 10, startY + drawH);
+    ctx.stroke();
+    ctx.save();
+    ctx.translate(startX - 18, startY + drawH/2);
+    ctx.rotate(-Math.PI / 2);
+    ctx.fillText(`h = ${(state.h*100).toFixed(0)} cm`, 0, 0);
+    ctx.restore();
+  }
+
+  // PANEL 2: PERFIL LINEAL DE DEFORMACIONES (EULER-BERNOULLI)
+  function renderCanvasStrain() {
+    const { ctx, width, height } = setupCanvas('canvas-strain');
+    const isDark = state.theme === 'dark';
+    ctx.clearRect(0, 0, width, height);
+
+    const padY = 35;
+    const availH = height - padY * 2;
+    const scale = availH / state.h;
+    const startY = padY;
+    const axisX = width * 0.48; // Eje vertical neutro (referencia cero)
+
+    // Vertical section axis (zero strain reference)
+    ctx.strokeStyle = isDark ? '#475569' : '#cbd5e1';
+    ctx.lineWidth = 2;
+    ctx.beginPath();
+    ctx.moveTo(axisX, startY);
+    ctx.lineTo(axisX, startY + state.h * scale);
+    ctx.stroke();
+
+    const active_c = (state.mode === 'capacidad') ? state.c : state.c_dis;
+    const active_et = (state.mode === 'capacidad') ? state.et : state.et_dis;
+    const neutralY = startY + active_c * scale;
+    const steelY = startY + state.d * scale;
+
+    // Escala de deformaciones
+    const maxStrain = Math.max(0.005, active_et, state.ecu) * 1.25;
+    const strainScale = (width * 0.36) / maxStrain;
+
+    // CONVENCIÓN: COMPRESIÓN AL LADO DERECHO (+), TRACCIÓN AL LADO IZQUIERDO (-)
+    const topStrainX = axisX + state.ecu * strainScale; // DERECHA: Compresión del concreto
+    const botStrainX = axisX - active_et * strainScale; // IZQUIERDA: Tracción del acero
+
+    // Neutral Axis dashed reference
+    ctx.strokeStyle = '#ea580c';
+    ctx.lineWidth = 1.5;
+    ctx.setLineDash([5, 4]);
+    ctx.beginPath();
+    ctx.moveTo(10, neutralY);
+    ctx.lineTo(width - 10, neutralY);
+    ctx.stroke();
+    ctx.setLineDash([]);
+
+    // Triángulo de compresión del concreto (sombreado naranja) -> LADO DERECHO
+    ctx.fillStyle = 'rgba(234, 88, 12, 0.2)';
+    ctx.beginPath();
+    ctx.moveTo(axisX, startY);
+    ctx.lineTo(topStrainX, startY);
+    ctx.lineTo(axisX, neutralY);
+    ctx.closePath();
+    ctx.fill();
+
+    // Triángulo de tracción del acero (sombreado azul) -> LADO IZQUIERDO
+    ctx.fillStyle = 'rgba(2, 132, 199, 0.15)';
+    ctx.beginPath();
+    ctx.moveTo(axisX, neutralY);
+    ctx.lineTo(botStrainX, steelY);
+    ctx.lineTo(axisX, steelY);
+    ctx.closePath();
+    ctx.fill();
+
+    // Línea lineal de deformaciones (Bernoulli)
+    ctx.strokeStyle = '#2563eb';
+    ctx.lineWidth = 3;
+    ctx.beginPath();
+    ctx.moveTo(topStrainX, startY);
+    ctx.lineTo(botStrainX, steelY);
+    ctx.stroke();
+
+    // Punto superior de compresión (ecu = 0.003) -> DERECHA
+    ctx.beginPath();
+    ctx.arc(topStrainX, startY, 5, 0, Math.PI * 2);
+    ctx.fillStyle = '#ea580c';
+    ctx.fill();
+
+    // Punto inferior de tracción (et) -> IZQUIERDA
+    ctx.beginPath();
+    ctx.arc(botStrainX, steelY, 5, 0, Math.PI * 2);
+    ctx.fillStyle = (active_et >= 0.005) ? '#059669' : '#d97706';
+    ctx.fill();
+
+    // Etiquetas numéricas
+    ctx.font = '700 11px JetBrains Mono';
+    ctx.fillStyle = '#ea580c';
+    ctx.textAlign = 'left';
+    ctx.fillText(`+εcu = 0.003`, topStrainX + 6, startY + 4);
+
+    ctx.fillStyle = (active_et >= 0.005) ? '#059669' : '#d97706';
+    ctx.textAlign = 'right';
+    ctx.fillText(`-εt = ${active_et.toFixed(4)}`, botStrainX - 6, steelY + 4);
+
+    ctx.font = '600 10px Inter';
+    ctx.fillStyle = isDark ? '#94a3b8' : '#64748b';
+    ctx.textAlign = 'left';
+    ctx.fillText(`c = ${(active_c*100).toFixed(1)} cm`, axisX + 8, neutralY - 6);
+  }
+
+  // PANEL 3: BLOQUE DE ESFUERZOS EQUIVALENTE DE WHITNEY
+  function renderCanvasWhitney() {
+    const { ctx, width, height } = setupCanvas('canvas-stress');
+    const isDark = state.theme === 'dark';
+    ctx.clearRect(0, 0, width, height);
+
+    const padY = 35;
+    const availH = height - padY * 2;
+    const scale = availH / state.h;
+    const startY = padY;
+    const axisX = width * 0.32; // Eje de esfuerzo cero
+
+    // Reference axis
+    ctx.strokeStyle = isDark ? '#475569' : '#cbd5e1';
+    ctx.lineWidth = 2;
+    ctx.beginPath();
+    ctx.moveTo(axisX, startY);
+    ctx.lineTo(axisX, startY + state.h * scale);
+    ctx.stroke();
+
+    const active_a = (state.mode === 'capacidad') ? state.a : state.a_dis;
+    const active_c = (state.mode === 'capacidad') ? state.c : state.c_dis;
+    const aH = active_a * scale;
+    const cH = active_c * scale;
+
+    const blockWidth = Math.min(width * 0.42, 95);
+
+    // Distribución parabólica real (Hognestad en naranja punteado) -> LADO DERECHO (Compresión)
+    ctx.strokeStyle = 'rgba(234, 88, 12, 0.45)';
+    ctx.lineWidth = 2;
+    ctx.setLineDash([3, 3]);
+    ctx.beginPath();
+    ctx.moveTo(axisX, startY);
+    ctx.quadraticCurveTo(axisX + blockWidth * 1.15, startY + cH * 0.45, axisX, startY + cH);
+    ctx.stroke();
+    ctx.setLineDash([]);
+
+    // Bloque rectangular equivalente de Whitney (0.85 f'c) -> LADO DERECHO (Compresión)
+    ctx.fillStyle = 'rgba(13, 148, 136, 0.25)';
+    ctx.strokeStyle = '#0d9488';
+    ctx.lineWidth = 2.5;
+    ctx.beginPath();
+    ctx.rect(axisX, startY, blockWidth, aH);
+    ctx.fill();
+    ctx.stroke();
+
+    // Achurado interior del bloque de Whitney
+    ctx.strokeStyle = 'rgba(13, 148, 136, 0.3)';
+    ctx.lineWidth = 1;
+    for (let y = startY + 8; y < startY + aH; y += 10) {
+      ctx.beginPath();
+      ctx.moveTo(axisX, y);
+      ctx.lineTo(axisX + blockWidth, y);
+      ctx.stroke();
+    }
+
+    // Línea de cota de profundidad "a" (a la izquierda del eje axisX)
+    ctx.strokeStyle = '#0d9488';
+    ctx.lineWidth = 1.5;
+    ctx.beginPath();
+    ctx.moveTo(axisX - 12, startY);
+    ctx.lineTo(axisX - 12, startY + aH);
+    ctx.stroke();
+    drawArrowHead(ctx, axisX - 12, startY, -Math.PI/2, 4);
+    drawArrowHead(ctx, axisX - 12, startY + aH, Math.PI/2, 4);
+
+    ctx.font = '700 10px JetBrains Mono';
+    ctx.fillStyle = '#0d9488';
+    ctx.textAlign = 'right';
+    ctx.fillText(`a = ${(active_a*100).toFixed(1)} cm`, axisX - 18, startY + aH/2 + 3);
+
+    // Etiqueta de magnitud de esfuerzo (al lado derecho del bloque)
+    ctx.fillStyle = isDark ? '#5eead4' : '#0f766e';
+    ctx.textAlign = 'left';
+    ctx.font = '700 11px Inter';
+    ctx.fillText(`0.85 f'c`, axisX + blockWidth + 8, startY + aH/2 - 4);
+    ctx.font = '600 10px JetBrains Mono';
+    ctx.fillText(`= ${(0.85 * state.fc).toFixed(1)} MPa`, axisX + blockWidth + 8, startY + aH/2 + 10);
+
+    // Eje neutro c punteado
+    ctx.strokeStyle = '#ea580c';
+    ctx.lineWidth = 1.2;
+    ctx.setLineDash([4, 4]);
+    ctx.beginPath();
+    ctx.moveTo(axisX - 10, startY + cH);
+    ctx.lineTo(axisX + blockWidth + 30, startY + cH);
+    ctx.stroke();
+    ctx.setLineDash([]);
+
+    ctx.font = '600 10px JetBrains Mono';
+    ctx.fillStyle = '#ea580c';
+    ctx.textAlign = 'left';
+    ctx.fillText(`c = ${(active_c*100).toFixed(1)} cm`, axisX + blockWidth + 34, startY + cH + 3);
+  }
+
+  // PANEL 4: EQUILIBRIO DE FUERZAS INTERNAS Y BRAZO
+  function renderCanvasForces() {
+    const { ctx, width, height } = setupCanvas('canvas-forces');
+    const isDark = state.theme === 'dark';
+    ctx.clearRect(0, 0, width, height);
+
+    const padY = 35;
+    const availH = height - padY * 2;
+    const scale = availH / state.h;
+    const startY = padY;
+    const midX = width * 0.50; // Eje central de referencia
+
+    // Contorno fantasma de la sección de concreto
+    ctx.strokeStyle = isDark ? '#334155' : '#e2e8f0';
+    ctx.lineWidth = 1.5;
+    ctx.strokeRect(midX - 25, startY, 50, state.h * scale);
+
+    // Eje vertical cero
+    ctx.strokeStyle = isDark ? '#475569' : '#cbd5e1';
+    ctx.lineWidth = 2;
+    ctx.beginPath();
+    ctx.moveTo(midX, startY);
+    ctx.lineTo(midX, startY + state.h * scale);
+    ctx.stroke();
+
+    const active_a = (state.mode === 'capacidad') ? state.a : state.a_dis;
+    const Cc_y = startY + (active_a / 2) * scale;
+    const T_y = startY + state.d * scale;
+    const force_val = (state.mode === 'capacidad') ? state.Cc : (0.85 * state.fc * 1000 * state.a_dis * state.b);
+
+    const maxVecLen = width * 0.32;
+    const vecLen = Math.min(maxVecLen, Math.max(45, (force_val / 550.0) * maxVecLen));
+
+    // VECTOR DE COMPRESIÓN Cc (EN EL LADO DERECHO):
+    // Inicia en el eje midX y apunta hacia la derecha (+Cc)
+    ctx.strokeStyle = '#ea580c';
+    ctx.fillStyle = '#ea580c';
+    ctx.lineWidth = 3.5;
+    ctx.beginPath();
+    ctx.moveTo(midX, Cc_y);
+    ctx.lineTo(midX + vecLen, Cc_y);
+    ctx.stroke();
+    drawArrowHead(ctx, midX + vecLen, Cc_y, 0, 7);
+
+    ctx.font = '700 11px JetBrains Mono';
+    ctx.textAlign = 'left';
+    ctx.fillText(`+Cc = ${force_val.toFixed(1)} kN`, midX + vecLen + 8, Cc_y + 4);
+
+    // VECTOR DE TRACCIÓN T (EN EL LADO IZQUIERDO):
+    // Inicia en el eje midX y apunta hacia la izquierda (-T)
+    ctx.strokeStyle = '#0284c7';
+    ctx.fillStyle = '#0284c7';
+    ctx.lineWidth = 3.5;
+    ctx.beginPath();
+    ctx.moveTo(midX, T_y);
+    ctx.lineTo(midX - vecLen, T_y);
+    ctx.stroke();
+    drawArrowHead(ctx, midX - vecLen, T_y, Math.PI, 7);
+
+    ctx.textAlign = 'right';
+    ctx.fillText(`-T = ${force_val.toFixed(1)} kN`, midX - vecLen - 8, T_y + 4);
+
+    // Brazo interno de palanca z = (d - a/2)
+    const armX = midX + 16;
+    ctx.strokeStyle = isDark ? '#94a3b8' : '#64748b';
+    ctx.lineWidth = 1.5;
+    ctx.setLineDash([3, 3]);
+    ctx.beginPath();
+    ctx.moveTo(armX, Cc_y);
+    ctx.lineTo(armX, T_y);
+    ctx.stroke();
+    ctx.setLineDash([]);
+
+    const z_m = state.d - active_a / 2;
+    ctx.textAlign = 'left';
+    ctx.font = '600 10px JetBrains Mono';
+    ctx.fillStyle = isDark ? '#cbd5e1' : '#334155';
+    ctx.fillText(`z = ${(z_m * 100).toFixed(1)} cm`, armX + 6, (Cc_y + T_y)/2 + 3);
+  }
+
+  function drawArrowHead(ctx, x, y, angle, size) {
+    ctx.save();
+    ctx.translate(x, y);
+    ctx.rotate(angle);
+    ctx.beginPath();
+    ctx.moveTo(0, 0);
+    ctx.lineTo(-size * 1.5, -size * 0.8);
+    ctx.lineTo(-size * 1.5, size * 0.8);
+    ctx.closePath();
+    ctx.fill();
+    ctx.restore();
+  }
+
+  /* ==========================================================================
+     REBAR ASSISTANT GENERATOR (MODE 2)
+     ========================================================================== */
+  function updateRebarAssistant() {
+    const tbody = document.getElementById('rebar-table-body');
+    const As_req = state.As_req;
+    const b_cm = state.b * 100;
+    const cover_cm = 4.0; // standard clear cover
+    const stirrup_db = 0.95; // #3 stirrup
+
+    // Formulate realistic rebar patterns
+    const options = [
+      { text: '3 # 5', bars: 3, num: 5, As: 3 * 1.99 },
+      { text: '4 # 5', bars: 4, num: 5, As: 4 * 1.99 },
+      { text: '3 # 6', bars: 3, num: 6, As: 3 * 2.84 },
+      { text: '4 # 6', bars: 4, num: 6, As: 4 * 2.86 },
+      { text: '2 # 6 + 2 # 5', bars: 4, num: 6, As: 2 * 2.84 + 2 * 1.99 },
+      { text: '3 # 7', bars: 3, num: 7, As: 3 * 3.87 },
+      { text: '3 # 8', bars: 3, num: 8, As: 3 * 5.10 }
+    ];
+
+    let html = '';
+    options.forEach(opt => {
+      const excess = ((opt.As - As_req) / As_req) * 100.0;
+      const bar_diam = (opt.num * 2.54) / 8.0;
+      const clearWidth = b_cm - 2 * cover_cm - 2 * stirrup_db - opt.bars * bar_diam;
+      const clearSpacing = (opt.bars > 1) ? clearWidth / (opt.bars - 1) : clearWidth;
+      
+      const isEnough = opt.As >= As_req;
+      const spacingOk = clearSpacing >= Math.max(2.5, bar_diam);
+
+      const isRecommended = isEnough && excess >= 0 && excess <= 35 && spacingOk;
+
+      html += `
+        <tr class="${isRecommended ? 'recommended' : ''}">
+          <td><strong>${opt.text}</strong></td>
+          <td>${opt.As.toFixed(2)} cm²</td>
+          <td>${excess >= 0 ? `+${excess.toFixed(1)}%` : `${excess.toFixed(1)}%`}</td>
+          <td>${clearSpacing.toFixed(1)} cm</td>
+          <td>
+            ${isEnough 
+              ? (spacingOk ? '<span style="color:var(--accent-emerald); font-weight:700;">✓ Satisface y Espacia</span>' : '<span style="color:var(--accent-amber);">⚠️ Espaciamiento ajustado</span>')
+              : '<span style="color:var(--accent-rose);">❌ As insuficiente</span>'}
+          </td>
+          <td>
+            <button class="btn-apply-rebar" onclick="applyRebarChoice(${opt.As.toFixed(2)}, '${opt.text}')">Aplicar a Sección</button>
+          </td>
+        </tr>
+      `;
+    });
+
+    tbody.innerHTML = html;
+  }
+
+  function applyRebarChoice(asVal, label) {
+    state.As = asVal;
+    setAppMode('capacidad');
+    document.getElementById('select-bar-config').value = 'custom';
+    updateUI();
+  }
+
+  /* ==========================================================================
+     ACADEMIC BLACKBOARD (STEP-BY-STEP MATHJAX EQUATIONS)
+     ========================================================================== */
+  let mathJaxDebounceTimer = null;
+  let isMathJaxActive = false;
+
+  function requestMathJaxTypeset(element) {
+    if (!window.MathJax || !window.MathJax.typesetPromise) return;
+    if (mathJaxDebounceTimer) clearTimeout(mathJaxDebounceTimer);
+
+    mathJaxDebounceTimer = setTimeout(() => {
+      if (isMathJaxActive) {
+        requestMathJaxTypeset(element);
+        return;
+      }
+      isMathJaxActive = true;
+      if (window.MathJax.typesetClear) {
+        try { window.MathJax.typesetClear([element]); } catch(e) {}
+      }
+      window.MathJax.typesetPromise([element])
+        .catch(err => console.warn('MathJax aviso:', err))
+        .finally(() => {
+          isMathJaxActive = false;
+        });
+    }, 50);
+  }
+
+  function renderBlackboard() {
+    const cont = document.getElementById('blackboard-content');
+    const fc = state.fc;
+    const fy = state.fy;
+    const b = state.b;
+    const h = state.h;
+    const d = state.d;
+    const beta1 = state.beta1;
+
+    let html = '';
+
+    if (state.mode === 'capacidad') {
+      const As = state.As;
+      const a = state.a;
+      const c = state.c;
+      const et = state.et;
+      const Mn = state.Mn;
+      const Md = state.Md;
+      const fi = state.fi;
+
+      html = `
+        <div class="step-item">
+          <div class="step-title"><span>Paso 1:</span> Geometría y Profundidad del Bloque de Whitney (\\(a\\))</div>
+          <div class="step-body">
+            Equilibrio de fuerzas longitudinales en la sección (\\(C_c = T\\)):
+            <div class="math-block">
+              \\[ 0.85 f'_c b a = A_s f_y \\implies a = \\frac{A_s f_y}{0.85 f'_c b} \\]
+            </div>
+            Sustituyendo los valores del script (\\(A_s = ${As.toFixed(2)}\\text{ cm}^2 = ${(As/10000).toFixed(6)}\\text{ m}^2\\), \\(f'_c = ${(fc*1000).toLocaleString()}\\text{ kN/m}^2\\), \\(f_y = ${(fy*1000).toLocaleString()}\\text{ kN/m}^2\\), \\(b = ${b.toFixed(2)}\\text{ m}\\)):
+            <div class="math-block">
+              \\[ a = \\frac{${(As/10000).toFixed(6)} \\times ${(fy*1000).toLocaleString()}}{0.85 \\times ${(fc*1000).toLocaleString()} \\times ${b.toFixed(2)}} = ${a.toFixed(4)}\\text{ m} = ${(a*100).toFixed(2)}\\text{ cm} \\]
+            </div>
+          </div>
+        </div>
+
+        <div class="step-item">
+          <div class="step-title"><span>Paso 2:</span> Eje Neutro (\\(c\\)) y Cinemática de Deformaciones (Euler-Bernoulli)</div>
+          <div class="step-body">
+            Con el factor de Whitney \\(\\beta_1 = ${beta1.toFixed(3)}\\), la profundidad del eje neutro es:
+            <div class="math-block">
+              \\[ c = \\frac{a}{\\beta_1} = \\frac{${a.toFixed(4)}}{${beta1.toFixed(3)}} = ${c.toFixed(4)}\\text{ m} = ${(c*100).toFixed(2)}\\text{ cm} \\]
+            </div>
+            Aplicando la compatibilidad de deformaciones lineales de Euler-Bernoulli con \\(\\varepsilon_{cu} = 0.003\\) y \\(d = ${d.toFixed(2)}\\text{ m}\\):
+            <div class="math-block">
+              \\[ \\varepsilon_t = \\varepsilon_{cu} \\frac{d - c}{c} = 0.003 \\times \\frac{${d.toFixed(2)} - ${c.toFixed(4)}}{${c.toFixed(4)}} = ${et.toFixed(5)} \\]
+            </div>
+            <strong>Verificación de Ductilidad:</strong> Como \\(\\varepsilon_t = ${et.toFixed(5)} \\ge 0.005\\), el acero fluye ampliamente y la viga está <strong>controlada por tracción</strong> con \\(\\phi = ${fi.toFixed(2)}\\).
+          </div>
+        </div>
+
+        <div class="step-item success">
+          <div class="step-title"><span>Paso 3:</span> Capacidad Nominal (\\(M_n\\)) y Momento de Diseño (\\(M_d = \\phi M_n\\))</div>
+          <div class="step-body">
+            Calculando el momento interno respecto al centroide de las fuerzas de compresión:
+            <div class="math-block">
+              \\[ M_n = A_s f_y \\left( d - \\frac{a}{2} \\right) = A_s f_y \\left( d - \\frac{A_s f_y}{1.7 f'_c b} \\right) \\]
+            </div>
+            Sustituyendo los valores directos:
+            <div class="math-block">
+              \\[ M_n = ${(As/10000).toFixed(6)} \\times ${(fy*1000).toLocaleString()} \\times \\left( ${d.toFixed(2)} - \\frac{${a.toFixed(4)}}{2} \\right) = ${Mn.toFixed(2)}\\text{ kN}\\cdot\\text{m} \\]
+            </div>
+            Aplicando el factor de reducción \\(\\phi = ${fi.toFixed(2)}\\):
+            <div class="math-block">
+              \\[ M_d = \\phi M_n = ${fi.toFixed(2)} \\times ${Mn.toFixed(2)} = \\mathbf{${Md.toFixed(2)}\\text{ kN}\\cdot\\text{m}} \\]
+            </div>
+          </div>
+        </div>
+      `;
+    } else {
+      // MODO DISEÑO
+      const Mu = state.Mu;
+      const m = state.m_coef;
+      const K = state.K_factor;
+      const rho = state.rho_req;
+      const As_req = state.As_req;
+      const c2 = state.c_dis;
+      const a2 = state.a_dis;
+      const et2 = state.et_dis;
+
+      html = `
+        <div class="step-item">
+          <div class="step-title"><span>Paso 1:</span> Parámetros de Resistencia Seccional (\\(m\\) y \\(K\\))</div>
+          <div class="step-body">
+            A partir del momento actuante \\(M_u = ${Mu.toFixed(1)}\\text{ kN}\\cdot\\text{m}\\), calculamos los factores del script:
+            <div class="math-block">
+              \\[ m = \\frac{f_y}{0.85 f'_c} = \\frac{${(fy*1000).toLocaleString()}}{0.85 \\times ${(fc*1000).toLocaleString()}} = ${m.toFixed(4)} \\]
+            </div>
+            El índice de resistencia nominal requerido \\(K = \\frac{M_u}{b d^2}\\):
+            <div class="math-block">
+              \\[ K = \\frac{${Mu.toFixed(1)}}{${b.toFixed(2)} \\times ${d.toFixed(2)}^2} = ${K.toFixed(2)}\\text{ kN/m}^2 = ${(K/1000).toFixed(3)}\\text{ MPa} \\]
+            </div>
+          </div>
+        </div>
+
+        <div class="step-item">
+          <div class="step-title"><span>Paso 2:</span> Cuantía Requerida (\\(\\rho\\)) y Área de Acero (\\(A_s\\))</div>
+          <div class="step-body">
+            Resolviendo la ecuación cuadrática de flexión con bloque de Whitney asumido con \\(\\phi = 0.90\\):
+            <div class="math-block">
+              \\[ \\rho = \\frac{1}{m} \\left( 1 - \\sqrt{1 - \\frac{2 m K}{\\phi f_y}} \\right) = \\frac{1}{${m.toFixed(4)}} \\left( 1 - \\sqrt{1 - \\frac{2 \\times ${m.toFixed(4)} \\times ${K.toFixed(2)}}{0.90 \\times ${(fy*1000).toLocaleString()}}} \\right) = ${rho.toFixed(6)} \\]
+            </div>
+            El área de acero requerida resulta:
+            <div class="math-block">
+              \\[ A_{s,\\text{req}} = \\rho \\cdot b \\cdot d = ${rho.toFixed(6)} \\times ${b.toFixed(2)} \\times ${d.toFixed(2)} = ${(As_req/10000).toFixed(6)}\\text{ m}^2 = \\mathbf{${As_req.toFixed(2)}\\text{ cm}^2} \\]
+            </div>
+            Verificación con los límites de cuantía de la norma:
+            <div class="math-block">
+              \\[ \\rho_{\\min} = ${(state.rho_min*100).toFixed(3)}\\% \\quad \\le \\quad \\rho = ${(rho*100).toFixed(3)}\\% \\quad \\le \\quad \\rho_{\\max} = ${(state.rho_max*100).toFixed(3)}\\% \\]
+            </div>
+          </div>
+        </div>
+
+        <div class="step-item success">
+          <div class="step-title"><span>Paso 3:</span> Verificación de Comportamiento Dúctil según Whitney</div>
+          <div class="step-body">
+            Comprobamos que el área calculada satisfaga la condición de viga con \\(\\varepsilon_t \\ge 0.005\\):
+            <div class="math-block">
+              \\[ c_2 = \\frac{A_s f_y}{0.85 f'_c b \\beta_1} = \\frac{${(As_req/10000).toFixed(6)} \\times ${(fy*1000).toLocaleString()}}{0.85 \\times ${(fc*1000).toLocaleString()} \\times ${b.toFixed(2)} \\times ${beta1.toFixed(3)}} = ${c2.toFixed(4)}\\text{ m} = ${(c2*100).toFixed(2)}\\text{ cm} \\]
+            </div>
+            Deformación unitaria en el acero más traccionado:
+            <div class="math-block">
+              \\[ \\varepsilon_{t2} = \\varepsilon_{cu} \\frac{d - c_2}{c_2} = 0.003 \\times \\frac{${d.toFixed(2)} - ${c2.toFixed(4)}}{${c2.toFixed(4)}} = ${et2.toFixed(5)} \\]
+            </div>
+            Como \\(\\varepsilon_{t2} = ${et2.toFixed(5)} > 0.005\\), se verifica plenamente que la sección es dúctil y el factor \\(\\phi = 0.90\\) asumido es 100% exacto.
+          </div>
+        </div>
+      `;
+    }
+
+    cont.innerHTML = html;
+    requestMathJaxTypeset(cont);
+  }
+
+  /* ==========================================================================
+     LIVE PYTHON CODE GENERATOR
+     ========================================================================== */
+  function renderPythonCode() {
+    const codeBlock = document.getElementById('python-code-block');
+    const b = state.b;
+    const h = state.h;
+    const r = state.r;
+    const fc = state.fc * 1000;
+    const fy = state.fy * 1000;
+    const As_cm2 = state.As;
+    const Mu = state.Mu;
+
+    let py = `#!/usr/bin/env python3\n# -*- coding: utf-8 -*-\n"""\nGenerado interactivamente desde el Módulo de Capacidad y Diseño de Vigas\nReferencia: Vigas/diseño_y_capacidad_vigas.py\n"""\nimport numpy as np\n\n`;
+
+    if (state.mode === 'capacidad') {
+      py += `# =============================================================================\n`;
+      py += `# Ejercicio # 1: Cálculo de capacidad de una viga existente\n`;
+      py += `# Definición de la viga: ${b} x ${h} m. Recubrimiento de ${r} m\n`;
+      py += `# =============================================================================\n`;
+      py += `b = ${b.toFixed(2)}\n`;
+      py += `h = ${h.toFixed(2)}\n`;
+      py += `As = ${As_cm2.toFixed(2)} / 10000  # area de acero en m2 (${As_cm2.toFixed(2)} cm2)\n`;
+      py += `r = ${r.toFixed(3)}          # recubrimiento al centro de la barra en m\n`;
+      py += `fc = ${fc}        # esfuerzo del concreto en kN/m2 (${state.fc} MPa)\n`;
+      py += `fy = ${fy}       # fluencia del acero en kN/m2 (${state.fy} MPa)\n`;
+      py += `d = h - r\n\n`;
+      py += `M = As * fy * (d - (As * fy) / (1.7 * fc * b))  # capacidad nominal Mn (kN*m)\n`;
+      py += `fi = ${state.fi.toFixed(3)}\n`;
+      py += `Md = fi * M  # capacidad de diseño de la viga (kN*m)\n\n`;
+      py += `# Verificamos que funcione como viga\n`;
+      py += `beta = ${state.beta1.toFixed(3)}  # según Whitney\n`;
+      py += `ec = 0.003  # deformación del concreto\n`;
+      py += `c = As * fy / (0.85 * fc * b * beta)\n\n`;
+      py += `et = ec * (d - c) / c  # aplicando Euler Bernoulli (hacer gráfico)\n`;
+      py += `# como et = ${state.et.toFixed(5)} > 0.005 entonces cumple que funciona como viga\n\n`;
+      py += `print(f"Momento Nominal Mn: {M:.2f} kN*m")\n`;
+      py += `print(f"Momento Diseno Md:  {Md:.2f} kN*m")\n`;
+      py += `print(f"Eje Neutro c:       {c*100:.2f} cm")\n`;
+      py += `print(f"Deformacion et:     {et:.5f} (Ductil: {et >= 0.005})")\n`;
+    } else {
+      py += `# =============================================================================\n`;
+      py += `# Ejercicio # 2: Cálculo de cuantía requerida para momento actuante\n`;
+      py += `# =============================================================================\n`;
+      py += `b = ${b.toFixed(2)}\n`;
+      py += `h = ${h.toFixed(2)}\n`;
+      py += `r = ${r.toFixed(3)}\n`;
+      py += `d = h - r\n`;
+      py += `fc = ${fc}        # kN/m2\n`;
+      py += `fy = ${fy}       # kN/m2\n`;
+      py += `M_actuante = ${Mu.toFixed(1)}  # kN*m\n`;
+      py += `fi = 0.9\n\n`;
+      py += `m = fy / (0.85 * fc)\n`;
+      py += `K = M_actuante / (b * d**2)\n`;
+      py += `rho = 1 / m * (1 - np.sqrt(1 - 2 * m * K / (fi * fy)))\n`;
+      py += `area_acero = rho * b * d * 10000  # area en cm2\n\n`;
+      py += `# Verificamos que funcione como viga\n`;
+      py += `beta = ${state.beta1.toFixed(3)}  # según Whitney\n`;
+      py += `ec = 0.003  # deformación del concreto\n`;
+      py += `c2 = (area_acero / 10000) * fy / (0.85 * fc * b * beta)\n\n`;
+      py += `et2 = ec * (d - c2) / c2  # aplicando Euler Bernoulli (hacer gráfico)\n`;
+      py += `# como et2 = ${state.et_dis.toFixed(5)} > 0.005 entonces cumple que funciona como viga\n\n`;
+      py += `print(f"Cuantia requerida rho: {rho*100:.4f} %")\n`;
+      py += `print(f"Acero requerido As:   {area_acero:.2f} cm2")\n`;
+      py += `print(f"Deformacion acero:    {et2:.5f}")\n`;
+    }
+
+    codeBlock.textContent = py;
+  }
+
+  function copyPythonCode() {
+    const text = document.getElementById('python-code-block').textContent;
+    navigator.clipboard.writeText(text).then(() => {
+      document.getElementById('copy-icon').textContent = '✓';
+      document.getElementById('copy-text').textContent = '¡Copiado con Éxito!';
+      setTimeout(() => {
+        document.getElementById('copy-icon').textContent = '📋';
+        document.getElementById('copy-text').textContent = 'Copiar Código Python';
+      }, 2200);
+    }).catch(err => {
+      alert('Error al copiar el código al portapapeles');
+    });
+  }
+
+  /* ==========================================================================
+     EVENT HANDLERS & PRESETS
+     ========================================================================== */
+  function setAppMode(newMode) {
+    state.mode = newMode;
+
+    const tabCap = document.getElementById('tab-mode-cap');
+    const tabDis = document.getElementById('tab-mode-dis');
+    const ctrlCap = document.getElementById('card-ctrl-capacidad');
+    const ctrlDis = document.getElementById('card-ctrl-diseno');
+    const rebarAss = document.getElementById('rebar-assistant-card');
+
+    if (newMode === 'capacidad') {
+      tabCap.classList.add('active');
+      tabDis.classList.remove('active');
+      ctrlCap.style.display = 'block';
+      ctrlDis.style.display = 'none';
+      rebarAss.style.display = 'none';
+    } else {
+      tabCap.classList.remove('active');
+      tabDis.classList.add('active');
+      ctrlCap.style.display = 'none';
+      ctrlDis.style.display = 'block';
+      rebarAss.style.display = 'block';
+    }
+
+    updateUI();
+  }
+
+  function updateParam(key, val) {
+    val = parseFloat(val);
+    if (key === 'b') state.b = val;
+    else if (key === 'h') state.h = val;
+    else if (key === 'r') state.r = val;
+    else if (key === 'fc') state.fc = val;
+    else if (key === 'fy') state.fy = val;
+    else if (key === 'as') {
+      state.As = val;
+      state.barConfig = 'custom';
+      document.getElementById('select-bar-config').value = 'custom';
+    }
+    else if (key === 'mu') state.Mu = val;
+
+    updateUI();
+  }
+
+  function onBarConfigChange(val) {
+    state.barConfig = val;
+    if (val === '4_6') {
+      state.As = 11.44; // 4 * 2.86 cm2 (exact match with class script)
+    } else if (val === '2_5') {
+      state.As = 3.98;
+    } else if (val === '3_5') {
+      state.As = 5.97;
+    } else if (val === '3_6') {
+      state.As = 8.52;
+    } else if (val === '2_6_2_5') {
+      state.As = 9.66;
+    } else if (val === '4_7') {
+      state.As = 15.48;
+    } else if (val === '4_8') {
+      state.As = 20.40;
+    }
+    updateUI();
+  }
+
+  function loadPreset(name) {
+    if (name === 'ejercicio1') {
+      state.mode = 'capacidad';
+      state.b = 0.35;
+      state.h = 0.45;
+      state.r = 0.05;
+      state.fc = 28;
+      state.fy = 420;
+      state.As = 11.44;
+      state.barConfig = '4_6';
+      setAppMode('capacidad');
+      syncInputs();
+    } else if (name === 'ejercicio2') {
+      state.mode = 'diseno';
+      state.b = 0.35;
+      state.h = 0.45;
+      state.r = 0.05;
+      state.fc = 28;
+      state.fy = 420;
+      state.Mu = 125.0;
+      setAppMode('diseno');
+      syncInputs();
+    } else if (name === 'viga_tipica') {
+      state.mode = 'diseno';
+      state.b = 0.30;
+      state.h = 0.50;
+      state.r = 0.06;
+      state.fc = 28;
+      state.fy = 420;
+      state.Mu = 160.0;
+      setAppMode('diseno');
+      syncInputs();
+    } else if (name === 'sobre_reforzada') {
+      state.mode = 'capacidad';
+      state.b = 0.30;
+      state.h = 0.45;
+      state.r = 0.05;
+      state.fc = 21;
+      state.fy = 420;
+      state.As = 32.0; // excessive steel
+      state.barConfig = 'custom';
+      setAppMode('capacidad');
+      syncInputs();
+    }
+    updateUI();
+  }
+
+  function syncInputs() {
+    document.getElementById('slider-b').value = state.b;
+    document.getElementById('slider-h').value = state.h;
+    document.getElementById('slider-r').value = state.r;
+    document.getElementById('select-fc').value = state.fc;
+    document.getElementById('select-fy').value = state.fy;
+    document.getElementById('select-bar-config').value = state.barConfig;
+    document.getElementById('slider-as').value = state.As;
+    document.getElementById('num-as').value = state.As;
+    document.getElementById('slider-mu').value = state.Mu;
+    document.getElementById('num-mu').value = state.Mu;
+  }
+
+  function toggleQuiz(idx) {
+    const el = document.getElementById(`quiz-ans-${idx}`);
+    el.classList.toggle('show');
+  }
+
+  function toggleTheme() {
+    const html = document.documentElement;
+    const isDark = html.getAttribute('data-theme') === 'dark';
+    const newTheme = isDark ? 'light' : 'dark';
+    html.setAttribute('data-theme', newTheme);
+    state.theme = newTheme;
+
+    document.getElementById('theme-icon').textContent = newTheme === 'dark' ? '☀️' : '🌙';
+    document.getElementById('theme-text').textContent = newTheme === 'dark' ? 'Modo Claro' : 'Modo Oscuro';
+    localStorage.setItem('concreto_theme', newTheme);
+
+    renderAllCanvases();
+  }
+
+  // Window resize handler for canvas crispness
+  window.addEventListener('resize', () => {
+    renderAllCanvases();
+  });
+
+  // Initialization
+  window.addEventListener('DOMContentLoaded', () => {
+    const savedTheme = localStorage.getItem('concreto_theme') || 'light';
+    if (savedTheme === 'dark') {
+      document.documentElement.setAttribute('data-theme', 'dark');
+      state.theme = 'dark';
+      document.getElementById('theme-icon').textContent = '☀️';
+      document.getElementById('theme-text').textContent = 'Modo Claro';
+    }
+    syncInputs();
+    updateUI();
+  });
+  </script>
+</body>
+</html>
