@@ -10,29 +10,29 @@ Plataforma web didáctica para la visualización y aprendizaje de la mecánica s
 
 ### 📘 Fundamentos del Concreto Armado
 
-#### 1. 📏 [Capacidad y Diseño de Vigas con Bloque de Whitney](https://odarroyo.github.io/curso_concreto_reforzado/capacidad_y_diseno_vigas.html)
-- Doble modalidad basada en el script oficial de clase: Análisis de Capacidad ($M_n, \phi M_n$) y Diseño por momento actuante ($M_u \to \rho, A_{s,\text{req}}$).
-- Visualizador cuádruple sincronizado: Sección, Euler-Bernoulli, bloque equivalente de Whitney y equilibrio de fuerzas con compresión al lado derecho.
-- Criterio de ductilidad ($\varepsilon_t \ge 0.005 \implies \phi = 0.90$), asistente de armaduras comerciales colombianas (NSR-10 / ACI 318), pizarrón MathJax paso a paso y consola Python en vivo.
-
-#### 2. 📜 [El Bloque de Whitney (1937) vs. Modelo de Fibras](https://odarroyo.github.io/curso_concreto_reforzado/bloque_whitney_vs_fibras.html)
-- El hito histórico de Whitney (1937) y el salto de esfuerzos admisibles (ASD) a resistencia última (USD).
-- Comparativa interactiva continua para cualquier profundidad del eje neutro $c$: $C_c$, centroide $\bar{y}_c$, $P_n$ y $M_n$.
-- 3 paneles dinámicos: Cinemática, Duelo de Esfuerzos y Diagrama $P-M$.
-- Fundamento físico de segundo orden y exportador a Python.
-
-#### 3. 📘 [Cálculo de un Punto (P, M) con Fibras](https://odarroyo.github.io/curso_concreto_reforzado/calculo_punto_fibras.html)
+#### 1. 📘 [Cálculo de un Punto (P, M) con Fibras](https://odarroyo.github.io/curso_concreto_reforzado/calculo_punto_fibras.html)
 - Cinemática de deformaciones planas de Euler-Bernoulli.
 - Modelo constitutivo de Hognestad no confinado y acero elastoplástico.
 - **Lupa didáctica:** Sustitución y cálculo numérico paso a paso ($y_i \to \varepsilon_i \to \sigma_i \to F_i \to d_i \to M_i$).
 - Balanza de equilibrio estático de fuerzas axiales y momentos flectores.
 - Convergencia de discretización numérica (5 a 100 fibras).
 
-#### 4. 📗 [Diagrama de Interacción Completo (P - M)](https://odarroyo.github.io/curso_concreto_reforzado/material_educativo_fibras.html)
+#### 2. 📗 [Diagrama de Interacción Completo (P - M)](https://odarroyo.github.io/curso_concreto_reforzado/material_educativo_fibras.html)
 - Envolvente completa de flexocompresión nominal $(P_n, M_n)$ y de diseño $(P_u, M_u)$.
 - Factores de reducción de resistencia $\phi$ según NSR-10 / ACI 318.
 - Clasificación de modos de falla (Falla dúctil controlada por tracción, balanceada y controlada por compresión).
 - 5 paneles dinámicos sincronizados a 60 FPS.
+
+#### 3. 📜 [El Bloque de Whitney (1937) vs. Modelo de Fibras](https://odarroyo.github.io/curso_concreto_reforzado/bloque_whitney_vs_fibras.html)
+- El hito histórico de Whitney (1937) y el salto de esfuerzos admisibles (ASD) a resistencia última (USD).
+- Comparativa interactiva continua para cualquier profundidad del eje neutro $c$: $C_c$, centroide $\bar{y}_c$, $P_n$ y $M_n$.
+- 3 paneles dinámicos: Cinemática, Duelo de Esfuerzos y Diagrama $P-M$.
+- Fundamento físico de segundo orden y exportador a Python.
+
+#### 4. 📏 [Capacidad y Diseño de Vigas con Bloque de Whitney](https://odarroyo.github.io/curso_concreto_reforzado/capacidad_y_diseno_vigas.html)
+- Doble modalidad basada en el script oficial de clase: Análisis de Capacidad ($M_n, \phi M_n$) y Diseño por momento actuante ($M_u \to \rho, A_{s,\text{req}}$).
+- Visualizador cuádruple sincronizado: Sección, Euler-Bernoulli, bloque equivalente de Whitney y equilibrio de fuerzas con compresión al lado derecho.
+- Criterio de ductilidad ($\varepsilon_t \ge 0.005 \implies \phi = 0.90$), asistente de armaduras comerciales colombianas (NSR-10 / ACI 318), pizarrón MathJax paso a paso y consola Python en vivo.
 
 ---
 
